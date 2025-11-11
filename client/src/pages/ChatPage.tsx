@@ -2,17 +2,21 @@ import AskAuntB from '@/components/AskAuntB';
 
 export default function ChatPage() {
   const handleSendMessage = async (message: string) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const responses = [
-      "That makes sense — your body's in its own rhythm right now. What would feel most supportive?",
-      "You're not broken, just human. Your hormones are teachers, not enemies.",
-      "If you need extra rest, that's data — not failure. Listen to what your body's asking for.",
-      "Your body's not working against you — it's trying to communicate. Take a breath and tune in.",
-      "You're allowed to ebb and flow. Productivity doesn't mean pushing. Be gentle with yourself.",
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await response.json();
+      return data.reply;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      return "I'm having trouble connecting right now, love. Can you try again in a moment?";
+    }
   };
 
   return (
