@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -16,3 +16,60 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export const rituals = pgTable("rituals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  phase: text("phase").notNull(),
+  fileType: text("file_type").notNull(),
+  filePath: text("file_path").notNull(),
+  duration: text("duration"),
+});
+
+export const insertRitualSchema = createInsertSchema(rituals).omit({ id: true });
+export type InsertRitual = z.infer<typeof insertRitualSchema>;
+export type Ritual = typeof rituals.$inferSelect;
+
+export const careRequests = pgTable("care_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: text("type").notNull(),
+  status: text("status").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  userId: varchar("user_id").notNull(),
+});
+
+export const insertCareRequestSchema = createInsertSchema(careRequests).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export type InsertCareRequest = z.infer<typeof insertCareRequestSchema>;
+export type CareRequest = typeof careRequests.$inferSelect;
+
+export const communityPosts = pgTable("community_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  phase: text("phase").notNull(),
+  upvotes: integer("upvotes").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
+export type CommunityPost = typeof communityPosts.$inferSelect;
+
+export const calendarEvents = pgTable("calendar_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  date: timestamp("date").notNull(),
+  phase: text("phase"),
+  userId: varchar("user_id").notNull(),
+});
+
+export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit({ id: true });
+export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
+export type CalendarEvent = typeof calendarEvents.$inferSelect;

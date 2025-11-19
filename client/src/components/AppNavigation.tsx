@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Heart, Calendar, MessageCircle, BookOpen, Users } from 'lucide-react';
+import { Heart, Calendar, MessageCircle, BookOpen, Users, Music, HandHeart, MessagesSquare, CalendarDays } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -16,7 +16,10 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
     { path: '/', label: 'Dashboard', icon: Heart },
     { path: '/check-in', label: 'Check-In', icon: Calendar },
     { path: '/chat', label: 'Ask Aunt B', icon: MessageCircle },
-    { path: '/learn', label: 'Learn', icon: BookOpen },
+    { path: '/rituals', label: 'Rituals', icon: Music },
+    { path: '/partner-support', label: 'Partner Care', icon: HandHeart },
+    { path: '/community', label: 'Community', icon: MessagesSquare },
+    { path: '/calendar', label: 'Calendar', icon: CalendarDays },
   ];
 
   return (

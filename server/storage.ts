@@ -1,14 +1,48 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { 
+  type User, 
+  type InsertUser,
+  type Ritual,
+  type InsertRitual,
+  type CareRequest,
+  type InsertCareRequest,
+  type CommunityPost,
+  type InsertCommunityPost,
+  type CalendarEvent,
+  type InsertCalendarEvent
+} from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Rituals
+  createRitual(ritual: InsertRitual): Promise<Ritual>;
+  getRituals(): Promise<Ritual[]>;
+  getRitualsByPhase(phase: string): Promise<Ritual[]>;
+  deleteRitual(id: string): Promise<void>;
+  
+  // Care Requests
+  createCareRequest(request: InsertCareRequest): Promise<CareRequest>;
+  getCareRequests(userId: string): Promise<CareRequest[]>;
+  updateCareRequestStatus(id: string, status: string): Promise<CareRequest>;
+  
+  // Community Posts
+  createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
+  getCommunityPosts(): Promise<CommunityPost[]>;
+  getCommunityPostsByPhase(phase: string): Promise<CommunityPost[]>;
+  upvoteCommunityPost(id: string): Promise<CommunityPost>;
+  
+  // Calendar Events
+  createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
+  getCalendarEvents(userId: string): Promise<CalendarEvent[]>;
+  deleteCalendarEvent(id: string): Promise<void>;
 }
+
+import { db } from "./db";
+import { rituals, careRequests, communityPosts, calendarEvents } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
@@ -32,6 +66,88 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async createRitual(ritual: InsertRitual): Promise<Ritual> {
+    const [newRitual] = await db.insert(rituals).values(ritual).returning();
+    return newRitual;
+  }
+
+  async getRituals(): Promise<Ritual[]> {
+    return await db.select().from(rituals);
+  }
+
+  async getRitualsByPhase(phase: string): Promise<Ritual[]> {
+    return await db.select().from(rituals).where(eq(rituals.phase, phase));
+  }
+
+  async deleteRitual(id: string): Promise<void> {
+    const result = await db.delete(rituals).where(eq(rituals.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error("Ritual not found");
+    }
+  }
+
+  async createCareRequest(request: InsertCareRequest): Promise<CareRequest> {
+    const [newRequest] = await db.insert(careRequests).values(request).returning();
+    return newRequest;
+  }
+
+  async getCareRequests(userId: string): Promise<CareRequest[]> {
+    return await db.select().from(careRequests).where(eq(careRequests.userId, userId));
+  }
+
+  async updateCareRequestStatus(id: string, status: string): Promise<CareRequest> {
+    const [updated] = await db
+      .update(careRequests)
+      .set({ status })
+      .where(eq(careRequests.id, id))
+      .returning();
+    if (!updated) {
+      throw new Error("Care request not found");
+    }
+    return updated;
+  }
+
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const [newPost] = await db.insert(communityPosts).values(post).returning();
+    return newPost;
+  }
+
+  async getCommunityPosts(): Promise<CommunityPost[]> {
+    return await db.select().from(communityPosts);
+  }
+
+  async getCommunityPostsByPhase(phase: string): Promise<CommunityPost[]> {
+    return await db.select().from(communityPosts).where(eq(communityPosts.phase, phase));
+  }
+
+  async upvoteCommunityPost(id: string): Promise<CommunityPost> {
+    const [post] = await db.select().from(communityPosts).where(eq(communityPosts.id, id));
+    if (!post) throw new Error("Post not found");
+    
+    const [updated] = await db
+      .update(communityPosts)
+      .set({ upvotes: (post.upvotes || 0) + 1 })
+      .where(eq(communityPosts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    const [newEvent] = await db.insert(calendarEvents).values(event).returning();
+    return newEvent;
+  }
+
+  async getCalendarEvents(userId: string): Promise<CalendarEvent[]> {
+    return await db.select().from(calendarEvents).where(eq(calendarEvents.userId, userId));
+  }
+
+  async deleteCalendarEvent(id: string): Promise<void> {
+    const result = await db.delete(calendarEvents).where(eq(calendarEvents.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error("Event not found");
+    }
   }
 }
 
