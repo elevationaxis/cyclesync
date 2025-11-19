@@ -1,0 +1,57 @@
+Absolutely! Here’s a "vibe coding prompt"—a high-level system/design brief you can use to guide your project (and even drop directly into an AI co-pilot or hand off to devs collaborating with you). This will help you keep your UX, features, and interactions cohesive and uniquely aligned with your community-first, connection-driven approach:
+
+***
+
+## Vibe Coding Prompt for Cycle Sync App
+
+**Project Soul:**  
+A neuro-affirming, relationship-strengthening cycle syncing app that transforms data into real daily support, deepens partner understanding, and makes self-care social, collaborative, and fun.
+
+### Core Principles  
+- **Personal, not clinical:** Use friendly, inclusive, non-medical language everywhere.  
+- **Connection > Tracking:** The real magic is in conversation, rituals, and active partners—not just logging data.  
+- **Neuro-friendly:** Rely on visual progress, reminders, streaks, audio tips, and "just one thing" daily nudges.
+- **Customizable, not one-size-fits-all:** Let users pick what they see, what they share, and how they interact.
+
+### Feature Requirements  
+1. **Partner Support Playbook**  
+   - Send phase-specific “how to support her today” cards/tips.  
+   - Option for quick “care request” (user chooses from snack run, touch, chill, encouragement, etc.).  
+   - Gamified or gratitude-based tracking for partner participation.
+
+2. **Cycle-Integrated Shared Calendar**  
+   - Both users sync schedules/events, color-coded by phase.  
+   - Partner can see daily energy/mood forecasts and cycle stage at a glance (with user permission toggle).
+
+3. **AI-Powered Suggestions**  
+   - “Aunt B” answers for cycle, moods, and relationship Qs—all advice tailored by phase and personal health log.  
+   - Dynamic supplement and recipe tips, based on user logs and tracked symptoms.  
+   - Habit/routine tips personalized by cycle phase and energy/motivation level.
+
+4. **Guidance Trackers**  
+   - Phase-based habits (hydration, exercise, rest, etc.) and optional ADHD-friendly rituals.  
+   - Celebratory streaks, badges, and gentle reminders when habits are kept up.
+
+5. **Community Sourced Q&A**  
+   - Anonymous, shareable partner Q&A knowledgebase: what helped in each phase, what didn’t, upvoted by community.
+
+6. **Guided Ritual Library**  
+   - Audio/video self-care practices (breathwork, meditation, journaling, movement) sorted by cycle phase.
+
+7. **Doctor/Export Options**  
+   - One-tap export of logs, symptom summaries, and mood tracking into shareable PDF for doctor visits.
+
+8. **Inclusive Options**  
+   - Onboarding flow offers non-binary, trans, poly, and solo configurations without gendered assumptions.
+
+### Brand/UX Vibe  
+- Whimsical but clear: soft colors, soothing fonts, gentle animations.  
+- Empowering and shame-free: always frame symptoms, needs, and requests as normal and valid.  
+- Micro-learning friendly: tips/cards are short, swipeable, “read this, try that” style.  
+- Opt-in privacy: users control what’s shared with partners/others at all times.
+
+***
+
+You can drop this prompt into your AI model (“help me translate this into React components,” etc.), hand it to freelance engineers, or use it as a “north star” reference in product meetings and team discussions. If you want a version slightly reworded for builders/devs or specific code snippets to get started, let me know!
+
+Sources
