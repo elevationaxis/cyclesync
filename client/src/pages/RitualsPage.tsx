@@ -7,10 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Upload, Play, Pause, Trash2, Music, Video } from "lucide-react";
+import { Upload, Trash2, Music, Video, Sparkles, Moon, Sun, Flower2, Cloud } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Ritual } from "@shared/schema";
+
+const phaseIcons: Record<string, typeof Moon> = {
+  menstrual: Moon,
+  follicular: Flower2,
+  ovulatory: Sun,
+  luteal: Cloud,
+};
 
 export default function RitualsPage() {
   const { toast } = useToast();
@@ -112,18 +119,30 @@ export default function RitualsPage() {
   };
 
   const phaseColors: Record<string, string> = {
-    menstrual: "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300",
-    follicular: "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300",
-    ovulatory: "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300",
-    luteal: "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300",
+    menstrual: "bg-gradient-to-br from-rose-100 to-red-50 dark:from-rose-900/30 dark:to-red-900/20 border-rose-200 dark:border-rose-800",
+    follicular: "bg-gradient-to-br from-emerald-100 to-green-50 dark:from-emerald-900/30 dark:to-green-900/20 border-emerald-200 dark:border-emerald-800",
+    ovulatory: "bg-gradient-to-br from-amber-100 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800",
+    luteal: "bg-gradient-to-br from-sky-100 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/20 border-sky-200 dark:border-sky-800",
+  };
+
+  const phaseTextColors: Record<string, string> = {
+    menstrual: "text-rose-700 dark:text-rose-300",
+    follicular: "text-emerald-700 dark:text-emerald-300",
+    ovulatory: "text-amber-700 dark:text-amber-300",
+    luteal: "text-sky-700 dark:text-sky-300",
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Ritual Library</h1>
-        <p className="text-muted-foreground">
-          Your personal collection of phase-aligned practices
+    <div className="container mx-auto p-4 md:p-8 max-w-6xl">
+      <div className="mb-8 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 mb-4">
+          <Sparkles className="w-8 h-8 text-primary" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+          Ritual Library
+        </h1>
+        <p className="text-muted-foreground text-lg max-w-md mx-auto">
+          Your sacred collection of phase-aligned practices for every season of your cycle
         </p>
       </div>
 
