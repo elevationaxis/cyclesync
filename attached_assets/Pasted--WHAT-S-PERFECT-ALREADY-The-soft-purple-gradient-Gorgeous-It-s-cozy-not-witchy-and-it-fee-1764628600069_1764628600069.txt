@@ -1,0 +1,144 @@
+💜 WHAT’S PERFECT ALREADY
+
+✔️ The soft purple gradient? Gorgeous.
+
+It’s cozy, not witchy, and it feels like a warm hug.
+
+✔️ The tone (“Hey there, love.”) is right.
+
+We keep that. That’s Aunt B.
+
+✔️ The cards look professional.
+
+Rounded. Clean. Spacious. Perfect.
+
+✔️ The spoon theory section looks AMAZING.
+
+You nailed the educational tone.
+
+✔️ It feels modern and safe.
+
+This looks like an actual startup’s landing page.
+
+⸻
+
+💜 WHAT TO TWEAK TO MAKE IT AUNT B (YOUR VERSION)
+
+1. Replace the moon icon ASAP
+
+The purple moon icon leans slightly mystical — not terrible, but not “Aunt B.”
+
+Swap it for:
+	•	a soft flower
+	•	a heart outline
+	•	a simple dot grid
+	•	a simple calendar icon
+	•	a wavy line (energy)
+	•	a checkmark
+	•	a circle with a +
+
+I can give you SVGs if you want.
+
+⸻
+
+2. Add more PURPLE in the buttons
+
+Right now, the “Start Your Journey” button is beige.
+It’s cute, but your signature is purple.
+
+We want:
+
+Primary action = purple
+Secondary action = beige or grey
+Tertiary = text only
+
+So:
+✔️ “Let’s Get Started” = deep plum or lavender
+✔️ Onboarding buttons = lavender/cherry blossom feel
+
+⸻
+
+3. Add a tiny note under the hero section
+
+Something like:
+
+“Built by a real mom with real life chaos — not a corporation.”
+
+This humanizes it immediately.
+
+⸻
+
+4. Add a soft Aunt B message under the spoon tracker
+
+Something like:
+
+Low spoons:
+“Baby, move slow today. Hydrate. One thing at a time.”
+
+Medium spoons:
+“You’ve got enough to get one meaningful thing done. Don’t overspend.”
+
+High spoons:
+“Protect your spoons, honey — not everyone deserves them.”
+
+I can give you a whole bank of these if you want.
+
+⸻
+
+5. Add a tiny lavender line divider between sections
+
+Just a soft horizontal line (#C8B7E4 at 20–30% opacity).
+It will make the layout feel more sophisticated.
+
+⸻
+
+6. The “A note from Aunt B” card is BEAUTIFUL — but let’s shrink the text a bit
+
+It’s powerful, but a bit long for in-app.
+
+Try a shorter version:
+
+“Honey, your cycle isn’t a battle — it’s your body talking to you.
+I’m here to help you listen, not judge.”
+
+It hits harder.
+
+⸻
+
+💜 WHAT TO ADD NEXT (to make this feel like a REAL app)
+
+✓ A spoon tracker slider
+
+Even if it doesn’t function yet, get the UI in place.
+
+✓ Mood chips or energy tags
+
+Small selectable chips like:
+	•	“Overwhelmed”
+	•	“Tired”
+	•	“Irritated”
+	•	“Motivated”
+	•	“Soft day”
+
+These guide the AI later.
+
+✓ A tiny bottom nav preview
+
+Even if nonfunctional, it makes it feel like an app, not a webpage.
+
+✓ A partner support preview
+
+Just a teaser:
+
+“Today: Be extra gentle. Luteal energy is low.”
+
+You can do a full Partner Mode later.
+
+⸻
+
+💜 WHAT YOU CAN TELL REPLIT NEXT (copy/paste)
+
+“Update the UI to more strongly reflect the Aunt B brand.
+Use soft purple buttons, remove the moon icon and replace with a non-mystical icon, tighten spacing under the hero section, and add a gentle Aunt B message under the Spoon Tracker card.
+Use the cozy lavender palette (C8B7E4, A184C5, EFE7FA).
+Tone: warm, grounded, older-sister energy — not spiritual or witchy.”
