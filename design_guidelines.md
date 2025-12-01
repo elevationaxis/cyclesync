@@ -1,180 +1,204 @@
-# Design Guidelines: Cycle Syncing App
+# Design Guidelines: Cycle Syncing App with Aunt B
 
 ## Design Approach
 
-**Reference-Based Approach**: Drawing inspiration from modern wellness apps with a focus on calm functionality. Primary references:
-- **Headspace** - approachable wellness tone with clean information hierarchy
-- **Notion** - organized content with breathing room
-- **Calm** - soothing interface design without clinical coldness
+**Reference-Based Approach**: Drawing inspiration from modern wellness apps that prioritize calm functionality and emotional safety.
+
+**Primary References**:
+- **Headspace** - approachable wellness tone with clean hierarchy
+- **Notion** - organized content with generous breathing room
+- **Calm** - soothing interface without clinical coldness
 
 **Design Principles**:
-1. Grounded warmth - trustworthy but never sterile
-2. Breathing room - generous spacing for calm feeling
-3. Human-first - conversational UI text, never robotic
-4. Mobile-optimized - primary use case is daily phone check-ins
+1. Grounded warmth - trustworthy older sister energy, never sterile
+2. Emotional safety - cozy, supportive spaces users return to daily
+3. Visual calm - generous whitespace, soft edges, gentle shadows
+4. Human-first - conversational UI, zero clinical or mystical language
+5. Mobile-optimized - primary daily check-in device
+
+## Color System
+
+**Foundation**:
+- Soft Cream (#F7F4F2) - primary backgrounds, breathing room
+- Light Taupe (#E4DAD2) - secondary backgrounds, subtle cards
+- Charcoal Grey (#3A3A3A) - body text, readable and warm
+
+**Accent Colors**:
+- Cozy Lavender (#C8B7E4) - primary actions, phase highlights
+- Soft Plum (#A184C5) - interactive elements, emphasis
+- Lilac Wash (#EFE7FA) - soft backgrounds, gentle emphasis areas
+- Muted Peach (#F2C8B8) - warm accents, celebration moments
+
+**Application Strategy**:
+- Page backgrounds: Soft Cream
+- Card backgrounds: White with soft shadows
+- Aunt B chat bubbles: Lilac Wash with Soft Plum text
+- User chat bubbles: Light Taupe
+- Phase indicators: Gradient from Cozy Lavender to Soft Plum
+- Primary buttons: Soft Plum with white text
+- Success states: Muted Peach accents
+- Text hierarchy: Charcoal Grey primary, Soft Plum for emphasis
 
 ## Typography System
 
 **Font Families** (Google Fonts):
-- **Primary**: Inter (400, 500, 600) - body text, UI elements
-- **Display**: DM Sans (500, 700) - headings, emphasis
+- **Primary**: Inter (400, 500, 600) - UI elements, body text
+- **Display**: DM Sans (500, 700) - headings, warmth
 
 **Hierarchy**:
-- Hero/Dashboard headers: text-4xl md:text-5xl, font-bold
-- Section headers: text-2xl md:text-3xl, font-semibold
-- Card titles: text-xl, font-medium
-- Body text: text-base, font-normal, leading-relaxed
-- Small text/captions: text-sm
-- Aunt B chat responses: text-base, leading-loose (extra breathing room)
+- Hero/Dashboard headers: text-4xl md:text-5xl, font-bold (DM Sans)
+- Section headers: text-2xl md:text-3xl, font-semibold (DM Sans)
+- Card titles: text-xl, font-medium (Inter)
+- Body text: text-base, leading-relaxed (Inter)
+- Aunt B responses: text-base, leading-loose (extra breathing room)
+- Captions/metadata: text-sm
 
 ## Layout System
 
-**Spacing Primitives**: Use Tailwind units of **4, 6, 8, 12, 16** for consistency
-- Component padding: p-6 to p-8
-- Section spacing: py-12 to py-16
-- Card gaps: gap-6
-- Tight spacing: space-y-4
-- Generous spacing: space-y-8
+**Spacing Primitives**: Tailwind units of **4, 6, 8, 12, 16**
+- Card padding: p-6 md:p-8
+- Section spacing: py-12 md:py-16
+- Component gaps: gap-6
+- Vertical rhythm: space-y-6 to space-y-8
+- Tight groupings: space-y-4
 
 **Container Strategy**:
-- Max width: max-w-6xl for main content
-- Dashboard cards: max-w-sm to max-w-md
+- Main content: max-w-6xl
+- Dashboard cards: max-w-md
 - Chat interface: max-w-3xl
-- Full-width sections for phase visualizations
+- Reading content: max-w-prose
 
 ## Core Components
 
-### 1. Cycle Compass (Dashboard Hero)
-- Circular phase indicator centered at top
-- Current phase name prominently displayed
-- Brief Aunt B-style message below (e.g., "You're in your luteal phase, which means it's okay to say no more often")
-- Today's date and cycle day count
-- Visual progress arc showing phase progression
+### 1. Cycle Compass Dashboard Hero
+Centered circular phase visualization (300px diameter on desktop):
+- Current phase name prominently displayed inside circle
+- Gentle progress arc showing phase progression (gradient: Cozy Lavender to Soft Plum)
+- Today's date and cycle day count below
+- Aunt B's supportive daily message card beneath (Lilac Wash background, rounded-2xl, p-8)
+- Four phase segments around circle with labels and day ranges
 
-### 2. Phase Card Layout
-Large cards for each of 4 phases with:
-- Phase icon/symbol
-- Phase name and day range
-- Energy level indicator
-- 3-4 bullet points of key characteristics
-- "Learn more" expansion option
+### 2. Phase Education Cards
+Large, breathing cards in 2-column grid (single column mobile):
+- Rounded-2xl corners with shadow-sm
+- Generous padding (p-8)
+- Simple line-art phase icon at top (48px, Soft Plum)
+- Phase name (text-2xl, font-semibold)
+- Day range subtitle (text-sm, Charcoal Grey)
+- Energy level visual bar (gradient fill)
+- 4-5 characteristic bullet points with ample line-height
+- Expandable "Learn more" section (collapsed by default)
 
-### 3. Daily Check-In Form
-Clean, vertical form layout:
-- Question groupings with space-y-6
-- Radio buttons for mood/energy (visual scale 1-5)
-- Checkboxes for physical symptoms (grouped)
-- Textarea for notes (optional, generous height)
-- Submit button with encouraging copy ("Share with Aunt B")
+### 3. Daily Check-In Flow
+Vertical single-column form with breathing room:
+- Progress indicator at top (4 dots showing current section)
+- Section headers with encouraging copy
+- Mood scale: 5 large circular buttons (60px) with emoji representations
+- Energy level: Horizontal slider with soft endpoints
+- Physical symptoms: Generous checkbox grid (grid-cols-2 md:grid-cols-3, gap-4)
+- Notes textarea: min-height 120px, rounded-lg, Lilac Wash background
+- Submit button: full-width on mobile, centered on desktop, rounded-full, px-8 py-4
 
 ### 4. Ask Aunt B Chat Interface
-- Chat bubbles with generous padding (p-4 to p-6)
-- User messages: aligned right, distinct styling
-- Aunt B responses: aligned left, warm styling
-- Avatar for Aunt B (circular, 40px)
-- Input at bottom with auto-focus
-- Scrollable message area with smooth scroll
+Clean conversation layout:
+- Aunt B avatar: 48px circular illustration (warm, friendly face with cozy lavender tones)
+- Aunt B messages: left-aligned, Lilac Wash background, rounded-2xl (sharp corner bottom-left), p-6, max-width 80%
+- User messages: right-aligned, Light Taupe background, rounded-2xl (sharp corner bottom-right), p-4, max-width 70%
+- Generous message spacing (space-y-6)
+- Input field: sticky bottom, Light Taupe background, rounded-full, py-4 px-6, shadow-lg
+- Send button: circular (48px), Soft Plum, icon only
 
-### 5. Tips & Suggestions Cards
-Grid layout (grid-cols-1 md:grid-cols-2):
-- Icon at top (48px size)
-- Category label (Mind/Body/Food/Flow)
-- 2-3 practical suggestions
-- Subtle card elevation
-- Rounded corners (rounded-xl)
+### 5. Tips & Wellness Suggestions
+Grid layout (grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-6):
+- Category label ribbon at top (Mind/Body/Food/Flow) - Muted Peach background
+- Simple icon (Soft Plum, 40px)
+- Card title (text-lg, font-medium)
+- 3-4 practical suggestions as clean list
+- Cards use white backgrounds with shadow-sm, rounded-xl, p-6
+- Hover: shadow-md transition
 
 ### 6. Gentle Wins Tracker
-Vertical checklist layout:
-- Large, satisfying checkboxes
-- Habit text with encouraging wording
-- Completion count at top
-- Reset option at bottom
-- Celebration micro-interaction on completion
+Vertical checklist with celebration:
+- Section header with current streak count
+- Large checkboxes (32px) with rounded-lg borders
+- Habit labels with warm, encouraging wording (text-base, leading-relaxed)
+- Checked items: Muted Peach checkmark, subtle strikethrough
+- Completion celebration: Confetti-style dots (Cozy Lavender, Soft Plum, Muted Peach)
+- Weekly reset indicator at bottom
+- Each item: p-4, hover background Light Taupe
 
-### 7. Partner View Dashboard
-Simplified, educational view:
-- Phase overview card (larger)
-- "What to know" section with 3-4 key points
-- "Ways to support" practical suggestions
-- "Ask before assuming" reminder card
-- No access to personal check-in data
+### 7. Partner Dashboard View
+Simplified, educational cards:
+- Large phase overview hero (same circular design, educational context)
+- "What's happening" card: current phase explanation, p-8, white background
+- "Ways to support" grid: 3-4 suggestion cards with icons
+- "Remember" reminder card: Lilac Wash background, italic text emphasis
+- "Ask first" principle highlighted
+- No personal check-in data visible
 
-### 8. Navigation
-Top navigation bar:
-- Logo/app name left
-- Main nav items center (Dashboard, Check-In, Learn, Chat)
-- User menu right with partner toggle if applicable
-- Sticky on scroll
-- Mobile: hamburger menu
+### 8. Navigation Structure
+**Desktop**: Top horizontal bar (sticky)
+- Logo/app name left (DM Sans, text-xl)
+- Main nav center: Dashboard, Check-In, Learn, Chat (horizontal spacing gap-8)
+- User menu right with partner toggle if enabled
+- Background: white with shadow-sm
+- Active nav items: Soft Plum underline
 
-## Component Patterns
-
-**Cards**: All cards use rounded-xl, shadow-sm, p-6, with hover:shadow-md transition
-
-**Buttons**:
-- Primary actions: px-6 py-3, rounded-full, font-medium
-- Secondary: outlined style, same dimensions
-- Icon buttons: rounded-full, p-3
-
-**Form Inputs**:
-- Consistent height: py-3 px-4
-- Rounded-lg borders
-- Focus states with ring effect
-- Labels above inputs with mb-2
-
-**Phase Indicators**: 
-- Use progress bars/arcs
-- Segment indicators for 4 phases
-- Visual current phase highlight
-
-## Animations
-
-Minimal, purposeful animations only:
-- Smooth transitions on card hover (transform scale-105)
-- Gentle fade-in for content loading
-- Check-in submission with brief success animation
-- Chat message slide-in
-- NO decorative background animations
+**Mobile**: Bottom tab bar (fixed)
+- 4 main sections as icons with labels
+- Active tab: Cozy Lavender fill
+- Safe area padding for modern devices
 
 ## Images
 
-**Hero Section**: 
-- Dashboard uses illustrated cycle diagram, not photo
-- Marketing pages can use soft, abstract imagery
+**Illustrated Style Throughout** (NO photos):
+
+**Hero Section (Marketing/Onboarding)**:
+- Soft abstract illustration of cycle phases as flowing shapes
+- Gentle gradients (Soft Cream → Lilac Wash → Cozy Lavender)
+- Width: full-width, height: 60vh
+- CTA buttons overlaid with backdrop-blur-sm backgrounds
+
+**Dashboard**:
+- Cycle Compass uses custom SVG illustration (geometric, clean)
+- Phase icons: simple line-art representations (flower buds, blooms, leaves, rest)
 
 **Throughout App**:
-- Phase icons (custom illustrated, simple line art style)
-- Aunt B avatar (warm, friendly illustration - not realistic photo)
-- Wellness spot illustrations for tips sections
-- NO stock photos of women - keep it abstract/illustrated
+- Aunt B avatar: warm illustrated character (cozy cardigan colors)
+- Wellness illustrations: minimalist spot illustrations for tip categories
+- Body symptom diagrams: clean, educational line drawings
+- Success states: small celebratory abstract shapes (dots, gentle curves)
 
-**Image Placement**:
-- Login/onboarding: full-width hero with soft gradient overlay
-- Phase education pages: supporting illustrations inline with content
-- Body Cues library: simple diagrams where helpful
+**Image Library**:
+All images use CDN placeholders with specific descriptions for custom illustration
 
 ## Responsive Strategy
 
-**Mobile-first** (primary experience):
+**Mobile (Primary Experience)**:
 - Single column layouts
-- Bottom navigation option
-- Thumb-friendly tap targets (min 44px)
-- Generous spacing for readability
+- Bottom navigation (fixed)
+- Thumb-friendly targets (min 48px)
+- Cycle Compass: 240px diameter
+- Generous tap padding
 
-**Tablet** (md:):
+**Tablet (md:)**:
 - Two-column card grids
-- Sidebar navigation appears
-- Expanded phase visualizations
+- Cycle Compass: 280px diameter
+- Side navigation appears
+- Expanded chat width
 
-**Desktop** (lg:):
-- Dashboard with sidebar + main content area
+**Desktop (lg:)**:
+- Dashboard with sidebar navigation + main content
 - Three-column tip grids
-- Chat interface with fixed width for readability
+- Cycle Compass: 320px diameter
+- Chat interface max-w-3xl centered
+- Generous margins (px-8 to px-16)
 
-## Content Tone in UI
+## Content Voice
 
-All UI copy follows Aunt B voice:
-- Buttons: "Let's check in" not "Submit"
-- Empty states: "Nothing here yet, love" not "No data"
-- Errors: "Oops, something got mixed up" not "Error"
-- Success: "Got it, thanks for sharing" not "Saved successfully"
+All UI copy maintains Aunt B warmth:
+- Buttons: "Let's check in" / "Share with me" / "Got it, thanks"
+- Empty states: "Nothing here yet, love"
+- Errors: "Oops, something got tangled"
+- Loading: "Just a moment, dear"
+- Success: "Beautiful, I've got it"

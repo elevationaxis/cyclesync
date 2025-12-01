@@ -68,3 +68,7 @@ export function getPhaseProgress(cycleDay: number): number {
   const range = ranges[phase];
   return ((cycleDay - range.start) / (range.end - range.start + 1)) * 100;
 }
+
+export function getPhaseInfo(phase: CyclePhase): PhaseInfo {
+  return PHASE_INFO[phase];
+}

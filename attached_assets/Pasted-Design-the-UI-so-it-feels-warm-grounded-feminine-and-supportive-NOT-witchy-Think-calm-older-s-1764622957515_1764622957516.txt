@@ -1,0 +1,93 @@
+Design the UI so it feels warm, grounded, feminine, and supportive — NOT witchy.
+Think: calm older sister, wise aunt energy, simple, modern, and cozy.
+
+Overall Design Vibe
+	•	Clean, minimal, soft
+	•	Neutral background with soft purple accents
+	•	Lots of white space
+	•	Rounded corners
+	•	Cards-based layout
+	•	Friendly, short copy
+	•	Zero mystical or magical symbols
+
+Color Palette
+
+Use a palette centered around cozy purples and clean neutrals:
+	•	Soft cream (#F7F4F2)
+	•	Light taupe / oatmeal (#E4DAD2)
+	•	Cozy lavender (#C8B7E4)
+	•	Soft plum (#A184C5)
+	•	Lilac wash (#EFE7FA)
+	•	Charcoal grey text (#3A3A3A)
+	•	Optional warm accent: muted peach (#F2C8B8)
+
+All purples should feel calming, not neon or mystical.
+
+Typography
+	•	Use a modern, readable font (Inter, SF Pro, or Roboto).
+	•	Headings bold, body text medium.
+	•	Keep copy short and friendly.
+
+Layout Structure
+
+Create a simple, mobile-first UI with these sections:
+
+1. Header:
+	•	Wordmark/logo “Aunt B” in charcoal grey
+	•	Soft lilac background strip
+	•	Minimal, no heavy decoration
+
+2. Home Screen Cards:
+Use cards with soft shadows + rounded corners:
+	•	Today at a Glance (current cycle phase, date, quick insight)
+	•	Spoon Level Tracker (slider or tap-to-select spoon level 0–10)
+	•	Aunt B Check-In Bubble (short supportive message in a lavender bubble)
+	•	Quick Actions (log symptoms, breath reset, partner brief)
+
+3. Bottom Navigation Bar (mobile):
+	•	Home
+	•	Cycle
+	•	Aunt B
+	•	Partner
+	•	Profile
+Use outline icons in plum or charcoal, with a lavender highlight for active.
+
+Spoon Tracker UI
+	•	Use the cozy purple palette
+	•	A slider or selection bubbles
+	•	Label states like:
+	•	Low (0–3)
+	•	Moderate (4–6)
+	•	Plenty (7–10)
+	•	Include a small link: “What’s Spoon Theory?”
+
+Spoon Theory Explanation (for modal or info page)
+
+Use this copy:
+
+“A ‘spoon’ represents your energy — mental, emotional, and physical.
+Some days you wake up with 10 spoons, some days with 3.
+This tracker helps you plan your day with compassion based on the spoons you actually have, not the ones you wish you had.”
+
+Short, warm, zero fluff.
+
+Aunt B Tone
+
+The tone throughout the UI should feel like a calm, supportive older sister.
+Examples:
+	•	“Hey honey, let’s check in.”
+	•	“You’ve only got a few spoons today — be gentle with yourself.”
+	•	“Let’s make this simple.”
+
+Accessibility + Spacing
+	•	Large touch targets
+	•	Huge padding (24–32px inside cards)
+	•	Generous vertical spacing
+	•	Soft 2–4px shadows
+	•	Text high contrast (dark grey on light backgrounds)
+	•	No dense walls of text
+
+Overall Goal
+
+Create a UI that feels emotionally safe, visually clean, and deeply supportive — a place users want to check in every day.
+Cozy purple, modern design, no mystical imagery, and a clear, simple experience.

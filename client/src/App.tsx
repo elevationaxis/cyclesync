@@ -15,7 +15,8 @@ import PartnerSupportPage from "@/pages/PartnerSupportPage";
 import CommunityPage from "@/pages/CommunityPage";
 import CalendarPage from "@/pages/CalendarPage";
 import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
-import { useState } from "react";
+import LandingPage from "@/pages/LandingPage";
+import { useState, useEffect } from "react";
 
 function Router({ isPartnerView }: { isPartnerView: boolean }) {
   if (isPartnerView) {
@@ -40,6 +41,30 @@ function Router({ isPartnerView }: { isPartnerView: boolean }) {
 
 function App() {
   const [isPartnerView, setIsPartnerView] = useState(false);
+  const [hasEntered, setHasEntered] = useState(() => {
+    return localStorage.getItem("cycle-sync-entered") === "true";
+  });
+
+  useEffect(() => {
+    if (hasEntered) {
+      localStorage.setItem("cycle-sync-entered", "true");
+    }
+  }, [hasEntered]);
+
+  const handleGetStarted = () => {
+    setHasEntered(true);
+  };
+
+  if (!hasEntered) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <LandingPage onGetStarted={handleGetStarted} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
