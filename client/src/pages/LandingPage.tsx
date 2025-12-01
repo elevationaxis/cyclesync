@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Moon, Sparkles, Users, Calendar, MessageCircle, Utensils, BookOpen } from "lucide-react";
+import { Heart, CircleDot, Users, Calendar, MessageCircle, Utensils, BookOpen } from "lucide-react";
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -9,7 +9,7 @@ interface LandingPageProps {
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
   const features = [
     {
-      icon: Moon,
+      icon: CircleDot,
       title: "Cycle Tracking",
       description: "Understand your four phases and what each one means for your energy and mood"
     },
@@ -61,22 +61,28 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               I'm <span className="text-primary font-semibold">Aunt B</span> — your warm, grounded guide through every phase of your cycle.
             </p>
             
-            <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-4 max-w-xl mx-auto">
               Let's make this simple. Track your energy, understand your body, and get the support you deserve — all in one cozy place.
+            </p>
+            
+            <p className="text-sm text-muted-foreground/80 mb-10">
+              Built by a real mom with real life chaos — not a corporation.
             </p>
             
             <Button 
               size="lg" 
               onClick={onGetStarted}
-              className="text-lg px-10 py-6 rounded-full shadow-lg"
+              className="text-lg px-10 py-6 rounded-full shadow-lg bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white"
               data-testid="button-get-started"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
+              <Heart className="w-5 h-5 mr-2" />
               Let's Get Started
             </Button>
           </div>
         </div>
       </section>
+
+      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
 
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-6">
@@ -114,12 +120,14 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         </div>
       </section>
 
+      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
+
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-6">
           <Card className="max-w-3xl mx-auto border-0 shadow-md bg-[hsl(var(--cozy-lilac))]">
             <CardContent className="p-8 md:p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-background mb-6">
-                <MessageCircle className="w-8 h-8 text-primary" />
+                <Heart className="w-8 h-8 text-[hsl(var(--cozy-plum))]" />
               </div>
               
               <h2 className="text-2xl md:text-3xl font-semibold mb-4">
@@ -127,14 +135,13 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               </h2>
               
               <blockquote className="text-lg leading-relaxed text-muted-foreground mb-6 italic">
-                "Honey, your cycle isn't something to fight against — it's wisdom your body is sharing with you. Let me help you listen to it, work with it, and find your own rhythm. No judgment here, just support."
+                "Honey, your cycle isn't a battle — it's your body talking to you. I'm here to help you listen, not judge."
               </blockquote>
               
               <Button 
-                variant="secondary" 
                 size="lg"
                 onClick={onGetStarted}
-                className="rounded-full px-8"
+                className="rounded-full px-8 bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white"
                 data-testid="button-start-journey"
               >
                 Start Your Journey
@@ -143,6 +150,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           </Card>
         </div>
       </section>
+
+      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
 
       <section className="py-16 bg-[hsl(var(--cozy-taupe)/0.3)]">
         <div className="container mx-auto px-6">

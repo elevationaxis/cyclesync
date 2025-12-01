@@ -7,13 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Upload, Trash2, Music, Video, Sparkles, Moon, Sun, Flower2, Cloud } from "lucide-react";
+import { Upload, Trash2, Music, Video, Sparkles, Heart, Sun, Flower2, Cloud } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Ritual } from "@shared/schema";
 
-const phaseIcons: Record<string, typeof Moon> = {
-  menstrual: Moon,
+const phaseIcons: Record<string, typeof Heart> = {
+  menstrual: Heart,
   follicular: Flower2,
   ovulatory: Sun,
   luteal: Cloud,

@@ -4,14 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Plus, Trash2, Moon, Flower2, Sun, Cloud, Sparkles } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Trash2, Heart, Flower2, Sun, Cloud, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { CalendarEvent } from "@shared/schema";
 import { getCurrentPhase } from "@/lib/cycleUtils";
 
-const phaseIcons: Record<string, typeof Moon> = {
-  menstrual: Moon,
+const phaseIcons: Record<string, typeof Heart> = {
+  menstrual: Heart,
   follicular: Flower2,
   ovulatory: Sun,
   luteal: Cloud,
@@ -245,7 +245,7 @@ export default function CalendarPage() {
                     const phase = event.phase || "menstrual";
                     const colors = phaseColors[phase];
                     const info = phaseInfo[phase];
-                    const PhaseIcon = phaseIcons[phase] || Moon;
+                    const PhaseIcon = phaseIcons[phase] || Heart;
                     return (
                       <Card
                         key={event.id}
@@ -305,7 +305,7 @@ export default function CalendarPage() {
                   {pastEvents.slice(0, 5).map((event) => {
                     const phase = event.phase || "menstrual";
                     const colors = phaseColors[phase];
-                    const PhaseIcon = phaseIcons[phase] || Moon;
+                    const PhaseIcon = phaseIcons[phase] || Heart;
                     return (
                       <Card
                         key={event.id}

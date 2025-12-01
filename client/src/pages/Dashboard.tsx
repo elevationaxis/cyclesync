@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import CycleCompass from '@/components/CycleCompass';
 import PhaseCard from '@/components/PhaseCard';
@@ -6,7 +7,8 @@ import GentleWins from '@/components/GentleWins';
 import { getCurrentPhase, getPhaseInfo } from '@/lib/cycleUtils';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { SpoonEntry } from "@shared/schema";
 
@@ -33,11 +35,37 @@ const phaseMessages: Record<string, string[]> = {
   ],
 };
 
+const spoonMessages = {
+  low: "Baby, move slow today. Hydrate. One thing at a time.",
+  medium: "You've got enough to get one meaningful thing done. Don't overspend.",
+  high: "Protect your spoons, honey — not everyone deserves them.",
+};
+
+const moodOptions = [
+  { label: "Overwhelmed", value: "overwhelmed" },
+  { label: "Tired", value: "tired" },
+  { label: "Irritated", value: "irritated" },
+  { label: "Motivated", value: "motivated" },
+  { label: "Soft day", value: "soft" },
+  { label: "Anxious", value: "anxious" },
+  { label: "Calm", value: "calm" },
+  { label: "Grateful", value: "grateful" },
+];
+
 export default function Dashboard() {
   const cycleDay = 12;
   const currentPhase = getCurrentPhase(cycleDay);
   const phaseInfo = getPhaseInfo(currentPhase);
   const userId = "demo-user";
+  const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+
+  const toggleMood = (value: string) => {
+    setSelectedMoods(prev => 
+      prev.includes(value) 
+        ? prev.filter(m => m !== value) 
+        : [...prev, value]
+    );
+  };
 
   const { data: spoonEntry } = useQuery<SpoonEntry | null>({
     queryKey: ["/api/spoon-entries/today", userId],
@@ -90,6 +118,27 @@ export default function Dashboard() {
   const remainingSpoons = spoonEntry 
     ? spoonEntry.totalSpoons - spoonEntry.usedSpoons 
     : null;
+
+  const getSpoonLevel = (remaining: number | null, total: number | undefined) => {
+    if (remaining === null || !total) return null;
+    const percentage = (remaining / total) * 100;
+    if (percentage <= 30) return 'low';
+    if (percentage <= 60) return 'medium';
+    return 'high';
+  };
+
+  const spoonLevel = getSpoonLevel(remainingSpoons, spoonEntry?.totalSpoons);
+
+  const getSpoonIcon = (level: string | null) => {
+    switch (level) {
+      case 'low': return BatteryLow;
+      case 'medium': return BatteryMedium;
+      case 'high': return BatteryFull;
+      default: return Battery;
+    }
+  };
+
+  const SpoonIcon = getSpoonIcon(spoonLevel);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -164,6 +213,110 @@ export default function Dashboard() {
                     </Button>
                   </Link>
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {spoonLevel && (
+        <section>
+          <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--cozy-lilac)/0.5)] to-background" data-testid="card-spoon-message">
+            <CardContent className="p-5 md:p-6">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    spoonLevel === 'low' ? 'bg-rose-100 dark:bg-rose-900/30' :
+                    spoonLevel === 'medium' ? 'bg-amber-100 dark:bg-amber-900/30' :
+                    'bg-emerald-100 dark:bg-emerald-900/30'
+                  }`}>
+                    <SpoonIcon className={`w-6 h-6 ${
+                      spoonLevel === 'low' ? 'text-rose-600 dark:text-rose-400' :
+                      spoonLevel === 'medium' ? 'text-amber-600 dark:text-amber-400' :
+                      'text-emerald-600 dark:text-emerald-400'
+                    }`} />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium capitalize">{spoonLevel} Spoons</span>
+                    <span className="text-xs text-muted-foreground">({remainingSpoons} of {spoonEntry?.totalSpoons})</span>
+                  </div>
+                  <p className="text-muted-foreground italic">
+                    "{spoonMessages[spoonLevel as keyof typeof spoonMessages]}"
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+      )}
+
+      <section>
+        <h2 className="text-xl font-semibold mb-4">How are you feeling?</h2>
+        <div className="flex flex-wrap gap-2" data-testid="mood-chips-container">
+          {moodOptions.map((mood) => (
+            <Badge
+              key={mood.value}
+              variant={selectedMoods.includes(mood.value) ? "default" : "outline"}
+              className={`cursor-pointer text-sm py-2 px-4 transition-all ${
+                selectedMoods.includes(mood.value) 
+                  ? 'bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white' 
+                  : 'hover:bg-[hsl(var(--cozy-lilac))]'
+              }`}
+              onClick={() => toggleMood(mood.value)}
+              data-testid={`mood-chip-${mood.value}`}
+            >
+              {mood.label}
+            </Badge>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-6 md:grid-cols-2">
+        <Card className="border-0 shadow-sm bg-[hsl(var(--cozy-peach)/0.3)]" data-testid="card-partner-preview">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--cozy-peach))] flex items-center justify-center">
+                  <Users className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold mb-2">Partner Support Today</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  {currentPhase === 'menstrual' && "Be extra gentle. She needs rest and comfort right now."}
+                  {currentPhase === 'follicular' && "Great time to plan something fun together. Her energy is rising!"}
+                  {currentPhase === 'ovulatory' && "She's feeling social and communicative. Quality time matters."}
+                  {currentPhase === 'luteal' && "Be extra patient. Luteal energy is winding down."}
+                </p>
+                <Link href="/partner-support">
+                  <Button size="sm" variant="outline" className="rounded-full" data-testid="button-partner-view">
+                    Open Partner View
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-sm" data-testid="card-energy-summary">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--cozy-lilac))] flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold mb-2">Energy Focus</h3>
+                <p className="text-muted-foreground text-sm mb-2">
+                  {phaseInfo.focus}
+                </p>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  {phaseInfo.supportTone} energy this phase
+                </p>
               </div>
             </div>
           </CardContent>

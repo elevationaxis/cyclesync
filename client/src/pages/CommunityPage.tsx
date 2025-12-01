@@ -8,13 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, Plus, MessageSquare, Users, Moon, Flower2, Sun, Cloud, Lightbulb, Sparkles } from "lucide-react";
+import { ThumbsUp, Plus, MessageSquare, Users, Heart, Flower2, Sun, Cloud, Lightbulb, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { CommunityPost } from "@shared/schema";
 
-const phaseIcons: Record<string, typeof Moon> = {
-  menstrual: Moon,
+const phaseIcons: Record<string, typeof Heart> = {
+  menstrual: Heart,
   follicular: Flower2,
   ovulatory: Sun,
   luteal: Cloud,
@@ -167,7 +167,7 @@ export default function CommunityPage() {
             <div className="space-y-4">
               {sortedPosts.map((post) => {
                 const phase = phaseColors[post.phase];
-                const PhaseIcon = phaseIcons[post.phase] || Moon;
+                const PhaseIcon = phaseIcons[post.phase] || Heart;
                 return (
                   <Card 
                     key={post.id} 
