@@ -6,7 +6,7 @@ import { askAuntB } from "./openai";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { insertRitualSchema, insertCareRequestSchema, insertCommunityPostSchema, insertCalendarEventSchema } from "@shared/schema";
+import { insertRitualSchema, insertCareRequestSchema, insertCommunityPostSchema, insertCalendarEventSchema, insertSpoonEntrySchema } from "@shared/schema";
 
 const uploadsDir = path.join(process.cwd(), "attached_assets", "rituals");
 if (!fs.existsSync(uploadsDir)) {
@@ -257,6 +257,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Event not found" });
       }
       return res.status(500).json({ error: "Failed to delete calendar event" });
+    }
+  });
+
+  app.post("/api/spoon-entries", async (req, res) => {
+    try {
+      const body = { ...req.body };
+      if (body.date && typeof body.date === 'string') {
+        body.date = new Date(body.date);
+      }
+      const data = insertSpoonEntrySchema.parse(body);
+      const entry = await storage.createSpoonEntry(data);
+      return res.json(entry);
+    } catch (error) {
+      console.error("Error creating spoon entry:", error);
+      if (error instanceof Error && error.name === 'ZodError') {
+        return res.status(400).json({ error: "Invalid spoon entry data" });
+      }
+      return res.status(500).json({ error: "Failed to create spoon entry" });
+    }
+  });
+
+  app.get("/api/spoon-entries", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      const entries = await storage.getSpoonEntries(userId as string);
+      return res.json(entries);
+    } catch (error) {
+      console.error("Error fetching spoon entries:", error);
+      return res.status(500).json({ error: "Failed to fetch spoon entries" });
+    }
+  });
+
+  app.get("/api/spoon-entries/today", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      const entry = await storage.getTodaySpoonEntry(userId as string);
+      return res.json(entry || null);
+    } catch (error) {
+      console.error("Error fetching today's spoon entry:", error);
+      return res.status(500).json({ error: "Failed to fetch today's spoon entry" });
+    }
+  });
+
+  app.patch("/api/spoon-entries/:id", async (req, res) => {
+    try {
+      if (!req.params.id) {
+        return res.status(400).json({ error: "Spoon entry ID is required" });
+      }
+      const { usedSpoons, totalSpoons, note } = req.body;
+      const updates: Record<string, unknown> = {};
+      if (usedSpoons !== undefined) updates.usedSpoons = usedSpoons;
+      if (totalSpoons !== undefined) updates.totalSpoons = totalSpoons;
+      if (note !== undefined) updates.note = note;
+      
+      const entry = await storage.updateSpoonEntry(req.params.id, updates);
+      return res.json(entry);
+    } catch (error) {
+      console.error("Error updating spoon entry:", error);
+      if (error instanceof Error && error.message === "Spoon entry not found") {
+        return res.status(404).json({ error: "Spoon entry not found" });
+      }
+      return res.status(500).json({ error: "Failed to update spoon entry" });
     }
   });
 

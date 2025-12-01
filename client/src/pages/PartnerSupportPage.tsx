@@ -3,10 +3,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users } from "lucide-react";
+import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users, Utensils, Battery, BatteryLow, BatteryMedium, BatteryFull, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import type { CareRequest } from "@shared/schema";
+import type { CareRequest, SpoonEntry } from "@shared/schema";
 
 const careTypes = [
   { 
@@ -60,6 +60,56 @@ export default function PartnerSupportPage() {
     },
   });
 
+  const { data: spoonEntry } = useQuery<SpoonEntry | null>({
+    queryKey: ["/api/spoon-entries/today", userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/spoon-entries/today?userId=${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch spoon entry");
+      return response.json();
+    },
+  });
+
+  const getSpoonStatus = () => {
+    if (!spoonEntry) return null;
+    const remaining = spoonEntry.totalSpoons - spoonEntry.usedSpoons;
+    const percentage = (remaining / spoonEntry.totalSpoons) * 100;
+    
+    if (percentage >= 70) return { 
+      label: "Plenty of energy", 
+      description: "They have good energy today",
+      icon: BatteryFull, 
+      color: "text-emerald-600 dark:text-emerald-400",
+      bgColor: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
+      borderColor: "border-emerald-200 dark:border-emerald-800"
+    };
+    if (percentage >= 40) return { 
+      label: "Moderate energy", 
+      description: "Managing energy carefully today",
+      icon: BatteryMedium, 
+      color: "text-amber-600 dark:text-amber-400",
+      bgColor: "from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20",
+      borderColor: "border-amber-200 dark:border-amber-800"
+    };
+    if (percentage >= 15) return { 
+      label: "Running low", 
+      description: "Energy is limited - extra support helps",
+      icon: BatteryLow, 
+      color: "text-orange-600 dark:text-orange-400",
+      bgColor: "from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20",
+      borderColor: "border-orange-200 dark:border-orange-800"
+    };
+    return { 
+      label: "Recharge needed", 
+      description: "Very low energy - be gentle and take over tasks",
+      icon: Battery, 
+      color: "text-rose-600 dark:text-rose-400",
+      bgColor: "from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20",
+      borderColor: "border-rose-200 dark:border-rose-800"
+    };
+  };
+
+  const spoonStatus = getSpoonStatus();
+
   const createRequest = useMutation({
     mutationFn: async (type: string) => {
       return await apiRequest("POST", "/api/care-requests", {
@@ -108,6 +158,41 @@ export default function PartnerSupportPage() {
       </div>
 
       <div className="space-y-8">
+        {spoonEntry && spoonStatus && (
+          <Card className={`border-2 ${spoonStatus.borderColor} bg-gradient-to-br ${spoonStatus.bgColor}`} data-testid="card-spoon-status">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 rounded-xl bg-background/80 flex items-center justify-center shadow-sm`}>
+                  <spoonStatus.icon className={`w-7 h-7 ${spoonStatus.color}`} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-lg font-semibold ${spoonStatus.color}`}>{spoonStatus.label}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {spoonEntry.totalSpoons - spoonEntry.usedSpoons} / {spoonEntry.totalSpoons} spoons
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{spoonStatus.description}</p>
+                  {spoonEntry.note && (
+                    <p className="text-xs text-muted-foreground mt-1 italic">"{spoonEntry.note}"</p>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from({ length: spoonEntry.totalSpoons }).map((_, i) => {
+                    const isUsed = i < spoonEntry.usedSpoons;
+                    return (
+                      <Utensils
+                        key={i}
+                        className={`w-4 h-4 ${isUsed ? 'text-muted-foreground/30' : 'text-orange-500'}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-2 overflow-visible">
           <CardHeader className="text-center pb-2">
             <CardTitle className="flex items-center justify-center gap-2">

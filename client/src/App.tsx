@@ -14,6 +14,7 @@ import RitualsPage from "@/pages/RitualsPage";
 import PartnerSupportPage from "@/pages/PartnerSupportPage";
 import CommunityPage from "@/pages/CommunityPage";
 import CalendarPage from "@/pages/CalendarPage";
+import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
 import { useState } from "react";
 
 function Router({ isPartnerView }: { isPartnerView: boolean }) {
@@ -31,6 +32,7 @@ function Router({ isPartnerView }: { isPartnerView: boolean }) {
       <Route path="/partner-support" component={PartnerSupportPage} />
       <Route path="/community" component={CommunityPage} />
       <Route path="/calendar" component={CalendarPage} />
+      <Route path="/spoons" component={SpoonTrackerPage} />
       <Route component={NotFound} />
     </Switch>
   );

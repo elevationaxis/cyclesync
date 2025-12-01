@@ -73,3 +73,21 @@ export const calendarEvents = pgTable("calendar_events", {
 export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit({ id: true });
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
 export type CalendarEvent = typeof calendarEvents.$inferSelect;
+
+export const spoonEntries = pgTable("spoon_entries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  date: timestamp("date").notNull(),
+  totalSpoons: integer("total_spoons").notNull().default(12),
+  usedSpoons: integer("used_spoons").notNull().default(0),
+  note: text("note"),
+  phase: text("phase"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSpoonEntrySchema = createInsertSchema(spoonEntries).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export type InsertSpoonEntry = z.infer<typeof insertSpoonEntrySchema>;
+export type SpoonEntry = typeof spoonEntries.$inferSelect;

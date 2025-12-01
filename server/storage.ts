@@ -8,7 +8,9 @@ import {
   type CommunityPost,
   type InsertCommunityPost,
   type CalendarEvent,
-  type InsertCalendarEvent
+  type InsertCalendarEvent,
+  type SpoonEntry,
+  type InsertSpoonEntry
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -38,11 +40,17 @@ export interface IStorage {
   createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
   getCalendarEvents(userId: string): Promise<CalendarEvent[]>;
   deleteCalendarEvent(id: string): Promise<void>;
+  
+  // Spoon Entries
+  createSpoonEntry(entry: InsertSpoonEntry): Promise<SpoonEntry>;
+  getSpoonEntries(userId: string): Promise<SpoonEntry[]>;
+  getTodaySpoonEntry(userId: string): Promise<SpoonEntry | undefined>;
+  updateSpoonEntry(id: string, updates: Partial<InsertSpoonEntry>): Promise<SpoonEntry>;
 }
 
 import { db } from "./db";
-import { rituals, careRequests, communityPosts, calendarEvents } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { rituals, careRequests, communityPosts, calendarEvents, spoonEntries } from "@shared/schema";
+import { eq, and, gte, lt } from "drizzle-orm";
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
@@ -148,6 +156,46 @@ export class MemStorage implements IStorage {
     if (result.length === 0) {
       throw new Error("Event not found");
     }
+  }
+
+  async createSpoonEntry(entry: InsertSpoonEntry): Promise<SpoonEntry> {
+    const [newEntry] = await db.insert(spoonEntries).values(entry).returning();
+    return newEntry;
+  }
+
+  async getSpoonEntries(userId: string): Promise<SpoonEntry[]> {
+    return await db.select().from(spoonEntries).where(eq(spoonEntries.userId, userId));
+  }
+
+  async getTodaySpoonEntry(userId: string): Promise<SpoonEntry | undefined> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const entries = await db
+      .select()
+      .from(spoonEntries)
+      .where(
+        and(
+          eq(spoonEntries.userId, userId),
+          gte(spoonEntries.date, today),
+          lt(spoonEntries.date, tomorrow)
+        )
+      );
+    return entries[0];
+  }
+
+  async updateSpoonEntry(id: string, updates: Partial<InsertSpoonEntry>): Promise<SpoonEntry> {
+    const [updated] = await db
+      .update(spoonEntries)
+      .set(updates)
+      .where(eq(spoonEntries.id, id))
+      .returning();
+    if (!updated) {
+      throw new Error("Spoon entry not found");
+    }
+    return updated;
   }
 }
 
