@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,16 +16,17 @@ import CommunityPage from "@/pages/CommunityPage";
 import CalendarPage from "@/pages/CalendarPage";
 import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
 import LandingPage from "@/pages/LandingPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import { useState, useEffect } from "react";
 
-function Router({ isPartnerView }: { isPartnerView: boolean }) {
+function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
   if (isPartnerView) {
     return <PartnerViewPage />;
   }
 
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/check-in" component={CheckInPage} />
       <Route path="/chat" component={ChatPage} />
       <Route path="/learn" component={LearnPage} />
@@ -39,43 +40,49 @@ function Router({ isPartnerView }: { isPartnerView: boolean }) {
   );
 }
 
-function App() {
-  const [isPartnerView, setIsPartnerView] = useState(false);
-  const [hasEntered, setHasEntered] = useState(() => {
-    return localStorage.getItem("cycle-sync-entered") === "true";
-  });
-
-  useEffect(() => {
-    if (hasEntered) {
-      localStorage.setItem("cycle-sync-entered", "true");
-    }
-  }, [hasEntered]);
+function LandingWrapper() {
+  const [, setLocation] = useLocation();
 
   const handleGetStarted = () => {
-    setHasEntered(true);
+    setLocation("/onboarding");
   };
 
-  if (!hasEntered) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <LandingPage onGetStarted={handleGetStarted} />
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
-    );
-  }
+  return <LandingPage onGetStarted={handleGetStarted} />;
+}
 
+function ProtectedApp() {
+  const [isPartnerView, setIsPartnerView] = useState(false);
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    const hasProfile = localStorage.getItem("cycleSync_profileId");
+    if (!hasProfile) {
+      setLocation("/onboarding");
+    }
+  }, [setLocation]);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AppNavigation 
+        isPartnerView={isPartnerView}
+        onTogglePartnerView={() => setIsPartnerView(!isPartnerView)}
+      />
+      <AppRouter isPartnerView={isPartnerView} />
+    </div>
+  );
+}
+
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-background">
-          <AppNavigation 
-            isPartnerView={isPartnerView}
-            onTogglePartnerView={() => setIsPartnerView(!isPartnerView)}
-          />
-          <Router isPartnerView={isPartnerView} />
-        </div>
+        <Switch>
+          <Route path="/" component={LandingWrapper} />
+          <Route path="/onboarding" component={OnboardingPage} />
+          <Route>
+            <ProtectedApp />
+          </Route>
+        </Switch>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
