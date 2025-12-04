@@ -91,3 +91,19 @@ export const insertSpoonEntrySchema = createInsertSchema(spoonEntries).omit({
 });
 export type InsertSpoonEntry = z.infer<typeof insertSpoonEntrySchema>;
 export type SpoonEntry = typeof spoonEntries.$inferSelect;
+
+export const userProfiles = pgTable("user_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  lastPeriodStart: timestamp("last_period_start").notNull(),
+  cycleLength: integer("cycle_length").notNull().default(28),
+  concerns: text("concerns"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
+export type UserProfile = typeof userProfiles.$inferSelect;
