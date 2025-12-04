@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import CycleCompass from '@/components/CycleCompass';
 import PhaseCard from '@/components/PhaseCard';
 import TipsCard from '@/components/TipsCard';
 import GentleWins from '@/components/GentleWins';
-import { getCurrentPhase, getPhaseInfo } from '@/lib/cycleUtils';
+import { getCurrentPhase, getPhaseInfo, calculateCycleDay, getPhaseForCycleLength } from '@/lib/cycleUtils';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import type { SpoonEntry } from "@shared/schema";
+import type { SpoonEntry, UserProfile } from "@shared/schema";
 
 const phaseMessages: Record<string, string[]> = {
   menstrual: [
@@ -53,11 +53,40 @@ const moodOptions = [
 ];
 
 export default function Dashboard() {
-  const cycleDay = 12;
-  const currentPhase = getCurrentPhase(cycleDay);
-  const phaseInfo = getPhaseInfo(currentPhase);
-  const userId = "demo-user";
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  
+  const profileId = localStorage.getItem("cycleSync_profileId");
+  const userName = localStorage.getItem("cycleSync_userName") || "friend";
+
+  const { data: profile, isLoading: profileLoading } = useQuery<UserProfile | null>({
+    queryKey: ["/api/profile", profileId],
+    queryFn: async () => {
+      if (!profileId) return null;
+      const response = await fetch(`/api/profile/${profileId}`);
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!profileId,
+  });
+
+  const { cycleDay, currentPhase, phaseInfo } = useMemo(() => {
+    if (profile?.lastPeriodStart) {
+      const day = calculateCycleDay(profile.lastPeriodStart, profile.cycleLength || 28);
+      const phase = getPhaseForCycleLength(day, profile.cycleLength || 28);
+      return {
+        cycleDay: day,
+        currentPhase: phase,
+        phaseInfo: getPhaseInfo(phase),
+      };
+    }
+    return {
+      cycleDay: 12,
+      currentPhase: getCurrentPhase(12),
+      phaseInfo: getPhaseInfo(getCurrentPhase(12)),
+    };
+  }, [profile]);
+
+  const userId = profileId || "demo-user";
 
   const toggleMood = (value: string) => {
     setSelectedMoods(prev => 

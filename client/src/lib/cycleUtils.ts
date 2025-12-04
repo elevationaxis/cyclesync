@@ -10,6 +10,30 @@ export interface PhaseInfo {
   description: string;
 }
 
+export function calculateCycleDay(lastPeriodStart: Date | string, cycleLength: number = 28): number {
+  const startDate = typeof lastPeriodStart === 'string' ? new Date(lastPeriodStart) : lastPeriodStart;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0);
+  
+  const diffTime = today.getTime() - startDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  const cycleDay = (diffDays % cycleLength) + 1;
+  return cycleDay;
+}
+
+export function getPhaseForCycleLength(cycleDay: number, cycleLength: number = 28): CyclePhase {
+  const menstrualEnd = 5;
+  const follicularEnd = Math.floor(cycleLength * 0.46);
+  const ovulatoryEnd = Math.floor(cycleLength * 0.60);
+  
+  if (cycleDay >= 1 && cycleDay <= menstrualEnd) return 'menstrual';
+  if (cycleDay >= menstrualEnd + 1 && cycleDay <= follicularEnd) return 'follicular';
+  if (cycleDay >= follicularEnd + 1 && cycleDay <= ovulatoryEnd) return 'ovulatory';
+  return 'luteal';
+}
+
 export const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   menstrual: {
     name: 'Menstrual Phase',
