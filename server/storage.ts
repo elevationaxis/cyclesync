@@ -10,7 +10,9 @@ import {
   type CalendarEvent,
   type InsertCalendarEvent,
   type SpoonEntry,
-  type InsertSpoonEntry
+  type InsertSpoonEntry,
+  type UserProfile,
+  type InsertUserProfile
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -46,10 +48,15 @@ export interface IStorage {
   getSpoonEntries(userId: string): Promise<SpoonEntry[]>;
   getTodaySpoonEntry(userId: string): Promise<SpoonEntry | undefined>;
   updateSpoonEntry(id: string, updates: Partial<InsertSpoonEntry>): Promise<SpoonEntry>;
+  
+  // User Profiles
+  getUserProfile(id: string): Promise<UserProfile | undefined>;
+  createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
+  updateUserProfile(id: string, updates: Partial<InsertUserProfile>): Promise<UserProfile>;
 }
 
 import { db } from "./db";
-import { rituals, careRequests, communityPosts, calendarEvents, spoonEntries } from "@shared/schema";
+import { rituals, careRequests, communityPosts, calendarEvents, spoonEntries, userProfiles } from "@shared/schema";
 import { eq, and, gte, lt } from "drizzle-orm";
 
 export class MemStorage implements IStorage {
@@ -194,6 +201,28 @@ export class MemStorage implements IStorage {
       .returning();
     if (!updated) {
       throw new Error("Spoon entry not found");
+    }
+    return updated;
+  }
+
+  async getUserProfile(id: string): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.id, id));
+    return profile;
+  }
+
+  async createUserProfile(profile: InsertUserProfile): Promise<UserProfile> {
+    const [newProfile] = await db.insert(userProfiles).values(profile).returning();
+    return newProfile;
+  }
+
+  async updateUserProfile(id: string, updates: Partial<InsertUserProfile>): Promise<UserProfile> {
+    const [updated] = await db
+      .update(userProfiles)
+      .set(updates)
+      .where(eq(userProfiles.id, id))
+      .returning();
+    if (!updated) {
+      throw new Error("User profile not found");
     }
     return updated;
   }
