@@ -63,7 +63,8 @@ Preferred communication style: Simple, everyday language.
 - Schema-first approach with Drizzle Kit for migrations
 
 **Data Models**
-- **Users**: Basic authentication with username/password
+- **User Profiles**: User onboarding data with name, lastPeriodStart, cycleLength, and optional concerns
+- **Spoon Entries**: Daily energy tracking using spoon theory (totalSpoons, usedSpoons, notes)
 - **Rituals**: Phase-specific audio/video guided practices with file storage
 - **Care Requests**: Partner support requests with status tracking
 - **Community Posts**: Anonymous Q&A organized by cycle phase with upvoting
@@ -75,13 +76,33 @@ Preferred communication style: Simple, everyday language.
 - Upload limits: 100MB max file size
 - Allowed formats: mp3, mp4, wav, m4a, mov, avi, webm
 
+### User Onboarding Flow
+
+**Multi-Step Onboarding**
+- Landing page at "/" introduces Aunt B persona with warm, inviting copy
+- "Get Started" navigates to /onboarding (4-step form)
+- Step 1: Name collection for personalization
+- Step 2: Last period start date for cycle tracking
+- Step 3: Average cycle length (default 28 days, range 20-45)
+- Step 4: Optional concerns/goals for personalized support
+- On completion, profile stored in database and localStorage, redirects to /dashboard
+
+**Access Control**
+- Dashboard and app routes protected via ProtectedApp component
+- Checks localStorage for cycleSync_profileId
+- Redirects to /onboarding if no profile exists
+
 ### Cycle Calculation Logic
 
 **Phase Determination**
 - Four phases: Menstrual (days 1-5), Follicular (6-13), Ovulatory (14-17), Luteal (18-28)
-- Default 28-day cycle with configurable length
+- Default 28-day cycle with user-configurable length
+- Phase boundaries scale proportionally for non-28-day cycles
 - Phase-specific color coding, energy descriptions, and support tips
-- Utility functions in `client/src/lib/cycleUtils.ts` for consistent phase calculations
+- Utility functions in `client/src/lib/cycleUtils.ts`:
+  - `calculateCycleDay()`: Computes current day from lastPeriodStart
+  - `getPhaseForCycleLength()`: Returns phase adjusted for custom cycle length
+  - `getCurrentPhase()`: Legacy function for 28-day cycles
 
 ### Authentication & Security
 
