@@ -6,7 +6,7 @@ import { askAuntB } from "./openai";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { insertRitualSchema, insertCareRequestSchema, insertCommunityPostSchema, insertCalendarEventSchema, insertSpoonEntrySchema } from "@shared/schema";
+import { insertRitualSchema, insertCareRequestSchema, insertCommunityPostSchema, insertCalendarEventSchema, insertSpoonEntrySchema, insertUserProfileSchema } from "@shared/schema";
 
 const uploadsDir = path.join(process.cwd(), "attached_assets", "rituals");
 if (!fs.existsSync(uploadsDir)) {
@@ -325,6 +325,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Spoon entry not found" });
       }
       return res.status(500).json({ error: "Failed to update spoon entry" });
+    }
+  });
+
+  app.get("/api/profile/:id", async (req, res) => {
+    try {
+      if (!req.params.id) {
+        return res.status(400).json({ error: "Profile ID is required" });
+      }
+      const profile = await storage.getUserProfile(req.params.id);
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      return res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+
+  app.post("/api/profile", async (req, res) => {
+    try {
+      const body = { ...req.body };
+      if (body.lastPeriodStart && typeof body.lastPeriodStart === 'string') {
+        body.lastPeriodStart = new Date(body.lastPeriodStart);
+      }
+      const data = insertUserProfileSchema.parse(body);
+      const profile = await storage.createUserProfile(data);
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error creating profile:", error);
+      if (error instanceof Error && error.name === 'ZodError') {
+        return res.status(400).json({ error: "Invalid profile data" });
+      }
+      return res.status(500).json({ error: "Failed to create profile" });
+    }
+  });
+
+  app.patch("/api/profile/:id", async (req, res) => {
+    try {
+      if (!req.params.id) {
+        return res.status(400).json({ error: "Profile ID is required" });
+      }
+      const body = { ...req.body };
+      if (body.lastPeriodStart && typeof body.lastPeriodStart === 'string') {
+        body.lastPeriodStart = new Date(body.lastPeriodStart);
+      }
+      const profile = await storage.updateUserProfile(req.params.id, body);
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      if (error instanceof Error && error.message === "User profile not found") {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+      return res.status(500).json({ error: "Failed to update profile" });
     }
   });
 
