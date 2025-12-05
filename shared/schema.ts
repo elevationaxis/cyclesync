@@ -34,6 +34,7 @@ export type Ritual = typeof rituals.$inferSelect;
 export const careRequests = pgTable("care_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   type: text("type").notNull(),
+  message: text("message"),
   status: text("status").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   userId: varchar("user_id").notNull(),

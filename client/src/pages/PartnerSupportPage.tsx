@@ -3,7 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users, Utensils, Battery, BatteryLow, BatteryMedium, BatteryFull, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users, Utensils, Battery, BatteryLow, BatteryMedium, BatteryFull, AlertTriangle, MessageCircle, PenLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { CareRequest, SpoonEntry } from "@shared/schema";
@@ -50,6 +51,7 @@ const careTypes = [
 export default function PartnerSupportPage() {
   const { toast } = useToast();
   const userId = "demo-user";
+  const [customMessage, setCustomMessage] = useState("");
 
   const { data: requests = [], isLoading } = useQuery<CareRequest[]>({
     queryKey: ["/api/care-requests", userId],
@@ -111,21 +113,28 @@ export default function PartnerSupportPage() {
   const spoonStatus = getSpoonStatus();
 
   const createRequest = useMutation({
-    mutationFn: async (type: string) => {
+    mutationFn: async ({ type, message }: { type: string; message?: string }) => {
       return await apiRequest("POST", "/api/care-requests", {
         type,
+        message: message || null,
         status: "pending",
         userId,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/care-requests"] });
+      setCustomMessage("");
       toast({
         title: "Care request sent",
         description: "Your partner has been notified",
       });
     },
   });
+
+  const handleCustomRequest = () => {
+    if (!customMessage.trim()) return;
+    createRequest.mutate({ type: "custom", message: customMessage.trim() });
+  };
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -210,7 +219,7 @@ export default function PartnerSupportPage() {
                 return (
                   <button
                     key={care.type}
-                    onClick={() => createRequest.mutate(care.type)}
+                    onClick={() => createRequest.mutate({ type: care.type })}
                     disabled={createRequest.isPending}
                     className={`relative group p-5 rounded-xl border-2 ${care.borderColor} bg-gradient-to-br ${care.bgGradient} text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed overflow-visible`}
                     data-testid={`button-request-${care.type}`}
@@ -227,6 +236,35 @@ export default function PartnerSupportPage() {
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-6 pt-6 border-t">
+              <div className="flex items-center gap-2 mb-3">
+                <PenLine className="w-4 h-4 text-primary" />
+                <span className="font-medium text-sm">Something else on your mind?</span>
+              </div>
+              <div className="flex gap-3">
+                <Input
+                  placeholder="Type your custom request..."
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCustomRequest()}
+                  className="flex-1"
+                  data-testid="input-custom-request"
+                />
+                <Button
+                  onClick={handleCustomRequest}
+                  disabled={!customMessage.trim() || createRequest.isPending}
+                  className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
+                  data-testid="button-send-custom"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Send
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Be specific about what would help you feel supported right now
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -247,7 +285,10 @@ export default function PartnerSupportPage() {
             <CardContent className="space-y-3">
               {pendingRequests.map((request) => {
                 const careType = careTypes.find((c) => c.type === request.type);
-                const Icon = careType?.icon || Clock;
+                const isCustom = request.type === "custom";
+                const Icon = isCustom ? MessageCircle : (careType?.icon || Clock);
+                const gradient = isCustom ? "from-violet-500 to-purple-600" : (careType?.gradient || 'from-gray-400 to-gray-500');
+                const label = isCustom ? "Custom Request" : careType?.label;
                 return (
                   <div
                     key={request.id}
@@ -255,11 +296,14 @@ export default function PartnerSupportPage() {
                     data-testid={`pending-request-${request.id}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${careType?.gradient || 'from-gray-400 to-gray-500'} flex items-center justify-center`}>
+                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium">{careType?.label}</p>
+                        <p className="font-medium">{label}</p>
+                        {isCustom && request.message && (
+                          <p className="text-sm text-foreground/80 mt-0.5">"{request.message}"</p>
+                        )}
                         <p className="text-xs text-muted-foreground">
                           {new Date(request.createdAt!).toLocaleString()}
                         </p>
@@ -300,7 +344,9 @@ export default function PartnerSupportPage() {
               <div className="grid gap-2">
                 {completedRequests.slice(0, 5).map((request) => {
                   const careType = careTypes.find((c) => c.type === request.type);
-                  const Icon = careType?.icon || CheckCircle;
+                  const isCustom = request.type === "custom";
+                  const Icon = isCustom ? MessageCircle : (careType?.icon || CheckCircle);
+                  const label = isCustom ? (request.message || "Custom Request") : careType?.label;
                   return (
                     <div
                       key={request.id}
@@ -309,7 +355,7 @@ export default function PartnerSupportPage() {
                     >
                       <CheckCircle className="w-5 h-5 text-emerald-500" />
                       <Icon className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm font-medium flex-1">{careType?.label}</span>
+                      <span className="text-sm font-medium flex-1 truncate">{label}</span>
                       <span className="text-xs text-muted-foreground">
                         {new Date(request.createdAt!).toLocaleDateString()}
                       </span>
