@@ -28,7 +28,6 @@ export default function DailyCheckIn({ onSubmit }: DailyCheckInProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Check-in submitted:', formData);
     onSubmit?.(formData);
   };
 

@@ -20,7 +20,17 @@ export interface CheckInEntry {
 const KEYS = {
   CHECK_INS: "cycleSync_checkIns",
   MOODS: "cycleSync_dashboardMoods",
+  PROFILE_ID: "cycleSync_profileId",
+  USER_NAME: "cycleSync_userName",
 } as const;
+
+export function getProfileId(): string | null {
+  return localStorage.getItem(KEYS.PROFILE_ID);
+}
+
+export function getUserName(): string {
+  return localStorage.getItem(KEYS.USER_NAME) || "friend";
+}
 
 export async function saveCheckIn(entry: Omit<CheckInEntry, "date">): Promise<CheckInEntry> {
   const dated: CheckInEntry = { ...entry, date: new Date().toISOString() };

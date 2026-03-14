@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { SpoonEntry, UserProfile } from "@shared/schema";
-import { saveMoods, loadMoods } from "@/lib/storage";
+import { saveMoods, loadMoods, getProfileId, getUserName } from "@/lib/storage";
 
 const phaseMessages: Record<string, string[]> = {
   menstrual: [
@@ -60,8 +60,8 @@ export default function Dashboard() {
     loadMoods().then(setSelectedMoods);
   }, []);
   
-  const profileId = localStorage.getItem("cycleSync_profileId");
-  const userName = localStorage.getItem("cycleSync_userName") || "friend";
+  const profileId = getProfileId();
+  const userName = getUserName();
 
   const { data: profile, isLoading: profileLoading } = useQuery<UserProfile | null>({
     queryKey: ["/api/profile", profileId],
