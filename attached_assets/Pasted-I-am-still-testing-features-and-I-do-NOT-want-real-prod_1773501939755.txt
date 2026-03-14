@@ -1,0 +1,41 @@
+I am still testing features and I do NOT want real production data collection yet.
+
+My goal right now is to make the app feel complete and testable without setting up real user accounts, real partner accounts, or production analytics.
+
+Please help me finish the app in this order:
+
+PRIORITY 1 — Make testing reliable without production data
+1. Wire the Daily Check-In so submissions save locally for testing (not just console logs).
+2. Make Dashboard mood tracking persist across refresh using local storage or demo storage.
+3. Make any other user inputs needed for testing persist locally so I can interact with the app like a real user.
+
+PRIORITY 2 — Keep everything in test/demo mode
+4. Do NOT add real authentication yet.
+5. Do NOT add real production database collection for user accounts yet.
+6. Do NOT add analytics, tracking pixels, or anything that collects real user behavior yet.
+7. If any feature currently depends on real accounts, replace it temporarily with a clean demo/test version.
+
+PRIORITY 3 — Make the partner feature testable without real account linking
+8. For SyncLink / Partner View, do NOT build full multi-user partner accounts yet.
+9. Instead, create a testable version such as:
+   - a shareable Partner Brief page,
+   - a generated preview link,
+   - or a read-only partner mode I can open separately for testing.
+10. Make it feel realistic for demos, but do not require real partner login or account linking yet.
+
+PRIORITY 4 — Clean up empty features for v1 testing
+11. If Ritual Library or Community Q&A are empty, seed them with starter placeholder/demo content so the app does not feel unfinished during testing.
+12. If any screens are visually complete but not wired up, finish the wiring in demo mode.
+
+IMPORTANT RULES
+- Do not add new features.
+- Do not overbuild.
+- Do not switch frameworks.
+- Do not rewrite the app.
+- Focus only on making the current app complete, polished, and testable in demo mode.
+- If something should later become production-ready, clearly label it as a future production step but keep the current implementation simple for testing.
+
+At the end, give me:
+A. what is now working in demo mode
+B. what still needs real production setup later
+C. what I should test manually next
