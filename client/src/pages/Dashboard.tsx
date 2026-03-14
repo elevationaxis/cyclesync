@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "wouter";
 import CycleCompass from '@/components/CycleCompass';
 import PhaseCard from '@/components/PhaseCard';
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { SpoonEntry, UserProfile } from "@shared/schema";
+import { saveMoods, loadMoods } from "@/lib/storage";
 
 const phaseMessages: Record<string, string[]> = {
   menstrual: [
@@ -54,6 +55,10 @@ const moodOptions = [
 
 export default function Dashboard() {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+
+  useEffect(() => {
+    loadMoods().then(setSelectedMoods);
+  }, []);
   
   const profileId = localStorage.getItem("cycleSync_profileId");
   const userName = localStorage.getItem("cycleSync_userName") || "friend";
@@ -89,11 +94,13 @@ export default function Dashboard() {
   const userId = profileId || "demo-user";
 
   const toggleMood = (value: string) => {
-    setSelectedMoods(prev => 
-      prev.includes(value) 
-        ? prev.filter(m => m !== value) 
-        : [...prev, value]
-    );
+    setSelectedMoods(prev => {
+      const next = prev.includes(value)
+        ? prev.filter(m => m !== value)
+        : [...prev, value];
+      saveMoods(next);
+      return next;
+    });
   };
 
   const { data: spoonEntry } = useQuery<SpoonEntry | null>({
