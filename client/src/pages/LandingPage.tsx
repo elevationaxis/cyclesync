@@ -98,7 +98,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="px-6 md:px-12 py-16 md:py-24" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+      <section className="px-6 md:px-12 py-16 md:py-24" style={{ background: "#F7F2EB", color: "#0D0B0A", borderTop: "1px solid rgba(13,11,10,0.06)" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-medium tracking-[0.2em] uppercase mb-3" style={{ color: "#B07D52" }}>
@@ -107,7 +107,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
               We didn't build another period tracker.
             </h2>
-            <p className="max-w-[500px] mx-auto" style={{ color: "#c4b29a" }}>
+            <p className="max-w-[500px] mx-auto" style={{ color: "#6b5e54" }}>
               Period trackers count days. We decode patterns. Your body already knows — we just help you hear it.
             </p>
           </div>
@@ -119,17 +119,17 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <div
                   key={index}
                   className="rounded-md p-7"
-                  style={{ background: "rgba(237,228,245,0.04)", border: "1px solid rgba(237,228,245,0.08)" }}
+                  style={{ background: "rgba(255,255,255,0.6)", border: "1px solid rgba(176,125,82,0.15)" }}
                   data-testid={`card-feature-${index}`}
                 >
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center mb-5"
-                    style={{ background: index === 3 ? "#C4846E" : "#EDE4F5" }}
+                    style={{ background: "#B07D52" }}
                   >
-                    <Icon className="w-5 h-5" style={{ color: "#0D0B0A" }} />
+                    <Icon className="w-5 h-5" style={{ color: "#F7F2EB" }} />
                   </div>
                   <h3 className="font-serif text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "#c4b29a" }}>
+                  <p className="text-sm leading-relaxed" style={{ color: "#6b5e54" }}>
                     {feature.description}
                   </p>
                 </div>
