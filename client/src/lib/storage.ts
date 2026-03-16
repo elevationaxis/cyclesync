@@ -55,6 +55,30 @@ export async function loadCheckInHistory(): Promise<CheckInEntry[]> {
   }
 }
 
+export async function loadProfile(): Promise<{ name: string; lastPeriodStart: string | null; cycleLength: number } | null> {
+  const profileId = getProfileId();
+  if (!profileId) return null;
+  try {
+    const response = await fetch(`/api/profile/${profileId}`);
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function loadTodaySpoons(): Promise<{ totalSpoons: number; usedSpoons: number; note?: string | null } | null> {
+  const profileId = getProfileId();
+  const userId = profileId || "demo-user";
+  try {
+    const response = await fetch(`/api/spoon-entries/today?userId=${userId}`);
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function saveMoods(moods: string[]): Promise<void> {
   localStorage.setItem(KEYS.MOODS, JSON.stringify(moods));
 }

@@ -1,36 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import PartnerView from '@/components/PartnerView';
 import { calculateCycleDay } from '@/lib/cycleUtils';
-import { getProfileId, getUserName } from '@/lib/storage';
+import { getProfileId, getUserName, loadProfile, loadTodaySpoons } from '@/lib/storage';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import type { UserProfile, SpoonEntry } from '@shared/schema';
+import type { SpoonEntry } from '@shared/schema';
 
 export default function PartnerBriefPage() {
   const profileId = getProfileId();
   const storedName = getUserName();
-  const userId = "demo-user";
 
-  const { data: profile, isLoading: profileLoading } = useQuery<UserProfile>({
-    queryKey: ['/api/profile', profileId],
-    queryFn: async () => {
-      if (!profileId) throw new Error('No profile');
-      const response = await fetch(`/api/profile/${profileId}`);
-      if (!response.ok) throw new Error('Failed to fetch profile');
-      return response.json();
-    },
-    enabled: !!profileId,
-  });
+  const [profile, setProfile] = useState<{ name: string; lastPeriodStart: string | null; cycleLength: number } | null>(null);
+  const [spoonEntry, setSpoonEntry] = useState<SpoonEntry | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const { data: spoonEntry } = useQuery<SpoonEntry | null>({
-    queryKey: ["/api/spoon-entries/today", userId],
-    queryFn: async () => {
-      const response = await fetch(`/api/spoon-entries/today?userId=${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch spoon entry");
-      return response.json();
-    },
-  });
+  useEffect(() => {
+    async function load() {
+      const [p, s] = await Promise.all([loadProfile(), loadTodaySpoons()]);
+      setProfile(p);
+      setSpoonEntry(s as SpoonEntry | null);
+      setLoading(false);
+    }
+    load();
+  }, []);
 
   const cycleDay = profile?.lastPeriodStart
     ? calculateCycleDay(profile.lastPeriodStart, profile.cycleLength || 28)
@@ -56,7 +49,7 @@ export default function PartnerBriefPage() {
     );
   }
 
-  if (profileLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Loading partner brief...</p>
