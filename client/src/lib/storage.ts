@@ -68,10 +68,8 @@ export async function loadProfile(): Promise<{ name: string; lastPeriodStart: st
 }
 
 export async function loadTodaySpoons(): Promise<{ totalSpoons: number; usedSpoons: number; note?: string | null } | null> {
-  const profileId = getProfileId();
-  const userId = profileId || "demo-user";
   try {
-    const response = await fetch(`/api/spoon-entries/today?userId=${userId}`);
+    const response = await fetch(`/api/spoon-entries/today?userId=demo-user`);
     if (!response.ok) return null;
     return response.json();
   } catch {
