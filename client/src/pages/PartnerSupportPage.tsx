@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users, Utensils, Battery, BatteryLow, BatteryMedium, BatteryFull, AlertTriangle, MessageCircle, PenLine } from "lucide-react";
+import { Heart, Coffee, HandHeart, Sparkles, CheckCircle, Clock, Send, Users, Utensils, Battery, BatteryLow, BatteryMedium, BatteryFull, AlertTriangle, MessageCircle, PenLine, Link2, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { CareRequest, SpoonEntry } from "@shared/schema";
@@ -164,6 +164,29 @@ export default function PartnerSupportPage() {
         <p className="text-muted-foreground text-lg max-w-md mx-auto">
           Let your partner know what you need today with just one tap
         </p>
+        <Button
+          variant="outline"
+          className="mt-4 rounded-full"
+          onClick={() => {
+            const url = `${window.location.origin}/partner-brief`;
+            navigator.clipboard.writeText(url).then(() => {
+              toast({
+                title: "CyncLink copied!",
+                description: "Share this link with your partner so they can see your cycle status.",
+              });
+            }).catch(() => {
+              toast({
+                title: "Copy this link",
+                description: url,
+              });
+            });
+          }}
+          data-testid="button-share-cynclink"
+        >
+          <Link2 className="w-4 h-4 mr-2" />
+          Share CyncLink
+          <Copy className="w-3.5 h-3.5 ml-2 text-muted-foreground" />
+        </Button>
       </div>
 
       <div className="space-y-8">

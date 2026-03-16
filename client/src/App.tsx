@@ -17,6 +17,7 @@ import CalendarPage from "@/pages/CalendarPage";
 import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
 import LandingPage from "@/pages/LandingPage";
 import OnboardingPage from "@/pages/OnboardingPage";
+import PartnerBriefPage from "@/pages/PartnerBriefPage";
 import { useState, useEffect } from "react";
 
 function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
@@ -79,6 +80,7 @@ function App() {
         <Switch>
           <Route path="/" component={LandingWrapper} />
           <Route path="/onboarding" component={OnboardingPage} />
+          <Route path="/partner-brief" component={PartnerBriefPage} />
           <Route>
             <ProtectedApp />
           </Route>
