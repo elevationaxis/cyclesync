@@ -16,7 +16,7 @@ export function LogoConcepts() {
     </svg>
   );
 
-  const IconWordmark = ({ color, bgColor, size = 1 }: { color: string; bgColor?: string; size?: number }) => (
+  const IconWordmark = ({ color, size = 1 }: { color: string; size?: number }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 12 * size }}>
       <IconMark color={color} size={size} />
       <WordmarkSVG color={color} size={size} />
@@ -40,7 +40,7 @@ export function LogoConcepts() {
     </div>
   );
 
-  const LogoDisplay = ({ label, children, bg, padding = 40 }: { label: string; children: JSX.Element | JSX.Element[]; bg: string; padding?: number }) => (
+  const LogoDisplay = ({ label, children, bg, padding = 40 }: { label: string; children: React.ReactNode; bg: string; padding?: number }) => (
     <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(0,0,0,0.06)" }}>
       <div style={{ background: bg, padding, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 100 }}>
         {children}
@@ -103,18 +103,32 @@ export function LogoConcepts() {
         <section style={{ marginBottom: 56 }}>
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 24, paddingBottom: 8, borderBottom: "1px solid #ddd1c0" }}>3. Icon-Only Mark</h2>
           <p style={{ fontSize: 13, color: "#6b5e54", marginBottom: 20 }}>Abstract symbol: the journey from chaos (scattered energy) to order (focused point). A wave within a circle — cyclical energy finding its rhythm.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-            <LogoDisplay label="On Cream" bg="#F7F2EB">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 16 }}>
+            <LogoDisplay label="Large — On Cream" bg="#F7F2EB">
               <IconMark color="#0D0B0A" size={1.4} />
             </LogoDisplay>
-            <LogoDisplay label="On Black" bg="#0D0B0A">
+            <LogoDisplay label="Large — On Black" bg="#0D0B0A">
               <IconMark color="#F7F2EB" size={1.4} />
             </LogoDisplay>
-            <LogoDisplay label="Copper" bg="#F7F2EB">
+            <LogoDisplay label="Large — Copper" bg="#F7F2EB">
               <IconMark color="#B07D52" size={1.4} />
             </LogoDisplay>
-            <LogoDisplay label="Rose" bg="#0D0B0A">
+            <LogoDisplay label="Large — Rose" bg="#0D0B0A">
               <IconMark color="#C4846E" size={1.4} />
+            </LogoDisplay>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+            <LogoDisplay label="Small — On Cream" bg="#F7F2EB" padding={24}>
+              <IconMark color="#0D0B0A" size={0.8} />
+            </LogoDisplay>
+            <LogoDisplay label="Small — On Black" bg="#0D0B0A" padding={24}>
+              <IconMark color="#F7F2EB" size={0.8} />
+            </LogoDisplay>
+            <LogoDisplay label="Small — Copper" bg="#F7F2EB" padding={24}>
+              <IconMark color="#B07D52" size={0.8} />
+            </LogoDisplay>
+            <LogoDisplay label="Small — Rose" bg="#0D0B0A" padding={24}>
+              <IconMark color="#C4846E" size={0.8} />
             </LogoDisplay>
           </div>
         </section>
@@ -128,6 +142,14 @@ export function LogoConcepts() {
             </LogoDisplay>
             <LogoDisplay label="On Warm Black" bg="#0D0B0A">
               <CyncLockup color="#F7F2EB" accentColor="#EDE4F5" size={1.3} />
+            </LogoDisplay>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+            <LogoDisplay label="Small lockup — Cream" bg="#F7F2EB" padding={24}>
+              <CyncLockup color="#0D0B0A" accentColor="#EDE4F5" size={0.8} />
+            </LogoDisplay>
+            <LogoDisplay label="Small lockup — Dark" bg="#0D0B0A" padding={24}>
+              <CyncLockup color="#F7F2EB" accentColor="#EDE4F5" size={0.8} />
             </LogoDisplay>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
