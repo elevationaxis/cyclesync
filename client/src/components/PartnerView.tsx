@@ -165,10 +165,10 @@ export default function PartnerView({ cycleDay, partnerName = 'Your Partner', sp
         </Card>
       )}
 
-      <Card className="p-6 border-2 border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50/50 to-purple-50/50 dark:from-violet-900/10 dark:to-purple-900/10" data-testid="card-spoon-theory-explanation">
+      <Card className="p-6 border-2 border-[hsl(var(--brand-copper)/0.2)] bg-gradient-to-br from-[hsl(var(--brand-lavender)/0.3)] to-background" data-testid="card-spoon-theory-explanation">
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
-            <HelpCircle className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          <div className="w-10 h-10 rounded-full bg-[hsl(var(--brand-lavender))] flex items-center justify-center flex-shrink-0">
+            <HelpCircle className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h3 className="font-semibold text-lg mb-1">What is Spoon Theory?</h3>
