@@ -46,7 +46,7 @@ export function ColorTypography() {
     { fg: "#0D0B0A", bg: "#F7F2EB", label: "Black on Cream", ratio: "15.8:1", pass: true },
     { fg: "#C4846E", bg: "#0D0B0A", label: "Rose on Black", ratio: "5.2:1", pass: true },
     { fg: "#0D0B0A", bg: "#C4846E", label: "Black on Rose", ratio: "5.2:1", pass: true },
-    { fg: "#B07D52", bg: "#0D0B0A", label: "Copper on Black", ratio: "4.1:1", pass: true },
+    { fg: "#B07D52", bg: "#0D0B0A", label: "Copper on Black", ratio: "4.1:1", pass: false },
     { fg: "#F7F2EB", bg: "#B07D52", label: "Cream on Copper", ratio: "3.8:1", pass: false },
     { fg: "#0D0B0A", bg: "#EDE4F5", label: "Black on Lavender", ratio: "13.4:1", pass: true },
     { fg: "#B07D52", bg: "#F7F2EB", label: "Copper on Cream", ratio: "4.1:1", pass: true },
