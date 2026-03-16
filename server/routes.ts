@@ -3,6 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { askAuntB } from "./openai";
+import { seedStarterContent } from "./seed";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -36,6 +37,8 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/assets/rituals", express.static(uploadsDir));
+
+  await seedStarterContent();
 
   app.post("/api/chat", async (req, res) => {
     try {

@@ -211,19 +211,25 @@ export default function RitualsPage() {
                     {ritual.duration && (
                       <p className="text-xs text-muted-foreground">Duration: {ritual.duration}</p>
                     )}
-                    <div className="flex gap-2">
-                      {ritual.fileType === "audio" ? (
-                        <audio controls className="w-full" data-testid={`audio-player-${ritual.id}`}>
-                          <source src={ritual.filePath} type="audio/mpeg" />
-                          Your browser does not support audio playback.
-                        </audio>
-                      ) : (
-                        <video controls className="w-full rounded-md" data-testid={`video-player-${ritual.id}`}>
-                          <source src={ritual.filePath} type="video/mp4" />
-                          Your browser does not support video playback.
-                        </video>
-                      )}
-                    </div>
+                    {ritual.filePath ? (
+                      <div className="flex gap-2">
+                        {ritual.fileType === "audio" ? (
+                          <audio controls className="w-full" data-testid={`audio-player-${ritual.id}`}>
+                            <source src={ritual.filePath} type="audio/mpeg" />
+                            Your browser does not support audio playback.
+                          </audio>
+                        ) : (
+                          <video controls className="w-full rounded-md" data-testid={`video-player-${ritual.id}`}>
+                            <source src={ritual.filePath} type="video/mp4" />
+                            Your browser does not support video playback.
+                          </video>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-6 rounded-md bg-muted/50 border border-dashed" data-testid={`placeholder-media-${ritual.id}`}>
+                        <p className="text-sm text-muted-foreground">Media coming soon</p>
+                      </div>
+                    )}
                     <Button
                       variant="destructive"
                       size="sm"
