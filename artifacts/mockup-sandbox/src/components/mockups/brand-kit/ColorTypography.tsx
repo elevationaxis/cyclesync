@@ -7,12 +7,38 @@ export function ColorTypography() {
     { name: "Lavender Whisper", hex: "#EDE4F5", oklch: "oklch(91% 0.04 302)", role: "Cync sub-brand signature", light: true },
   ];
 
-  const shadeRamps: Record<string, string[]> = {
-    "Warm Black": ["#2a2523", "#211e1c", "#191614", "#0D0B0A", "#080706", "#050403"],
-    "Dusty Rose": ["#f5e8e2", "#e8c7b8", "#dba68e", "#C4846E", "#a66b55", "#7d503f", "#543628"],
-    "Warm Cream": ["#FDFCFA", "#FAF7F3", "#F7F2EB", "#ede5d9", "#ddd1c0", "#c4b29a", "#a08970"],
-    "Copper": ["#f0e0cc", "#d4b58a", "#c29a6e", "#B07D52", "#8e6340", "#6b4a30", "#483220"],
-    "Lavender Whisper": ["#FAF6FE", "#F3ECF9", "#EDE4F5", "#d8c8e8", "#bfa5d6", "#9b7abe", "#7652a0"],
+  const shadeLabels = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
+  const shadeRamps: Record<string, { hex: string; label: string }[]> = {
+    "Warm Black": [
+      { hex: "#3d3835", label: "50" }, { hex: "#332e2b", label: "100" }, { hex: "#2a2523", label: "200" },
+      { hex: "#211e1c", label: "300" }, { hex: "#191614", label: "400" }, { hex: "#0D0B0A", label: "500" },
+      { hex: "#0a0908", label: "600" }, { hex: "#080706", label: "700" }, { hex: "#050403", label: "800" },
+      { hex: "#030202", label: "900" },
+    ],
+    "Dusty Rose": [
+      { hex: "#faf2ee", label: "50" }, { hex: "#f5e8e2", label: "100" }, { hex: "#e8c7b8", label: "200" },
+      { hex: "#dba68e", label: "300" }, { hex: "#d09578", label: "400" }, { hex: "#C4846E", label: "500" },
+      { hex: "#a66b55", label: "600" }, { hex: "#8a5744", label: "700" }, { hex: "#6e4436", label: "800" },
+      { hex: "#543628", label: "900" },
+    ],
+    "Warm Cream": [
+      { hex: "#FDFCFA", label: "50" }, { hex: "#FAF7F3", label: "100" }, { hex: "#F7F2EB", label: "200" },
+      { hex: "#f0e9de", label: "300" }, { hex: "#ede5d9", label: "400" }, { hex: "#ddd1c0", label: "500" },
+      { hex: "#cebfaa", label: "600" }, { hex: "#c4b29a", label: "700" }, { hex: "#b09a7e", label: "800" },
+      { hex: "#a08970", label: "900" },
+    ],
+    "Copper": [
+      { hex: "#f5ead9", label: "50" }, { hex: "#f0e0cc", label: "100" }, { hex: "#dfc5a0", label: "200" },
+      { hex: "#d4b58a", label: "300" }, { hex: "#c29a6e", label: "400" }, { hex: "#B07D52", label: "500" },
+      { hex: "#8e6340", label: "600" }, { hex: "#6b4a30", label: "700" }, { hex: "#553b26", label: "800" },
+      { hex: "#483220", label: "900" },
+    ],
+    "Lavender Whisper": [
+      { hex: "#FDFAFE", label: "50" }, { hex: "#FAF6FE", label: "100" }, { hex: "#F3ECF9", label: "200" },
+      { hex: "#EDE4F5", label: "300" }, { hex: "#e0d2ee", label: "400" }, { hex: "#d8c8e8", label: "500" },
+      { hex: "#bfa5d6", label: "600" }, { hex: "#a886c8", label: "700" }, { hex: "#9b7abe", label: "800" },
+      { hex: "#7652a0", label: "900" },
+    ],
   };
 
   const contrastPairs = [
@@ -56,14 +82,16 @@ export function ColorTypography() {
         <section style={{ marginBottom: 56 }}>
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 24, paddingBottom: 8, borderBottom: "1px solid #ddd1c0" }}>Shade Ramps</h2>
           {Object.entries(shadeRamps).map(([name, shades]) => (
-            <div key={name} style={{ marginBottom: 16 }}>
+            <div key={name} style={{ marginBottom: 20 }}>
               <p style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6, color: "#6b5e54" }}>{name}</p>
-              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", height: 40 }}>
+              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden" }}>
                 {shades.map((shade, i) => {
-                  const isLight = ["#FDFCFA", "#FAF7F3", "#F7F2EB", "#FAF6FE", "#F3ECF9", "#EDE4F5", "#f5e8e2", "#f0e0cc", "#ede5d9", "#ddd1c0", "#d8c8e8", "#e8c7b8", "#d4b58a"].includes(shade);
+                  const lightHexes = ["#FDFCFA", "#FAF7F3", "#F7F2EB", "#FAF6FE", "#F3ECF9", "#EDE4F5", "#f5e8e2", "#f0e0cc", "#ede5d9", "#ddd1c0", "#d8c8e8", "#e8c7b8", "#d4b58a", "#faf2ee", "#f5ead9", "#dfc5a0", "#f0e9de", "#FDFAFE", "#e0d2ee", "#3d3835", "#332e2b", "#cebfaa"];
+                  const isLight = lightHexes.includes(shade.hex);
                   return (
-                    <div key={i} style={{ flex: 1, background: shade, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 9, fontFamily: "monospace", color: isLight ? "#0D0B0A" : "#F7F2EB", opacity: 0.8 }}>{shade}</span>
+                    <div key={i} style={{ flex: 1, background: shade.hex, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "8px 0" }}>
+                      <span style={{ fontSize: 9, fontWeight: 600, fontFamily: "monospace", color: isLight ? "#0D0B0A" : "#F7F2EB", opacity: 0.9 }}>{shade.label}</span>
+                      <span style={{ fontSize: 7, fontFamily: "monospace", color: isLight ? "#0D0B0A" : "#F7F2EB", opacity: 0.6, marginTop: 2 }}>{shade.hex}</span>
                     </div>
                   );
                 })}
@@ -119,6 +147,40 @@ export function ColorTypography() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+
+        <section style={{ marginBottom: 56 }}>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, marginBottom: 24, paddingBottom: 8, borderBottom: "1px solid #ddd1c0" }}>CSS Custom Properties & Tailwind Config</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div style={{ background: "#0D0B0A", borderRadius: 8, padding: 20, color: "#c4b29a" }}>
+              <p style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "#B07D52", marginBottom: 12 }}>CSS Custom Properties</p>
+              <pre style={{ fontSize: 11, lineHeight: 1.7, fontFamily: "monospace", whiteSpace: "pre-wrap", margin: 0 }}>{`:root {
+  --chaos-black: 20 15% 4%;
+  --chaos-rose: 18 47% 60%;
+  --chaos-cream: 33 38% 95%;
+  --chaos-copper: 30 43% 50%;
+  --chaos-lavender: 272 47% 93%;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Inter', sans-serif;
+}`}</pre>
+            </div>
+            <div style={{ background: "#0D0B0A", borderRadius: 8, padding: 20, color: "#c4b29a" }}>
+              <p style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "#B07D52", marginBottom: 12 }}>Tailwind Config</p>
+              <pre style={{ fontSize: 11, lineHeight: 1.7, fontFamily: "monospace", whiteSpace: "pre-wrap", margin: 0 }}>{`colors: {
+  chaos: {
+    black: "hsl(var(--chaos-black))",
+    rose: "hsl(var(--chaos-rose))",
+    cream: "hsl(var(--chaos-cream))",
+    copper: "hsl(var(--chaos-copper))",
+    lavender: "hsl(var(--chaos-lavender))",
+  }
+},
+fontFamily: {
+  display: ["var(--font-display)"],
+  body: ["var(--font-body)"],
+}`}</pre>
+            </div>
           </div>
         </section>
 

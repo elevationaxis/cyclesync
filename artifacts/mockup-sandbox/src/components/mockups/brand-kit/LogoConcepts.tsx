@@ -40,7 +40,7 @@ export function LogoConcepts() {
     </div>
   );
 
-  const LogoDisplay = ({ label, children, bg, padding = 40 }: { label: string; children: React.ReactNode; bg: string; padding?: number }) => (
+  const LogoDisplay = ({ label, children, bg, padding = 40 }: { label: string; children: any; bg: string; padding?: number }) => (
     <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid rgba(0,0,0,0.06)" }}>
       <div style={{ background: bg, padding, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 100 }}>
         {children}
