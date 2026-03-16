@@ -49,7 +49,7 @@ export function ColorTypography() {
     { fg: "#B07D52", bg: "#0D0B0A", label: "Copper on Black", ratio: "4.1:1", pass: false },
     { fg: "#F7F2EB", bg: "#B07D52", label: "Cream on Copper", ratio: "3.8:1", pass: false },
     { fg: "#0D0B0A", bg: "#EDE4F5", label: "Black on Lavender", ratio: "13.4:1", pass: true },
-    { fg: "#B07D52", bg: "#F7F2EB", label: "Copper on Cream", ratio: "4.1:1", pass: true },
+    { fg: "#B07D52", bg: "#F7F2EB", label: "Copper on Cream", ratio: "4.1:1", pass: false },
   ];
 
   return (
