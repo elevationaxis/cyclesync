@@ -1,8 +1,8 @@
-# Cycle Sync App
+# Cync — Cycle Intelligence by Chaos & Co
 
 ## Overview
 
-Cycle Sync is a neuro-affirming, relationship-strengthening menstrual cycle tracking app designed to transform cycle data into actionable daily support. The app helps users understand their hormonal rhythms through science-backed guidance delivered in a warm, conversational tone inspired by a "wise auntie" persona named Aunt B. The platform emphasizes connection over clinical tracking, making self-care social and collaborative while supporting partners in understanding and responding to hormonal phases.
+Cync is a cycle intelligence companion within the Chaos & Co ecosystem, designed to transform cycle data into actionable daily support. The app helps users understand their hormonal rhythms through science-backed guidance delivered in a warm, conspiratorial tone inspired by a "wise auntie" persona named Aunt B. The platform emphasizes connection over clinical tracking, making self-care social and collaborative while supporting partners via CyncLink. Part of the broader Chaos & Co brand alongside The Sanctuary (physical spaces) and The Thread (premium membership).
 
 ## User Preferences
 
@@ -24,10 +24,13 @@ Preferred communication style: Simple, everyday language.
 - Tailwind CSS for utility-first styling with custom design tokens
 - Class Variance Authority (CVA) for type-safe component variants
 
-**Design System**
-- Typography: Inter (body/UI) and DM Sans (headings) from Google Fonts
+**Design System — Chaos & Co Brand**
+- Typography: Inter (body/UI) and DM Serif Display (display/headings) from Google Fonts
+- Brand colors: Warm Black #0D0B0A, Dusty Rose #C4846E, Warm Cream #F7F2EB, Copper #B07D52, Lavender Whisper #EDE4F5
+- CSS custom properties: --brand-rose, --brand-cream, --brand-copper, --brand-lavender, --brand-black
 - Spacing primitives based on Tailwind units (4, 6, 8, 12, 16)
-- Custom color scheme using HSL values with CSS custom properties for theme flexibility
+- Border radius: small (0.375rem) for editorial feel
+- Landing page uses full-bleed dark (warm black) editorial design; app interior uses cream-based light theme
 - Responsive breakpoints prioritizing mobile-first design
 - Custom elevation system using hover/active states and shadow utilities
 

@@ -1,182 +1,271 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Heart, CircleDot, Users, Calendar, MessageCircle, Utensils, BookOpen } from "lucide-react";
+import { ArrowRight, CircleDot, MessageCircle, Utensils, Users, Calendar, BookOpen } from "lucide-react";
 
 interface LandingPageProps {
   onGetStarted: () => void;
+}
+
+function BrandMark({ size = 32, color = "#F7F2EB" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="22" stroke={color} strokeWidth="2" />
+      <path d="M14 28 C14 28, 18 14, 24 20 C30 26, 34 12, 34 12" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <circle cx="14" cy="28" r="3" fill={color} opacity="0.8" />
+      <circle cx="34" cy="12" r="3" fill={color} opacity="0.4" />
+    </svg>
+  );
 }
 
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
   const features = [
     {
       icon: CircleDot,
-      title: "Cycle Tracking",
-      description: "Understand your four phases and what each one means for your energy and mood"
+      title: "Four-Phase Tracking",
+      description: "Know exactly where you are in your cycle and what your body needs right now — not what an app tells you to feel.",
     },
     {
       icon: MessageCircle,
-      title: "Ask Aunt B",
-      description: "Get warm, supportive guidance from your wise AI companion whenever you need it"
+      title: "Aunt B — Your Guide",
+      description: "AI-powered wisdom that sounds like the woman you wish you'd had in your corner all along. Grounded, warm, zero judgment.",
     },
     {
       icon: Utensils,
-      title: "Spoon Tracker",
-      description: "Track your daily energy with spoon theory - because some days you just have fewer spoons"
+      title: "Spoon Theory Energy",
+      description: "Track your actual capacity, not the one the world expects. Know when to push and when to protect your energy.",
     },
     {
       icon: Users,
-      title: "Partner Support",
-      description: "Help your loved ones understand how to support you through each phase"
+      title: "CyncLink",
+      description: "Give your partner a way in — not all the way in. Share what they need to know so they can show up for you.",
     },
     {
       icon: Calendar,
       title: "Cycle Calendar",
-      description: "Plan ahead with a visual calendar that shows your upcoming phases"
+      description: "Plan your week around your biology, not against it. See what's coming so you can stop being blindsided.",
     },
     {
       icon: BookOpen,
       title: "Ritual Library",
-      description: "Discover self-care rituals tailored to how you're feeling right now"
-    }
+      description: "Phase-specific practices that actually work. Movement, breath, rest — matched to where your body is today.",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--cozy-lilac))] via-background to-[hsl(var(--cozy-lilac)/0.3)]" />
-        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[hsl(var(--cozy-lavender)/0.2)] blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-[hsl(var(--cozy-peach)/0.15)] blur-3xl" />
-        
-        <div className="relative container mx-auto px-6 py-20 md:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[hsl(var(--cozy-lilac))] mb-8">
-              <Heart className="w-10 h-10 text-[hsl(var(--cozy-plum))]" />
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              Hey there, love.
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground mb-4 leading-relaxed">
-              I'm <span className="text-primary font-semibold">Aunt B</span> — your warm, grounded guide through every phase of your cycle.
-            </p>
-            
-            <p className="text-lg text-muted-foreground mb-4 max-w-xl mx-auto">
-              Let's make this simple. Track your energy, understand your body, and get the support you deserve — all in one cozy place.
-            </p>
-            
-            <p className="text-sm text-muted-foreground/80 mb-10">
-              Built by a real mom with real life chaos — not a corporation.
-            </p>
-            
-            <Button 
-              size="lg" 
-              onClick={onGetStarted}
-              className="text-lg px-10 py-6 rounded-full shadow-lg bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white"
-              data-testid="button-get-started"
-            >
-              <Heart className="w-5 h-5 mr-2" />
-              Let's Get Started
-            </Button>
-          </div>
+    <div className="min-h-screen" style={{ background: "#0D0B0A", color: "#F7F2EB" }}>
+      <nav className="flex items-center justify-between px-6 md:px-12 py-5" style={{ borderBottom: "1px solid rgba(247,242,235,0.08)" }}>
+        <div className="flex items-center gap-2.5">
+          <BrandMark size={28} />
+          <span className="font-serif text-lg" data-testid="text-brand-name">Chaos <span style={{ opacity: 0.4 }}>&</span> Co</span>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onGetStarted}
+          className="border-[#C4846E]/40 text-[#C4846E] bg-transparent"
+          data-testid="button-nav-get-started"
+        >
+          Get Started
+        </Button>
+      </nav>
+
+      <section className="px-6 md:px-12 pt-20 md:pt-32 pb-16 md:pb-24 max-w-[900px] mx-auto text-center">
+        <p
+          className="text-xs font-medium tracking-[0.25em] uppercase mb-8"
+          style={{ color: "#B07D52" }}
+        >
+          For the women who feel everything
+        </p>
+        <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-7">
+          Your body's been trying to tell you something.{" "}
+          <span style={{ color: "#C4846E" }}>We'll help you hear it.</span>
+        </h1>
+        <p
+          className="text-lg md:text-xl leading-relaxed max-w-[600px] mx-auto mb-10"
+          style={{ color: "#c4b29a" }}
+        >
+          Cync is a cycle intelligence companion that turns your hormonal patterns into daily power moves. Track your phases, manage your energy, and finally stop fighting your own biology.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            size="lg"
+            onClick={onGetStarted}
+            className="text-base px-8 bg-[#C4846E] text-[#0D0B0A] font-semibold"
+            data-testid="button-get-started"
+          >
+            Start with Cync — Free
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
       </section>
 
-      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
-
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-              Everything you need, nothing you don't
+      <section className="px-6 md:px-12 py-16 md:py-24" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs font-medium tracking-[0.2em] uppercase mb-3" style={{ color: "#B07D52" }}>
+              What Cync Does
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
+              We didn't build another period tracker.
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Simple tools that actually help — no complicated charts or overwhelming data
+            <p className="max-w-[500px] mx-auto" style={{ color: "#c4b29a" }}>
+              Period trackers count days. We decode patterns. Your body already knows — we just help you hear it.
             </p>
           </div>
-          
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card 
-                  key={index} 
-                  className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300"
+                <div
+                  key={index}
+                  className="rounded-md p-7"
+                  style={{ background: "rgba(237,228,245,0.04)", border: "1px solid rgba(237,228,245,0.08)" }}
                   data-testid={`card-feature-${index}`}
                 >
-                  <CardContent className="p-8">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[hsl(var(--cozy-lilac))] mb-4">
-                      <Icon className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center mb-5"
+                    style={{ background: index === 3 ? "#C4846E" : "#EDE4F5" }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: "#0D0B0A" }} />
+                  </div>
+                  <h3 className="font-serif text-lg mb-2">{feature.title}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: "#c4b29a" }}>
+                    {feature.description}
+                  </p>
+                </div>
               );
             })}
           </div>
         </div>
       </section>
 
-      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
-
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-6">
-          <Card className="max-w-3xl mx-auto border-0 shadow-md bg-[hsl(var(--cozy-lilac))]">
-            <CardContent className="p-8 md:p-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-background mb-6">
-                <Heart className="w-8 h-8 text-[hsl(var(--cozy-plum))]" />
-              </div>
-              
-              <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-                A note from Aunt B
-              </h2>
-              
-              <blockquote className="text-lg leading-relaxed text-muted-foreground mb-6 italic">
-                "Honey, your cycle isn't a battle — it's your body talking to you. I'm here to help you listen, not judge."
-              </blockquote>
-              
-              <Button 
-                size="lg"
-                onClick={onGetStarted}
-                className="rounded-full px-8 bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white"
-                data-testid="button-start-journey"
-              >
-                Start Your Journey
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <div className="h-px bg-[hsl(var(--cozy-lavender)/0.3)] max-w-2xl mx-auto" />
-
-      <section className="py-16 bg-[hsl(var(--cozy-taupe)/0.3)]">
-        <div className="container mx-auto px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-              What's spoon theory?
+      <section className="px-6 md:px-12 py-16 md:py-24" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-xs font-medium tracking-[0.2em] uppercase mb-3" style={{ color: "#B07D52" }}>
+              The Ecosystem
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
+              Three layers. One knowing.
             </h2>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Imagine you start each day with a set number of "spoons" — that's your energy. Some days you wake up with 10 spoons, some days with 3. Every task uses spoons. This tracker helps you plan your day with compassion, based on the spoons you actually have — not the ones you wish you had.
+            <p className="max-w-[500px] mx-auto" style={{ color: "#c4b29a" }}>
+              From your phone to your body to your community — we built the full stack of cyclical living.
             </p>
-            <p className="text-sm text-muted-foreground">
-              Perfect for neurodivergent folks and anyone who needs to manage their energy mindfully.
-            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="rounded-md p-8" style={{ background: "rgba(237,228,245,0.06)", border: "1px solid rgba(237,228,245,0.12)" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mb-5" style={{ background: "#EDE4F5" }}>
+                <svg width={18} height={18} viewBox="0 0 16 16" fill="none">
+                  <path d="M4 10 C4 10, 6 4, 8 7 C10 10, 12 3, 12 3" stroke="#0D0B0A" strokeWidth="2" fill="none" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h3 className="font-serif text-xl mb-2">Cync</h3>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
+                Your daily cycle companion. Four-phase tracking, AI check-ins with Aunt B, spoon theory energy, and CyncLink partner sharing.
+              </p>
+              <span className="text-xs font-medium" style={{ color: "#EDE4F5" }} data-testid="text-cync-cta">Try Cync Free</span>
+            </div>
+
+            <div className="rounded-md p-8" style={{ background: "rgba(196,132,110,0.06)", border: "1px solid rgba(196,132,110,0.12)" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mb-5" style={{ background: "#C4846E" }}>
+                <svg width={18} height={18} viewBox="0 0 20 20" fill="none">
+                  <path d="M10 3 L10 17 M3 10 L17 10 M5 5 L15 15 M15 5 L5 15" stroke="#0D0B0A" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h3 className="font-serif text-xl mb-2">The Sanctuary</h3>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
+                Where digital meets physical. Phase-aligned workshops, cycle-synced retreats, and a space that understands why you need to cancel sometimes.
+              </p>
+              <span className="text-xs font-medium" style={{ color: "#C4846E" }}>Coming Soon</span>
+            </div>
+
+            <div className="rounded-md p-8" style={{ background: "rgba(176,125,82,0.06)", border: "1px solid rgba(176,125,82,0.12)" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mb-5" style={{ background: "#B07D52" }}>
+                <svg width={18} height={18} viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="7" stroke="#0D0B0A" strokeWidth="1.5" fill="none" />
+                  <circle cx="10" cy="10" r="3" fill="#0D0B0A" />
+                </svg>
+              </div>
+              <h3 className="font-serif text-xl mb-2">The Thread</h3>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
+                Premium membership connecting all of it. Exclusive content, personal cycle coaching, and a private community of women who get it.
+              </p>
+              <span className="text-xs font-medium" style={{ color: "#B07D52" }}>Join the Waitlist</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="py-12 border-t">
-        <div className="container mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <Heart className="w-5 h-5 text-primary" />
-            <span className="font-semibold">Cycle Sync</span>
+      <section className="px-6 md:px-12 py-16 md:py-20" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-3xl md:text-4xl font-normal mb-5">
+            The four phases. <span style={{ color: "#C4846E" }}>Your roadmap.</span>
+          </h2>
+          <p className="mb-10" style={{ color: "#c4b29a" }}>
+            Every phase has a purpose. Once you see the pattern, you stop fighting yourself and start working with the system you were born with.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 rounded-md overflow-hidden" style={{ border: "1px solid rgba(247,242,235,0.1)" }}>
+            {[
+              { phase: "Menstrual", desc: "Rest & reflect", color: "#C4846E" },
+              { phase: "Follicular", desc: "Build & begin", color: "#B07D52" },
+              { phase: "Ovulatory", desc: "Connect & shine", color: "#F7F2EB" },
+              { phase: "Luteal", desc: "Slow & protect", color: "#EDE4F5" },
+            ].map((p, i) => (
+              <div key={p.phase} className="p-6 text-center" style={{ borderRight: i < 3 ? "1px solid rgba(247,242,235,0.1)" : "none" }} data-testid={`phase-card-${p.phase.toLowerCase()}`}>
+                <div className="w-2 h-2 rounded-full mx-auto mb-3" style={{ background: p.color }} />
+                <p className="font-serif text-base mb-1">{p.phase}</p>
+                <p className="text-xs" style={{ color: "#8a7d74" }}>{p.desc}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            Made with care for you and your cycle
+        </div>
+      </section>
+
+      <section className="px-6 md:px-12 py-16 md:py-20" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "rgba(196,132,110,0.1)" }}>
+            <MessageCircle className="w-7 h-7" style={{ color: "#C4846E" }} />
+          </div>
+          <h2 className="font-serif text-2xl md:text-3xl font-normal mb-4">
+            A word from Aunt B
+          </h2>
+          <blockquote className="text-lg md:text-xl leading-relaxed italic mb-2" style={{ color: "#c4b29a" }}>
+            "Honey, your cycle isn't a problem to solve. It's a language your body speaks fluently. I'm just here to help you translate."
+          </blockquote>
+          <p className="text-xs tracking-wider uppercase mt-4" style={{ color: "#B07D52" }}>Your AI cycle companion</p>
+        </div>
+      </section>
+
+      <section className="px-6 md:px-12 py-16 md:py-24" style={{ borderTop: "1px solid rgba(247,242,235,0.06)", background: "rgba(196,132,110,0.04)" }}>
+        <div className="max-w-xl mx-auto text-center">
+          <p className="font-serif text-xs tracking-[0.2em] uppercase mb-4" style={{ color: "#B07D52" }}>Ready?</p>
+          <h2 className="font-serif text-3xl md:text-4xl font-normal leading-tight mb-4">
+            Stop explaining yourself.{" "}
+            <span style={{ color: "#C4846E" }}>Start understanding yourself.</span>
+          </h2>
+          <p className="leading-relaxed mb-8" style={{ color: "#c4b29a" }}>
+            Join women using cyclical intelligence to reclaim their energy, their relationships, and their calm.
+          </p>
+          <Button
+            size="lg"
+            onClick={onGetStarted}
+            className="text-base px-10 bg-[#C4846E] text-[#0D0B0A] font-semibold"
+            data-testid="button-start-journey"
+          >
+            Get Started Free
+          </Button>
+        </div>
+      </section>
+
+      <footer className="px-6 md:px-12 py-10" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <BrandMark size={18} color="#6b5e54" />
+            <span className="font-serif text-sm" style={{ color: "#6b5e54" }}>Chaos & Co</span>
+          </div>
+          <p className="text-xs" style={{ color: "#483220" }} data-testid="text-footer">
+            Cync — part of Chaos & Co. Made with intention.
           </p>
         </div>
       </footer>

@@ -2,73 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - Cozy Purple Palette */
-/* Soft cream (#F7F4F2), Light taupe (#E4DAD2), Cozy lavender (#C8B7E4) */
-/* Soft plum (#A184C5), Lilac wash (#EFE7FA), Charcoal grey (#3A3A3A), Muted peach (#F2C8B8) */
+/* LIGHT MODE - Chaos & Co Brand */
+/* Warm Black #0D0B0A, Dusty Rose #C4846E, Warm Cream #F7F2EB, Copper #B07D52, Lavender Whisper #EDE4F5 */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 30 25% 96%;
-  --foreground: 0 0% 23%;
-  --border: 27 20% 88%;
-  --card: 30 30% 99%;
-  --card-foreground: 0 0% 23%;
-  --card-border: 27 20% 90%;
-  --sidebar: 265 50% 97%;
-  --sidebar-foreground: 0 0% 23%;
-  --sidebar-border: 265 30% 90%;
-  --sidebar-primary: 267 36% 58%;
+  --background: 33 38% 95%;
+  --foreground: 20 15% 5%;
+  --border: 30 20% 86%;
+  --card: 33 40% 98%;
+  --card-foreground: 20 15% 5%;
+  --card-border: 30 20% 88%;
+  --sidebar: 33 30% 93%;
+  --sidebar-foreground: 20 15% 10%;
+  --sidebar-border: 30 18% 84%;
+  --sidebar-primary: 18 47% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 265 68% 94%;
-  --sidebar-accent-foreground: 267 36% 35%;
-  --sidebar-ring: 267 36% 58%;
-  --popover: 30 30% 99%;
-  --popover-foreground: 0 0% 23%;
-  --popover-border: 27 20% 88%;
-  --primary: 267 36% 58%;
+  --sidebar-accent: 272 47% 93%;
+  --sidebar-accent-foreground: 18 47% 35%;
+  --sidebar-ring: 18 47% 60%;
+  --popover: 33 40% 98%;
+  --popover-foreground: 20 15% 5%;
+  --popover-border: 30 20% 86%;
+  --primary: 18 47% 60%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 27 25% 86%;
-  --secondary-foreground: 0 0% 23%;
-  --muted: 27 20% 90%;
-  --muted-foreground: 0 0% 40%;
-  --accent: 265 68% 94%;
-  --accent-foreground: 267 36% 35%;
+  --secondary: 30 25% 86%;
+  --secondary-foreground: 20 15% 15%;
+  --muted: 30 18% 89%;
+  --muted-foreground: 20 10% 40%;
+  --accent: 272 47% 93%;
+  --accent-foreground: 272 30% 35%;
   --destructive: 0 72% 50%;
   --destructive-foreground: 0 0% 100%;
-  --input: 27 20% 82%;
-  --ring: 267 36% 58%;
-  --chart-1: 267 36% 58%;
-  --chart-2: 17 62% 75%;
-  --chart-3: 263 45% 75%;
+  --input: 30 18% 80%;
+  --ring: 18 47% 60%;
+  --chart-1: 18 47% 60%;
+  --chart-2: 30 43% 50%;
+  --chart-3: 272 47% 70%;
   --chart-4: 200 55% 55%;
   --chart-5: 340 50% 60%;
   --font-sans: Inter, sans-serif;
-  --font-serif: DM Sans, serif;
+  --font-serif: 'DM Serif Display', serif;
   --font-mono: Menlo, monospace;
-  --radius: .625rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(267 36% 30% / 0.04);
-  --shadow-xs: 0px 1px 3px 0px hsl(267 36% 30% / 0.06);
-  --shadow-sm: 0px 1px 2px 0px hsl(267 36% 30% / 0.05), 0px 2px 4px -1px hsl(267 36% 30% / 0.05);
-  --shadow: 0px 2px 4px 0px hsl(267 36% 30% / 0.06), 0px 4px 6px -1px hsl(267 36% 30% / 0.05);
-  --shadow-md: 0px 4px 6px 0px hsl(267 36% 30% / 0.07), 0px 6px 10px -2px hsl(267 36% 30% / 0.05);
-  --shadow-lg: 0px 8px 12px 0px hsl(267 36% 30% / 0.08), 0px 12px 20px -4px hsl(267 36% 30% / 0.06);
-  --shadow-xl: 0px 12px 20px 0px hsl(267 36% 30% / 0.10), 0px 20px 32px -6px hsl(267 36% 30% / 0.08);
-  --shadow-2xl: 0px 20px 32px 0px hsl(267 36% 30% / 0.12);
+  --radius: .375rem;
+  --shadow-2xs: 0px 1px 2px 0px hsl(20 15% 5% / 0.04);
+  --shadow-xs: 0px 1px 3px 0px hsl(20 15% 5% / 0.06);
+  --shadow-sm: 0px 1px 2px 0px hsl(20 15% 5% / 0.05), 0px 2px 4px -1px hsl(20 15% 5% / 0.05);
+  --shadow: 0px 2px 4px 0px hsl(20 15% 5% / 0.06), 0px 4px 6px -1px hsl(20 15% 5% / 0.05);
+  --shadow-md: 0px 4px 6px 0px hsl(20 15% 5% / 0.07), 0px 6px 10px -2px hsl(20 15% 5% / 0.05);
+  --shadow-lg: 0px 8px 12px 0px hsl(20 15% 5% / 0.08), 0px 12px 20px -4px hsl(20 15% 5% / 0.06);
+  --shadow-xl: 0px 12px 20px 0px hsl(20 15% 5% / 0.10), 0px 20px 32px -6px hsl(20 15% 5% / 0.08);
+  --shadow-2xl: 0px 20px 32px 0px hsl(20 15% 5% / 0.12);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-  
-  /* Custom cozy colors for direct use */
-  --cozy-cream: 30 25% 96%;
-  --cozy-taupe: 27 25% 86%;
-  --cozy-lavender: 263 45% 81%;
-  --cozy-plum: 267 36% 58%;
-  --cozy-lilac: 265 68% 94%;
-  --cozy-peach: 17 62% 84%;
 
-/* Fallback for older browsers */
+  --brand-rose: 18 47% 60%;
+  --brand-cream: 33 38% 95%;
+  --brand-copper: 30 43% 50%;
+  --brand-lavender: 272 47% 93%;
+  --brand-black: 20 15% 5%;
+
+  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
@@ -97,45 +94,45 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
-/* DARK MODE - Cozy Purple Palette */
+/* DARK MODE - Chaos & Co Brand */
 .dark {
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
-  --background: 267 15% 10%;
-  --foreground: 30 20% 95%;
-  --border: 267 15% 20%;
-  --card: 267 15% 12%;
-  --card-foreground: 30 20% 95%;
-  --card-border: 267 15% 18%;
-  --sidebar: 267 20% 14%;
-  --sidebar-foreground: 30 20% 92%;
-  --sidebar-border: 267 15% 20%;
-  --sidebar-primary: 267 45% 68%;
+  --background: 20 15% 6%;
+  --foreground: 33 30% 93%;
+  --border: 20 10% 16%;
+  --card: 20 12% 9%;
+  --card-foreground: 33 30% 93%;
+  --card-border: 20 10% 14%;
+  --sidebar: 20 12% 8%;
+  --sidebar-foreground: 33 25% 88%;
+  --sidebar-border: 20 10% 14%;
+  --sidebar-primary: 18 50% 65%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 267 25% 22%;
-  --sidebar-accent-foreground: 265 50% 85%;
-  --sidebar-ring: 267 45% 68%;
-  --popover: 267 15% 14%;
-  --popover-foreground: 30 20% 92%;
-  --popover-border: 267 15% 22%;
-  --primary: 267 45% 68%;
+  --sidebar-accent: 20 10% 14%;
+  --sidebar-accent-foreground: 272 40% 80%;
+  --sidebar-ring: 18 50% 65%;
+  --popover: 20 12% 10%;
+  --popover-foreground: 33 25% 90%;
+  --popover-border: 20 10% 18%;
+  --primary: 18 50% 65%;
   --primary-foreground: 0 0% 100%;
   --destructive: 0 72% 55%;
   --destructive-foreground: 0 0% 100%;
-  --muted: 267 15% 18%;
-  --muted-foreground: 30 15% 65%;
-  --accent: 267 25% 20%;
-  --accent-foreground: 265 50% 85%;
-  --secondary: 27 15% 18%;
-  --secondary-foreground: 30 20% 90%;
-  --input: 267 15% 25%;
-  --ring: 267 45% 68%;
-  --chart-1: 267 45% 70%;
-  --chart-2: 17 55% 70%;
-  --chart-3: 263 40% 70%;
+  --muted: 20 10% 15%;
+  --muted-foreground: 30 15% 60%;
+  --accent: 20 10% 14%;
+  --accent-foreground: 272 40% 80%;
+  --secondary: 20 10% 14%;
+  --secondary-foreground: 33 25% 88%;
+  --input: 20 10% 20%;
+  --ring: 18 50% 65%;
+  --chart-1: 18 50% 65%;
+  --chart-2: 30 45% 60%;
+  --chart-3: 272 35% 65%;
   --chart-4: 200 55% 65%;
   --chart-5: 340 50% 65%;
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.15);
@@ -146,16 +143,14 @@
   --shadow-lg: 0px 8px 12px 0px hsl(0 0% 0% / 0.25), 0px 12px 20px -4px hsl(0 0% 0% / 0.20);
   --shadow-xl: 0px 12px 20px 0px hsl(0 0% 0% / 0.30), 0px 20px 32px -6px hsl(0 0% 0% / 0.25);
   --shadow-2xl: 0px 20px 32px 0px hsl(0 0% 0% / 0.35);
-  
-  /* Custom cozy colors for direct use - dark mode */
-  --cozy-cream: 267 15% 14%;
-  --cozy-taupe: 27 15% 20%;
-  --cozy-lavender: 263 35% 55%;
-  --cozy-plum: 267 45% 68%;
-  --cozy-lilac: 267 25% 22%;
-  --cozy-peach: 17 45% 65%;
 
-/* Fallback for older browsers */
+  --brand-rose: 18 50% 65%;
+  --brand-cream: 20 12% 10%;
+  --brand-copper: 30 45% 55%;
+  --brand-lavender: 272 25% 20%;
+  --brand-black: 33 30% 93%;
+
+  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 

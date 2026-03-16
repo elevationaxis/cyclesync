@@ -179,7 +179,7 @@ export default function Dashboard() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       <section className="grid gap-6 md:grid-cols-[1fr_1.2fr]">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--cozy-lilac))] to-background" data-testid="card-today-glance">
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-lavender))] to-background" data-testid="card-today-glance">
           <CardContent className="p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-5 h-5 text-primary" />
@@ -225,7 +225,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm bg-[hsl(var(--cozy-lilac))]" data-testid="card-aunt-b-message">
+        <Card className="border-0 shadow-sm bg-[hsl(var(--brand-lavender))]" data-testid="card-aunt-b-message">
           <CardContent className="p-6 md:p-8">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
@@ -257,7 +257,7 @@ export default function Dashboard() {
 
       {spoonLevel && (
         <section>
-          <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--cozy-lilac)/0.5)] to-background" data-testid="card-spoon-message">
+          <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--brand-lavender)/0.5)] to-background" data-testid="card-spoon-message">
             <CardContent className="p-5 md:p-6">
               <div className="flex items-center gap-4">
                 <div className="flex-shrink-0">
@@ -297,8 +297,8 @@ export default function Dashboard() {
               variant={selectedMoods.includes(mood.value) ? "default" : "outline"}
               className={`cursor-pointer text-sm py-2 px-4 transition-all ${
                 selectedMoods.includes(mood.value) 
-                  ? 'bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white' 
-                  : 'hover:bg-[hsl(var(--cozy-lilac))]'
+                  ? 'bg-primary text-primary-foreground' 
+                  : ''
               }`}
               onClick={() => toggleMood(mood.value)}
               data-testid={`mood-chip-${mood.value}`}
@@ -310,12 +310,12 @@ export default function Dashboard() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <Card className="border-0 shadow-sm bg-[hsl(var(--cozy-peach)/0.3)]" data-testid="card-partner-preview">
+        <Card className="border-0 shadow-sm bg-[hsl(var(--brand-rose)/0.15)]" data-testid="card-partner-preview">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--cozy-peach))] flex items-center justify-center">
-                  <Users className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-rose)/0.3)] flex items-center justify-center">
+                  <Users className="w-6 h-6 text-primary" />
                 </div>
               </div>
               <div className="flex-1">
@@ -341,8 +341,8 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--cozy-lilac))] flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-lavender))] flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-primary" />
                 </div>
               </div>
               <div className="flex-1">
@@ -368,7 +368,7 @@ export default function Dashboard() {
               <Link key={action.href} href={action.href}>
                 <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full" data-testid={`card-action-${action.label.toLowerCase().replace(/\s+/g, '-')}`}>
                   <CardContent className="p-5 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[hsl(var(--cozy-lilac))] mb-3">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[hsl(var(--brand-lavender))] mb-3">
                       <Icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="font-medium text-sm mb-1">{action.label}</h3>

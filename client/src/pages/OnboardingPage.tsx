@@ -96,9 +96,9 @@ export default function OnboardingPage() {
       key={num}
       className={`w-2.5 h-2.5 rounded-full transition-colors ${
         num === step
-          ? "bg-[hsl(var(--cozy-plum))]"
+          ? "bg-primary"
           : num < step
-          ? "bg-[hsl(var(--cozy-lavender))]"
+          ? "bg-[hsl(var(--brand-copper))]"
           : "bg-muted"
       }`}
     />
@@ -106,15 +106,15 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--cozy-lilac))] via-background to-[hsl(var(--cozy-lilac)/0.3)]" />
-      <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[hsl(var(--cozy-lavender)/0.2)] blur-3xl" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-[hsl(var(--cozy-peach)/0.15)] blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--brand-lavender))] via-background to-[hsl(var(--brand-lavender)/0.3)]" />
+      <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[hsl(var(--brand-lavender)/0.2)] blur-3xl" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-[hsl(var(--brand-rose)/0.15)] blur-3xl" />
 
       <div className="relative container mx-auto px-6 py-12 md:py-20">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[hsl(var(--cozy-lilac))] mb-6">
-              <Heart className="w-8 h-8 text-[hsl(var(--cozy-plum))]" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[hsl(var(--brand-lavender))] mb-6">
+              <Heart className="w-8 h-8 text-primary" />
             </div>
             <div className="flex justify-center gap-2 mb-4">
               {progressDots}
@@ -270,8 +270,8 @@ export default function OnboardingPage() {
               {step === 4 && (
                 <div className="space-y-6">
                   <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[hsl(var(--cozy-lilac))] mb-4">
-                      <Sparkles className="w-6 h-6 text-[hsl(var(--cozy-plum))]" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[hsl(var(--brand-lavender))] mb-4">
+                      <Sparkles className="w-6 h-6 text-primary" />
                     </div>
                     <h2 className="text-2xl font-semibold mb-2">
                       One more thing...
@@ -323,7 +323,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={handleNext}
                   disabled={createProfile.isPending}
-                  className="bg-[hsl(var(--cozy-plum))] hover:bg-[hsl(var(--cozy-plum)/0.9)] text-white"
+                  className="bg-primary text-primary-foreground"
                   data-testid="button-next"
                 >
                   {createProfile.isPending ? (

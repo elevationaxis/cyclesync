@@ -36,7 +36,7 @@ export default function CheckInPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {lastCheckIn && (
-        <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--cozy-lilac)/0.5)] to-background" data-testid="card-last-checkin">
+        <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--brand-lavender)/0.5)] to-background" data-testid="card-last-checkin">
           <CardContent className="p-4 flex items-center gap-3">
             <ClipboardCheck className="w-5 h-5 text-primary flex-shrink-0" />
             <div className="flex-1 min-w-0">

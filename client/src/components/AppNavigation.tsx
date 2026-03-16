@@ -1,8 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Heart, Calendar, MessageCircle, BookOpen, Users, Music, HandHeart, MessagesSquare, CalendarDays, Utensils } from 'lucide-react';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 
 interface AppNavigationProps {
   isPartnerView?: boolean;
@@ -31,7 +29,7 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
             <Link href="/">
               <div className="flex items-center gap-2 hover-elevate px-2 py-1 rounded-lg transition-all cursor-pointer" data-testid="link-home">
                 <Heart className="w-6 h-6 text-primary fill-primary" />
-                <span className="text-xl font-semibold">Cycle Sync</span>
+                <span className="text-xl font-semibold">Cync</span>
               </div>
             </Link>
 
