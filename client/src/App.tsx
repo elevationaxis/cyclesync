@@ -52,7 +52,20 @@ function LandingWrapper() {
     setLocation("/onboarding");
   };
 
-  return <LandingPage onGetStarted={handleGetStarted} />;
+  const handleTryAsGuest = async () => {
+    try {
+      const res = await fetch("/api/auth/guest", { method: "POST", credentials: "include" });
+      if (res.ok) {
+        // Mark profile as set so ProtectedApp doesn't redirect to onboarding
+        localStorage.setItem("cycleSync_profileId", "guest");
+        setLocation("/dashboard");
+      }
+    } catch (e) {
+      console.error("Guest login failed", e);
+    }
+  };
+
+  return <LandingPage onGetStarted={handleGetStarted} onTryAsGuest={handleTryAsGuest} />;
 }
 
 function ProtectedApp() {
@@ -62,27 +75,44 @@ function ProtectedApp() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    const hasProfile = localStorage.getItem("cycleSync_profileId");
-    if (!hasProfile) {
-      setLocation("/onboarding");
-      return;
-    }
-
-    // Show splash once per session
-    const splashShown = sessionStorage.getItem(SPLASH_SESSION_KEY);
-    if (!splashShown) {
-      setShowSplash(true);
-      sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
-    }
-
-    // Load profile for phase-aware quote
-    const profileId = hasProfile;
-    fetch(`/api/profile/${profileId}`)
+    // Check session first — works for both real users and guests
+    fetch("/api/auth/me", { credentials: "include" })
       .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) setProfileData({ lastPeriodStart: data.lastPeriodStart, cycleLength: data.cycleLength });
+      .then(async (user) => {
+        if (!user) {
+          // No session — check localStorage for legacy profile
+          const hasProfile = localStorage.getItem("cycleSync_profileId");
+          if (!hasProfile || hasProfile === "guest") {
+            setLocation("/onboarding");
+            return;
+          }
+          // Legacy: fetch by profile id
+          const profileRes = await fetch(`/api/profile/${hasProfile}`);
+          if (profileRes.ok) {
+            const data = await profileRes.json();
+            setProfileData({ lastPeriodStart: data.lastPeriodStart, cycleLength: data.cycleLength });
+          } else {
+            setLocation("/onboarding");
+          }
+        } else {
+          // Authenticated user (real or guest) — fetch profile by userId
+          const profileRes = await fetch(`/api/profile/user/${user.id}`);
+          if (profileRes.ok) {
+            const data = await profileRes.json();
+            setProfileData({ lastPeriodStart: data.lastPeriodStart, cycleLength: data.cycleLength });
+          } else if (!user.isGuest) {
+            setLocation("/onboarding");
+          }
+        }
+
+        // Show splash once per session
+        const splashShown = sessionStorage.getItem(SPLASH_SESSION_KEY);
+        if (!splashShown) {
+          setShowSplash(true);
+          sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
+        }
       })
-      .catch(() => {});
+      .catch(() => setLocation("/onboarding"));
   }, [setLocation]);
 
   return (

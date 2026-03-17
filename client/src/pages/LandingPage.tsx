@@ -3,6 +3,7 @@ import { ArrowRight, CircleDot, MessageCircle, Utensils, Users, Calendar, BookOp
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onTryAsGuest?: () => void;
 }
 
 function BrandMark({ size = 32, color = "#F7F2EB" }: { size?: number; color?: string }) {
@@ -16,7 +17,7 @@ function BrandMark({ size = 32, color = "#F7F2EB" }: { size?: number; color?: st
   );
 }
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageProps) {
   const features = [
     {
       icon: CircleDot,
@@ -95,6 +96,17 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             Start with Cync — Free
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
+          {onTryAsGuest && (
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={onTryAsGuest}
+              className="text-base px-8 border-[#F7F2EB]/20 text-[#F7F2EB]/70 bg-transparent hover:bg-[#F7F2EB]/05 hover:text-[#F7F2EB]"
+              data-testid="button-guest"
+            >
+              Try as Guest
+            </Button>
+          )}
         </div>
       </section>
 

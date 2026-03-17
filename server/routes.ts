@@ -331,6 +331,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Fetch profile by userId (for session-based auth)
+  app.get("/api/profile/user/:userId", async (req, res) => {
+    try {
+      if (!req.params.userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      const profile = await storage.getUserProfileByUserId(req.params.userId);
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error fetching profile by userId:", error);
+      return res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+
   app.get("/api/profile/:id", async (req, res) => {
     try {
       if (!req.params.id) {
@@ -436,12 +453,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Guest access — creates a temporary guest session with demo profile
+  app.post("/api/auth/guest", async (req, res) => {
+    try {
+      const guestId = `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      const bcrypt = await import("bcryptjs");
+      const hashed = await bcrypt.hash(guestId, 6);
+      const user = await storage.createUser({
+        username: guestId,
+        password: hashed,
+        email: null,
+      });
+      // Pre-seed a demo profile so the app feels alive immediately (day 10 = Follicular phase)
+      const lastPeriodStart = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      await storage.createUserProfile({
+        userId: user.id,
+        name: "Guest",
+        cycleLength: 28,
+        lastPeriodStart,
+        concerns: null,
+      });
+      (req.session as any).userId = user.id;
+      (req.session as any).isGuest = true;
+      return res.json({ id: user.id, username: "Guest", email: null, isGuest: true });
+    } catch (error) {
+      console.error("Guest login error:", error);
+      return res.status(500).json({ error: "Guest session failed" });
+    }
+  });
+
   app.get("/api/auth/me", async (req, res) => {
     const userId = (req.session as any).userId;
     if (!userId) return res.status(401).json({ error: "Not authenticated" });
     const user = await storage.getUser(userId);
     if (!user) return res.status(401).json({ error: "User not found" });
-    return res.json({ id: user.id, username: user.username, email: user.email });
+    const isGuest = (req.session as any).isGuest || false;
+    return res.json({ id: user.id, username: isGuest ? "Guest" : user.username, email: user.email, isGuest });
   });
 
   // ─── CHECK-INS ───────────────────────────────────────────────────────────
