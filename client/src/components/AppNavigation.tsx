@@ -29,7 +29,7 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
             <Link href="/">
               <div className="flex items-center gap-2 hover-elevate px-2 py-1 rounded-lg transition-all cursor-pointer" data-testid="link-home">
                 <Heart className="w-6 h-6 text-primary fill-primary" />
-                <span className="text-xl font-semibold">Cync</span>
+                <span className="font-display text-xl font-normal italic tracking-wide">Cync</span>
               </div>
             </Link>
 

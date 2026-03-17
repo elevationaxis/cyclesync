@@ -167,24 +167,38 @@ export default function PartnerSupportPage() {
         <Button
           variant="outline"
           className="mt-4 rounded-full"
-          onClick={() => {
-            const url = `${window.location.origin}/partner-brief`;
-            navigator.clipboard.writeText(url).then(() => {
-              toast({
-                title: "CyncLink copied!",
-                description: "Share this link with your partner so they can see your cycle status.",
+          onClick={async () => {
+            try {
+              const res = await fetch("/api/partner-links", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ label: "My Partner" }),
               });
-            }).catch(() => {
-              toast({
-                title: "Copy this link",
-                description: url,
+              const data = await res.json();
+              const url = data.url || `${window.location.origin}/cynclink/${data.token}`;
+              navigator.clipboard.writeText(url).then(() => {
+                toast({
+                  title: "CyncLink copied!",
+                  description: "Share this with your partner — works on any device.",
+                });
+              }).catch(() => {
+                toast({
+                  title: "Your CyncLink",
+                  description: url,
+                });
               });
-            });
+            } catch {
+              toast({
+                title: "Could not generate CyncLink",
+                description: "Please try again.",
+                variant: "destructive",
+              });
+            }
           }}
           data-testid="button-share-cynclink"
         >
           <Link2 className="w-4 h-4 mr-2" />
-          Share CyncLink
+          Generate CyncLink
           <Copy className="w-3.5 h-3.5 ml-2 text-muted-foreground" />
         </Button>
       </div>

@@ -1,12 +1,9 @@
 /**
- * Demo-mode storage abstraction.
+ * Storage abstraction.
  *
- * Every read/write in the app goes through this module.
- * Right now the backing store is localStorage.
- *
- * To upgrade to production:
- *   1. Replace each function body with a fetch() call to the real API.
- *   2. The async signatures stay the same — no component changes needed.
+ * Check-ins are saved to the server API first, with localStorage as fallback.
+ * Profile and spoon data use the API directly.
+ * Moods use localStorage (UI-only state).
  */
 
 export interface CheckInEntry {
@@ -33,6 +30,20 @@ export function getUserName(): string {
 }
 
 export async function saveCheckIn(entry: Omit<CheckInEntry, "date">): Promise<CheckInEntry> {
+  try {
+    const res = await fetch("/api/check-ins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry),
+    });
+    if (res.ok) {
+      const saved = await res.json();
+      return { ...entry, date: saved.createdAt || new Date().toISOString() };
+    }
+  } catch {
+    // fall through to localStorage fallback
+  }
+  // localStorage fallback for offline/demo
   const dated: CheckInEntry = { ...entry, date: new Date().toISOString() };
   const history = await loadCheckInHistory();
   history.unshift(dated);
@@ -41,11 +52,30 @@ export async function saveCheckIn(entry: Omit<CheckInEntry, "date">): Promise<Ch
 }
 
 export async function loadLatestCheckIn(): Promise<CheckInEntry | null> {
+  try {
+    const res = await fetch("/api/check-ins/latest");
+    if (res.ok) {
+      const data = await res.json();
+      if (data) return { ...data, date: data.createdAt };
+    }
+  } catch {
+    // fall through to localStorage fallback
+  }
   const history = await loadCheckInHistory();
   return history.length > 0 ? history[0] : null;
 }
 
 export async function loadCheckInHistory(): Promise<CheckInEntry[]> {
+  try {
+    const res = await fetch("/api/check-ins?limit=30");
+    if (res.ok) {
+      const data = await res.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return data.map((d: any) => ({ ...d, date: d.createdAt }));
+    }
+  } catch {
+    // fall through to localStorage fallback
+  }
   try {
     const raw = localStorage.getItem(KEYS.CHECK_INS);
     if (!raw) return [];

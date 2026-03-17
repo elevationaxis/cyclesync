@@ -385,6 +385,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ─── AUTH ────────────────────────────────────────────────────────────────
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+      const existing = await storage.getUserByUsername(username);
+      if (existing) {
+        return res.status(409).json({ error: "Username already taken" });
+      }
+      const bcrypt = await import("bcryptjs");
+      const hashed = await bcrypt.hash(password, 10);
+      const user = await storage.createUser({ username, password: hashed, email: email || null });
+      (req.session as any).userId = user.id;
+      return res.json({ id: user.id, username: user.username, email: user.email });
+    } catch (error) {
+      console.error("Register error:", error);
+      return res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      const bcrypt = await import("bcryptjs");
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      (req.session as any).userId = user.id;
+      return res.json({ id: user.id, username: user.username, email: user.email });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy(() => {
+      res.json({ ok: true });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    const userId = (req.session as any).userId;
+    if (!userId) return res.status(401).json({ error: "Not authenticated" });
+    const user = await storage.getUser(userId);
+    if (!user) return res.status(401).json({ error: "User not found" });
+    return res.json({ id: user.id, username: user.username, email: user.email });
+  });
+
+  // ─── CHECK-INS ───────────────────────────────────────────────────────────
+  app.post("/api/check-ins", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || req.body.userId || "demo-user";
+      const { energy, mood, symptoms, notes, phase } = req.body;
+      if (!energy || !mood) {
+        return res.status(400).json({ error: "Energy and mood are required" });
+      }
+      const checkIn = await storage.createCheckIn({
+        userId,
+        energy,
+        mood,
+        symptoms: Array.isArray(symptoms) ? JSON.stringify(symptoms) : (symptoms || "[]"),
+        notes: notes || "",
+        phase: phase || null,
+      });
+      return res.json({ ...checkIn, symptoms: JSON.parse(checkIn.symptoms) });
+    } catch (error) {
+      console.error("Error creating check-in:", error);
+      return res.status(500).json({ error: "Failed to save check-in" });
+    }
+  });
+
+  app.get("/api/check-ins", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || (req.query.userId as string) || "demo-user";
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 30;
+      const entries = await storage.getCheckIns(userId, limit);
+      return res.json(entries.map(e => ({ ...e, symptoms: JSON.parse(e.symptoms) })));
+    } catch (error) {
+      console.error("Error fetching check-ins:", error);
+      return res.status(500).json({ error: "Failed to fetch check-ins" });
+    }
+  });
+
+  app.get("/api/check-ins/latest", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || (req.query.userId as string) || "demo-user";
+      const latest = await storage.getLatestCheckIn(userId);
+      if (!latest) return res.json(null);
+      return res.json({ ...latest, symptoms: JSON.parse(latest.symptoms) });
+    } catch (error) {
+      console.error("Error fetching latest check-in:", error);
+      return res.status(500).json({ error: "Failed to fetch latest check-in" });
+    }
+  });
+
+  // ─── CYNCLINK (Partner Links) ─────────────────────────────────────────────
+  app.post("/api/partner-links", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || req.body.userId || "demo-user";
+      const { label } = req.body;
+      const { randomBytes } = await import("crypto");
+      const token = randomBytes(16).toString("hex");
+      const link = await storage.createPartnerLink({
+        userId,
+        token,
+        label: label || "My Partner",
+        active: true,
+        expiresAt: null,
+      });
+      const baseUrl = req.headers.origin || `${req.protocol}://${req.get("host")}`;
+      return res.json({ ...link, url: `${baseUrl}/cynclink/${link.token}` });
+    } catch (error) {
+      console.error("Error creating partner link:", error);
+      return res.status(500).json({ error: "Failed to create CyncLink" });
+    }
+  });
+
+  app.get("/api/partner-links", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || (req.query.userId as string) || "demo-user";
+      const links = await storage.getPartnerLinksByUser(userId);
+      const baseUrl = req.headers.origin || `${req.protocol}://${req.get("host")}`;
+      return res.json(links.map(l => ({ ...l, url: `${baseUrl}/cynclink/${l.token}` })));
+    } catch (error) {
+      console.error("Error fetching partner links:", error);
+      return res.status(500).json({ error: "Failed to fetch CyncLinks" });
+    }
+  });
+
+  app.delete("/api/partner-links/:id", async (req, res) => {
+    try {
+      await storage.deactivatePartnerLink(req.params.id);
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("Error deactivating partner link:", error);
+      return res.status(500).json({ error: "Failed to deactivate CyncLink" });
+    }
+  });
+
+  // Public CyncLink view — no auth required, token-gated
+  app.get("/api/cynclink/:token", async (req, res) => {
+    try {
+      const link = await storage.getPartnerLinkByToken(req.params.token);
+      if (!link) {
+        return res.status(404).json({ error: "CyncLink not found or expired" });
+      }
+      if (link.expiresAt && new Date() > link.expiresAt) {
+        return res.status(410).json({ error: "This CyncLink has expired" });
+      }
+      const profile = await storage.getUserProfileByUserId(link.userId);
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found" });
+      }
+      const spoons = await storage.getTodaySpoonEntry(link.userId);
+      const latest = await storage.getLatestCheckIn(link.userId);
+      return res.json({
+        partnerName: profile.name,
+        lastPeriodStart: profile.lastPeriodStart,
+        cycleLength: profile.cycleLength,
+        spoons: spoons || null,
+        latestCheckIn: latest ? { ...latest, symptoms: JSON.parse(latest.symptoms) } : null,
+        label: link.label,
+      });
+    } catch (error) {
+      console.error("Error fetching CyncLink data:", error);
+      return res.status(500).json({ error: "Failed to load CyncLink" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

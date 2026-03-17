@@ -178,12 +178,22 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+      {/* Page header */}
+      <div className="text-center pb-2">
+        <h1 className="font-display text-3xl md:text-4xl font-normal italic text-foreground mb-1">
+          {userName ? `Welcome back, ${userName.split(' ')[0]}` : 'Your Daily Cync'}
+        </h1>
+        <p className="font-label text-base text-muted-foreground tracking-wide">
+          {phaseInfo.name} · Day {cycleDay}
+        </p>
+      </div>
+
       <section className="grid gap-6 md:grid-cols-[1fr_1.2fr]">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-lavender))] to-background" data-testid="card-today-glance">
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-lavender))] to-background rounded-3xl" data-testid="card-today-glance">
           <CardContent className="p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">Today at a Glance</h2>
+              <h2 className="font-display text-lg font-medium">Today at a Glance</h2>
             </div>
             
             <div className="space-y-4">
@@ -225,21 +235,21 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm bg-[hsl(var(--brand-lavender))]" data-testid="card-aunt-b-message">
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-copper)/0.12)] to-[hsl(var(--brand-sage)/0.08)] rounded-3xl" data-testid="card-aunt-b-message">
           <CardContent className="p-6 md:p-8">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-[hsl(var(--brand-copper)/0.15)] flex items-center justify-center">
                   <MessageCircle className="w-7 h-7 text-primary" />
                 </div>
               </div>
               <div className="flex-1 pt-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="font-semibold text-lg">Aunt B</span>
-                  <span className="text-xs text-muted-foreground">Check-In</span>
+                  <span className="font-display font-medium text-lg italic">Aunt B</span>
+                  <span className="font-label text-xs text-muted-foreground tracking-widest uppercase">Your Guide</span>
                 </div>
-                <p className="text-foreground leading-relaxed text-lg">
-                  "{todaysMessage}"
+                <p className="font-display font-normal italic text-foreground leading-relaxed text-lg">
+                  &ldquo;{todaysMessage}&rdquo;
                 </p>
                 <div className="mt-6">
                   <Link href="/chat">
@@ -289,16 +299,16 @@ export default function Dashboard() {
       )}
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">How are you feeling?</h2>
+        <h2 className="font-display text-xl font-normal italic mb-4">How are you feeling?</h2>
         <div className="flex flex-wrap gap-2" data-testid="mood-chips-container">
           {moodOptions.map((mood) => (
             <Badge
               key={mood.value}
               variant={selectedMoods.includes(mood.value) ? "default" : "outline"}
-              className={`cursor-pointer text-sm py-2 px-4 transition-all ${
+              className={`cursor-pointer font-label text-sm py-2 px-4 rounded-full transition-all tracking-wide ${
                 selectedMoods.includes(mood.value) 
                   ? 'bg-primary text-primary-foreground' 
-                  : ''
+                  : 'border-border/60'
               }`}
               onClick={() => toggleMood(mood.value)}
               data-testid={`mood-chip-${mood.value}`}
@@ -310,16 +320,16 @@ export default function Dashboard() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <Card className="border-0 shadow-sm bg-[hsl(var(--brand-rose)/0.15)]" data-testid="card-partner-preview">
+        <Card className="border-0 shadow-sm bg-rose-soft rounded-3xl" data-testid="card-partner-preview">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-rose)/0.3)] flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-rose)/0.25)] flex items-center justify-center">
                   <Users className="w-6 h-6 text-primary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold mb-2">Partner Support Today</h3>
+                <h3 className="font-display font-medium italic mb-2">Partner Support Today</h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   {currentPhase === 'menstrual' && "Be extra gentle. She needs rest and comfort right now."}
                   {currentPhase === 'follicular' && "Great time to plan something fun together. Her energy is rising!"}
@@ -337,16 +347,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm" data-testid="card-energy-summary">
+        <Card className="border-0 shadow-sm bg-sage-soft rounded-3xl" data-testid="card-energy-summary">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-lavender))] flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-sage)/0.2)] flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-sage" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold mb-2">Energy Focus</h3>
+                <h3 className="font-display font-medium italic mb-2">Energy Focus</h3>
                 <p className="text-muted-foreground text-sm mb-2">
                   {phaseInfo.focus}
                 </p>
@@ -360,7 +370,7 @@ export default function Dashboard() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+        <h2 className="font-display text-xl font-normal italic mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -386,7 +396,7 @@ export default function Dashboard() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Today's Tips</h2>
+        <h2 className="font-display text-xl font-normal italic mb-4">Today's Tips</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <TipsCard category="Mind" tips={tips.Mind} />
           <TipsCard category="Body" tips={tips.Body} />
@@ -400,7 +410,7 @@ export default function Dashboard() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Understanding the Phases</h2>
+        <h2 className="font-display text-xl font-normal italic mb-4">Understanding the Phases</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <PhaseCard phase="menstrual" />
           <PhaseCard phase="follicular" />

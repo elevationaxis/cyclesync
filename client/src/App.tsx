@@ -18,7 +18,11 @@ import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
 import LandingPage from "@/pages/LandingPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import PartnerBriefPage from "@/pages/PartnerBriefPage";
+import CyncLinkPage from "@/pages/CyncLinkPage";
+import QuoteSplash from "@/components/QuoteSplash";
 import { useState, useEffect } from "react";
+
+const SPLASH_SESSION_KEY = "cync_splash_shown";
 
 function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
   if (isPartnerView) {
@@ -53,17 +57,43 @@ function LandingWrapper() {
 
 function ProtectedApp() {
   const [isPartnerView, setIsPartnerView] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [profileData, setProfileData] = useState<{ lastPeriodStart?: string | null; cycleLength?: number } | null>(null);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
     const hasProfile = localStorage.getItem("cycleSync_profileId");
     if (!hasProfile) {
       setLocation("/onboarding");
+      return;
     }
+
+    // Show splash once per session
+    const splashShown = sessionStorage.getItem(SPLASH_SESSION_KEY);
+    if (!splashShown) {
+      setShowSplash(true);
+      sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
+    }
+
+    // Load profile for phase-aware quote
+    const profileId = hasProfile;
+    fetch(`/api/profile/${profileId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) setProfileData({ lastPeriodStart: data.lastPeriodStart, cycleLength: data.cycleLength });
+      })
+      .catch(() => {});
   }, [setLocation]);
 
   return (
     <div className="min-h-screen bg-background">
+      {showSplash && (
+        <QuoteSplash
+          onDismiss={() => setShowSplash(false)}
+          lastPeriodStart={profileData?.lastPeriodStart}
+          cycleLength={profileData?.cycleLength}
+        />
+      )}
       <AppNavigation 
         isPartnerView={isPartnerView}
         onTogglePartnerView={() => setIsPartnerView(!isPartnerView)}
@@ -81,6 +111,7 @@ function App() {
           <Route path="/" component={LandingWrapper} />
           <Route path="/onboarding" component={OnboardingPage} />
           <Route path="/partner-brief" component={PartnerBriefPage} />
+          <Route path="/cynclink/:token" component={CyncLinkPage} />
           <Route>
             <ProtectedApp />
           </Route>

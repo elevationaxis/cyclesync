@@ -12,9 +12,12 @@ import {
   type SpoonEntry,
   type InsertSpoonEntry,
   type UserProfile,
-  type InsertUserProfile
+  type InsertUserProfile,
+  type CheckIn,
+  type InsertCheckIn,
+  type PartnerLink,
+  type InsertPartnerLink
 } from "@shared/schema";
-import { randomUUID } from "crypto";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -51,35 +54,43 @@ export interface IStorage {
   
   // User Profiles
   getUserProfile(id: string): Promise<UserProfile | undefined>;
+  getUserProfileByUserId(userId: string): Promise<UserProfile | undefined>;
   createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
   updateUserProfile(id: string, updates: Partial<InsertUserProfile>): Promise<UserProfile>;
+
+  // Check-ins
+  createCheckIn(checkIn: InsertCheckIn): Promise<CheckIn>;
+  getCheckIns(userId: string, limit?: number): Promise<CheckIn[]>;
+  getLatestCheckIn(userId: string): Promise<CheckIn | undefined>;
+
+  // Partner Links (CyncLink)
+  createPartnerLink(link: InsertPartnerLink): Promise<PartnerLink>;
+  getPartnerLinkByToken(token: string): Promise<PartnerLink | undefined>;
+  getPartnerLinksByUser(userId: string): Promise<PartnerLink[]>;
+  deactivatePartnerLink(id: string): Promise<void>;
 }
 
 import { db } from "./db";
-import { rituals, careRequests, communityPosts, calendarEvents, spoonEntries, userProfiles } from "@shared/schema";
-import { eq, and, gte, lt } from "drizzle-orm";
+import { rituals, careRequests, communityPosts, calendarEvents, spoonEntries, userProfiles, checkIns, partnerLinks, users } from "@shared/schema";
+import { eq, and, gte, lt, desc } from "drizzle-orm";
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
-  }
-
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
-
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email!));
     return user;
   }
 
@@ -210,6 +221,11 @@ export class MemStorage implements IStorage {
     return profile;
   }
 
+  async getUserProfileByUserId(userId: string): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    return profile;
+  }
+
   async createUserProfile(profile: InsertUserProfile): Promise<UserProfile> {
     const [newProfile] = await db.insert(userProfiles).values(profile).returning();
     return newProfile;
@@ -226,6 +242,50 @@ export class MemStorage implements IStorage {
     }
     return updated;
   }
+
+  // Check-ins
+  async createCheckIn(checkIn: InsertCheckIn): Promise<CheckIn> {
+    const [newCheckIn] = await db.insert(checkIns).values(checkIn).returning();
+    return newCheckIn;
+  }
+
+  async getCheckIns(userId: string, limit = 30): Promise<CheckIn[]> {
+    return await db.select().from(checkIns)
+      .where(eq(checkIns.userId, userId))
+      .orderBy(desc(checkIns.createdAt))
+      .limit(limit);
+  }
+
+  async getLatestCheckIn(userId: string): Promise<CheckIn | undefined> {
+    const [latest] = await db.select().from(checkIns)
+      .where(eq(checkIns.userId, userId))
+      .orderBy(desc(checkIns.createdAt))
+      .limit(1);
+    return latest;
+  }
+
+  // Partner Links (CyncLink)
+  async createPartnerLink(link: InsertPartnerLink): Promise<PartnerLink> {
+    const [newLink] = await db.insert(partnerLinks).values(link).returning();
+    return newLink;
+  }
+
+  async getPartnerLinkByToken(token: string): Promise<PartnerLink | undefined> {
+    const [link] = await db.select().from(partnerLinks)
+      .where(and(eq(partnerLinks.token, token), eq(partnerLinks.active, true)));
+    return link;
+  }
+
+  async getPartnerLinksByUser(userId: string): Promise<PartnerLink[]> {
+    return await db.select().from(partnerLinks)
+      .where(and(eq(partnerLinks.userId, userId), eq(partnerLinks.active, true)))
+      .orderBy(desc(partnerLinks.createdAt));
+  }
+
+  async deactivatePartnerLink(id: string): Promise<void> {
+    await db.update(partnerLinks).set({ active: false }).where(eq(partnerLinks.id, id));
+  }
 }
 
 export const storage = new MemStorage();
+

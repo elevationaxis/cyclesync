@@ -55,7 +55,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       <nav className="flex items-center justify-between px-6 md:px-12 py-5" style={{ borderBottom: "1px solid rgba(247,242,235,0.08)" }}>
         <div className="flex items-center gap-2.5">
           <BrandMark size={28} />
-          <span className="font-serif text-lg" data-testid="text-brand-name">Chaos <span style={{ opacity: 0.4 }}>&</span> Co</span>
+          <span className="font-display text-lg" data-testid="text-brand-name">Chaos <span style={{ opacity: 0.4 }}>&</span> Co</span>
         </div>
         <Button
           variant="outline"
@@ -75,7 +75,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         >
           For the women who feel everything
         </p>
-        <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-7">
+        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-7">
           Your body's been trying to tell you something.{" "}
           <span style={{ color: "#C4846E" }}>We'll help you hear it.</span>
         </h1>
@@ -104,7 +104,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <p className="text-xs font-medium tracking-[0.2em] uppercase mb-3" style={{ color: "#B07D52" }}>
               What Cync Does
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-normal mb-4">
               We didn't build another period tracker.
             </h2>
             <p className="max-w-[500px] mx-auto" style={{ color: "#6b5e54" }}>
@@ -128,7 +128,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   >
                     <Icon className="w-5 h-5" style={{ color: "#F7F2EB" }} />
                   </div>
-                  <h3 className="font-serif text-lg mb-2">{feature.title}</h3>
+                  <h3 className="font-display text-lg mb-2">{feature.title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: "#6b5e54" }}>
                     {feature.description}
                   </p>
@@ -145,7 +145,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <p className="text-xs font-medium tracking-[0.2em] uppercase mb-3" style={{ color: "#B07D52" }}>
               The Ecosystem
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-normal mb-4">
               Three layers. One knowing.
             </h2>
             <p className="max-w-[500px] mx-auto" style={{ color: "#c4b29a" }}>
@@ -160,7 +160,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   <path d="M4 10 C4 10, 6 4, 8 7 C10 10, 12 3, 12 3" stroke="#0D0B0A" strokeWidth="2" fill="none" strokeLinecap="round" />
                 </svg>
               </div>
-              <h3 className="font-serif text-xl mb-2">Cync</h3>
+              <h3 className="font-display text-xl mb-2">Cync</h3>
               <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
                 Your daily cycle companion. Four-phase tracking, AI check-ins with Aunt B, spoon theory energy, and CyncLink partner sharing.
               </p>
@@ -173,7 +173,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   <path d="M10 3 L10 17 M3 10 L17 10 M5 5 L15 15 M15 5 L5 15" stroke="#0D0B0A" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </div>
-              <h3 className="font-serif text-xl mb-2">The Sanctuary</h3>
+              <h3 className="font-display text-xl mb-2">The Sanctuary</h3>
               <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
                 Where digital meets physical. Phase-aligned workshops, cycle-synced retreats, and a space that understands why you need to cancel sometimes.
               </p>
@@ -187,7 +187,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   <circle cx="10" cy="10" r="3" fill="#0D0B0A" />
                 </svg>
               </div>
-              <h3 className="font-serif text-xl mb-2">The Thread</h3>
+              <h3 className="font-display text-xl mb-2">The Thread</h3>
               <p className="text-sm leading-relaxed mb-4" style={{ color: "#c4b29a" }}>
                 Premium membership connecting all of it. Exclusive content, personal cycle coaching, and a private community of women who get it.
               </p>
@@ -199,7 +199,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
       <section className="px-6 md:px-12 py-16 md:py-20" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-normal mb-5">
+          <h2 className="font-display text-3xl md:text-4xl font-normal mb-5">
             The four phases. <span style={{ color: "#C4846E" }}>Your roadmap.</span>
           </h2>
           <p className="mb-10" style={{ color: "#c4b29a" }}>
@@ -214,7 +214,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             ].map((p, i) => (
               <div key={p.phase} className="p-6 text-center" style={{ borderRight: i < 3 ? "1px solid rgba(247,242,235,0.1)" : "none" }} data-testid={`phase-card-${p.phase.toLowerCase()}`}>
                 <div className="w-2 h-2 rounded-full mx-auto mb-3" style={{ background: p.color }} />
-                <p className="font-serif text-base mb-1">{p.phase}</p>
+                <p className="font-display text-base mb-1">{p.phase}</p>
                 <p className="text-xs" style={{ color: "#8a7d74" }}>{p.desc}</p>
               </div>
             ))}
@@ -227,7 +227,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "rgba(196,132,110,0.1)" }}>
             <MessageCircle className="w-7 h-7" style={{ color: "#C4846E" }} />
           </div>
-          <h2 className="font-serif text-2xl md:text-3xl font-normal mb-4">
+          <h2 className="font-display text-2xl md:text-3xl font-normal mb-4">
             A word from Aunt B
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed italic mb-2" style={{ color: "#c4b29a" }}>
@@ -239,8 +239,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
       <section className="px-6 md:px-12 py-16 md:py-24" style={{ borderTop: "1px solid rgba(247,242,235,0.06)", background: "rgba(196,132,110,0.04)" }}>
         <div className="max-w-xl mx-auto text-center">
-          <p className="font-serif text-xs tracking-[0.2em] uppercase mb-4" style={{ color: "#B07D52" }}>Ready?</p>
-          <h2 className="font-serif text-3xl md:text-4xl font-normal leading-tight mb-4">
+          <p className="font-display text-xs tracking-[0.2em] uppercase mb-4" style={{ color: "#B07D52" }}>Ready?</p>
+          <h2 className="font-display text-3xl md:text-4xl font-normal leading-tight mb-4">
             Stop explaining yourself.{" "}
             <span style={{ color: "#C4846E" }}>Start understanding yourself.</span>
           </h2>
@@ -262,7 +262,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <BrandMark size={18} color="#6b5e54" />
-            <span className="font-serif text-sm" style={{ color: "#6b5e54" }}>Chaos & Co</span>
+            <span className="font-display text-sm" style={{ color: "#6b5e54" }}>Chaos & Co</span>
           </div>
           <p className="text-xs" style={{ color: "#483220" }} data-testid="text-footer">
             Cync — part of Chaos & Co. Made with intention.

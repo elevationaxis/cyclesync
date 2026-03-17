@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* LIGHT MODE - Chaos & Co Brand */
-/* Warm Black #0D0B0A, Dusty Rose #C4846E, Warm Cream #F7F2EB, Copper #B07D52, Lavender Whisper #EDE4F5 */
+/* Warm Black #0D0B0A, Dusty Rose #C4846E, Warm Cream #F7F2EB, Copper #B07D52, Sage #7A9E7E, Lavender Whisper #EDE4F5 */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -45,9 +45,11 @@
   --chart-4: 200 55% 55%;
   --chart-5: 340 50% 60%;
   --font-sans: Inter, sans-serif;
-  --font-serif: 'DM Serif Display', serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-display: 'Playfair Display', serif;
+  --font-label: 'Cormorant Garamond', serif;
   --font-mono: Menlo, monospace;
-  --radius: .375rem;
+  --radius: 1rem;
   --shadow-2xs: 0px 1px 2px 0px hsl(20 15% 5% / 0.04);
   --shadow-xs: 0px 1px 3px 0px hsl(20 15% 5% / 0.06);
   --shadow-sm: 0px 1px 2px 0px hsl(20 15% 5% / 0.05), 0px 2px 4px -1px hsl(20 15% 5% / 0.05);
@@ -63,6 +65,7 @@
   --brand-cream: 33 38% 95%;
   --brand-copper: 30 43% 50%;
   --brand-lavender: 272 47% 93%;
+  --brand-sage: 130 20% 55%;
   --brand-black: 20 15% 5%;
 
   /* Fallback for older browsers */
@@ -148,6 +151,7 @@
   --brand-cream: 20 12% 10%;
   --brand-copper: 30 45% 55%;
   --brand-lavender: 272 25% 20%;
+  --brand-sage: 130 18% 45%;
   --brand-black: 33 30% 93%;
 
   /* Fallback for older browsers */
@@ -186,6 +190,37 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+  .font-label {
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .text-sage {
+    color: hsl(var(--brand-sage));
+  }
+  .bg-sage {
+    background-color: hsl(var(--brand-sage));
+  }
+  .border-sage {
+    border-color: hsl(var(--brand-sage));
+  }
+  .bg-sage-soft {
+    background-color: hsl(130 20% 55% / 0.12);
+  }
+  .bg-copper-soft {
+    background-color: hsl(30 43% 50% / 0.12);
+  }
+  .bg-rose-soft {
+    background-color: hsl(18 47% 60% / 0.12);
   }
 }
 
