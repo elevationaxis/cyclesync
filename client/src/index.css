@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* LIGHT MODE - Chaos & Co Brand */
-/* Warm Black #0D0B0A, Dusty Rose #C4846E, Warm Cream #F7F2EB, Copper #B07D52, Sage #7A9E7E, Lavender Whisper #EDE4F5 */
+/* Warm Black #0D0B0A, Blush #E8B4A0, Warm Cream #F7F2EB, Sage #7A9E7E */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -12,29 +12,29 @@
   --elevate-2: rgba(0,0,0, .08);
   --background: 33 38% 95%;
   --foreground: 20 15% 5%;
-  --border: 30 20% 86%;
+  --border: 30 15% 85%;
   --card: 33 40% 98%;
   --card-foreground: 20 15% 5%;
-  --card-border: 30 20% 88%;
+  --card-border: 30 15% 87%;
   --sidebar: 20 15% 8%;
   --sidebar-foreground: 33 30% 90%;
   --sidebar-border: 20 10% 14%;
-  --sidebar-primary: 18 47% 60%;
+  --sidebar-primary: 16 60% 76%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 20 10% 14%;
   --sidebar-accent-foreground: 33 30% 90%;
-  --sidebar-ring: 18 47% 60%;
+  --sidebar-ring: 16 60% 76%;
   --popover: 33 40% 98%;
   --popover-foreground: 20 15% 5%;
-  --popover-border: 30 20% 86%;
-  --primary: 18 47% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 30 25% 86%;
-  --secondary-foreground: 20 15% 15%;
+  --popover-border: 30 15% 85%;
+  --primary: 16 60% 76%;
+  --primary-foreground: 20 15% 8%;
+  --secondary: 130 20% 88%;
+  --secondary-foreground: 130 25% 25%;
   --muted: 30 18% 89%;
   --muted-foreground: 20 10% 40%;
-  --accent: 272 47% 93%;
-  --accent-foreground: 272 30% 35%;
+  --accent: 130 20% 88%;
+  --accent-foreground: 130 25% 25%;
   --destructive: 0 72% 50%;
   --destructive-foreground: 0 0% 100%;
   --input: 30 18% 80%;
@@ -61,11 +61,10 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  --brand-rose: 18 47% 60%;
+  --brand-blush: 16 60% 76%;
   --brand-cream: 33 38% 95%;
-  --brand-copper: 30 43% 50%;
-  --brand-lavender: 272 47% 93%;
   --brand-sage: 130 20% 55%;
+  --brand-sage-soft: 130 20% 88%;
   --brand-black: 20 15% 5%;
 
   /* Fallback for older browsers */
@@ -147,11 +146,10 @@
   --shadow-xl: 0px 12px 20px 0px hsl(0 0% 0% / 0.30), 0px 20px 32px -6px hsl(0 0% 0% / 0.25);
   --shadow-2xl: 0px 20px 32px 0px hsl(0 0% 0% / 0.35);
 
-  --brand-rose: 18 50% 65%;
+  --brand-blush: 16 55% 70%;
   --brand-cream: 20 12% 10%;
-  --brand-copper: 30 45% 55%;
-  --brand-lavender: 272 25% 20%;
   --brand-sage: 130 18% 45%;
+  --brand-sage-soft: 130 18% 20%;
   --brand-black: 33 30% 93%;
 
   /* Fallback for older browsers */
@@ -216,11 +214,17 @@
   .bg-sage-soft {
     background-color: hsl(130 20% 55% / 0.12);
   }
-  .bg-copper-soft {
-    background-color: hsl(30 43% 50% / 0.12);
+  .text-blush {
+    color: hsl(var(--brand-blush));
   }
-  .bg-rose-soft {
-    background-color: hsl(18 47% 60% / 0.12);
+  .bg-blush {
+    background-color: hsl(var(--brand-blush));
+  }
+  .border-blush {
+    border-color: hsl(var(--brand-blush));
+  }
+  .bg-blush-soft {
+    background-color: hsl(16 60% 76% / 0.15);
   }
 }
 
