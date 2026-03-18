@@ -1,7 +1,7 @@
 {
-  "name": "Cync — Cycle Intelligence by Chaos & Co",
+  "name": "Cync by Chaos & Co",
   "short_name": "Cync",
-  "description": "Your cycle intelligence companion. Four-phase tracking, AI-powered guidance from Aunt B, spoon theory energy management, and partner support via CyncLink.",
+  "description": "Your daily companion. Four-phase tracking, guidance from Aunt B, spoon theory energy management, and partner support via CyncLink.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F7F2EB",

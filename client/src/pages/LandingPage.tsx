@@ -35,7 +35,7 @@ const features = [
   {
     icon: MessageCircle,
     title: "Aunt B — Your Guide",
-    description: "AI-powered wisdom that sounds like the woman you wish you'd had in your corner all along. Grounded, warm, zero judgment.",
+    description: "Wisdom that sounds like the woman you wish you'd had in your corner all along. Grounded, warm, zero judgment.",
     color: SAGE,
   },
   {
@@ -106,7 +106,7 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
           <span style={{ color: BLUSH }}>We'll help you hear it.</span>
         </h1>
         <p className="text-lg md:text-xl leading-relaxed max-w-[600px] mx-auto mb-10" style={{ color: CREAM_MUTED }}>
-          Cync is a cycle intelligence companion that turns your hormonal patterns into daily power moves. Track your phases, manage your energy, and finally stop fighting your own biology.
+          Cync turns your hormonal patterns into daily power moves. Track your phases, manage your energy, and finally stop fighting your own biology.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
@@ -217,7 +217,7 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
               </div>
               <h3 className="font-display text-xl mb-2">Cync</h3>
               <p className="text-sm leading-relaxed mb-4" style={{ color: CREAM_MUTED }}>
-                Your daily cycle companion. Four-phase tracking, AI check-ins with Aunt B, spoon theory energy, and CyncLink partner sharing.
+                Your daily companion. Four-phase tracking, daily check-ins with Aunt B, spoon theory energy, and CyncLink partner sharing.
               </p>
               <span className="text-xs font-medium" style={{ color: BLUSH }} data-testid="text-cync-cta">Try Cync Free →</span>
             </div>
