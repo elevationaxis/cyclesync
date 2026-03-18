@@ -5,10 +5,72 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Heart, ArrowRight, ArrowLeft, Calendar, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowLeft, Calendar } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
+
+// Transparent logo watermark SVG
+function LogoWatermark({ size = 200, opacity = 0.04, className = "" }: { size?: number; opacity?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      fill="none"
+      className={`pointer-events-none select-none ${className}`}
+      style={{ opacity }}
+    >
+      {/* Flame */}
+      <path
+        d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z"
+        fill="currentColor"
+      />
+      {/* Lotus petals */}
+      <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
+      <path d="M44 98 C38 92, 30 94, 28 100 C34 98, 44 98, 44 98Z" fill="currentColor" opacity="0.7" />
+      <path d="M76 98 C82 92, 90 94, 92 100 C86 98, 76 98, 76 98Z" fill="currentColor" opacity="0.7" />
+      {/* Roots */}
+      <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M60 104 C56 108, 50 110, 46 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M60 104 C64 108, 70 110, 74 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M60 108 C57 112, 53 114, 50 116" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+      <path d="M60 108 C63 112, 67 114, 70 116" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+    </svg>
+  );
+}
+
+const BLUSH = "#E8B4A0";
+const SAGE = "#7A9E7E";
+const CREAM = "#F7F2EB";
+const BLACK = "#0D0B0A";
+const CREAM_MUTED = "#c4b29a";
+
+const intakeQuestions = [
+  {
+    id: "adhd",
+    question: "Does your brain feel like it runs on a different operating system than everyone else's?",
+    subtext: "Hyperfocus one minute, can't remember what you walked into the room for the next.",
+    tag: "ADHD / Executive Function"
+  },
+  {
+    id: "pmdd",
+    question: "Does your luteal phase feel less like PMS and more like a personality transplant?",
+    subtext: "Like the week before your period, someone else moves in and you just have to wait it out.",
+    tag: "PMDD / Luteal Intensity"
+  },
+  {
+    id: "perimenopause",
+    question: "Has your cycle started doing things it never used to?",
+    subtext: "Irregular, more intense, unpredictable — like your body changed the rules without telling you.",
+    tag: "Perimenopause / Hormonal Shifts"
+  },
+  {
+    id: "spoons",
+    question: "Do you track your energy in terms of what you have left, not what you planned?",
+    subtext: "Some days you wake up already at half capacity. You know the math before the day starts.",
+    tag: "Spoon Theory / Chronic Energy"
+  },
+];
 
 export default function OnboardingPage() {
   const [, setLocation] = useLocation();
@@ -19,15 +81,26 @@ export default function OnboardingPage() {
     cycleLength: 28,
     concerns: ""
   });
+  const [intakeAnswers, setIntakeAnswers] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showIntake, setShowIntake] = useState<boolean | null>(null); // null = not decided yet
 
   const createProfile = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // Build concerns from intake answers + any free text
+      const intakeTags = Object.entries(intakeAnswers)
+        .filter(([, val]) => val)
+        .map(([key]) => intakeQuestions.find(q => q.id === key)?.tag)
+        .filter(Boolean)
+        .join(", ");
+      
+      const fullConcerns = [intakeTags, data.concerns].filter(Boolean).join(" | ");
+
       const response = await apiRequest("POST", "/api/profile", {
         name: data.name,
         lastPeriodStart: data.lastPeriodStart,
         cycleLength: data.cycleLength,
-        concerns: data.concerns || null
+        concerns: fullConcerns || null
       });
       return response.json() as Promise<UserProfile>;
     },
@@ -76,9 +149,16 @@ export default function OnboardingPage() {
 
   const handleNext = () => {
     if (validateStep(step)) {
-      if (step < 4) {
+      if (step < 3) {
         setStep(step + 1);
-      } else {
+      } else if (step === 3) {
+        // Step 4 = spoon gate for optional intake
+        setStep(4);
+      } else if (step === 4) {
+        // They chose to do the intake quiz
+        setStep(5);
+      } else if (step === 5) {
+        // Done with intake, finish
         createProfile.mutate(formData);
       }
     }
@@ -91,262 +171,354 @@ export default function OnboardingPage() {
     }
   };
 
-  const progressDots = [1, 2, 3, 4].map((num) => (
+  const handleSkipIntake = () => {
+    createProfile.mutate(formData);
+  };
+
+  const totalSteps = 3;
+  const progressDots = [1, 2, 3].map((num) => (
     <div
       key={num}
-      className={`w-2.5 h-2.5 rounded-full transition-colors ${
-        num === step
-          ? "bg-primary"
-          : num < step
-          ? "bg-[hsl(var(--brand-copper))]"
-          : "bg-muted"
-      }`}
+      className="w-2 h-2 rounded-full transition-all duration-300"
+      style={{
+        background: num === Math.min(step, 3) ? BLUSH : num < Math.min(step, 3) ? SAGE : "rgba(247,242,235,0.2)"
+      }}
     />
   ));
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--brand-lavender))] via-background to-[hsl(var(--brand-lavender)/0.3)]" />
-      <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[hsl(var(--brand-lavender)/0.2)] blur-3xl" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-[hsl(var(--brand-rose)/0.15)] blur-3xl" />
+    <div className="min-h-screen relative overflow-hidden" style={{ background: BLACK, color: CREAM }}>
+      
+      {/* Background watermarks */}
+      <div className="absolute top-[-40px] right-[-40px] text-[#E8B4A0]">
+        <LogoWatermark size={280} opacity={0.05} />
+      </div>
+      <div className="absolute bottom-[-60px] left-[-60px] text-[#7A9E7E]">
+        <LogoWatermark size={320} opacity={0.04} />
+      </div>
+      <div className="absolute top-[40%] left-[5%] text-[#F7F2EB]">
+        <LogoWatermark size={120} opacity={0.03} />
+      </div>
 
       <div className="relative container mx-auto px-6 py-12 md:py-20">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[hsl(var(--brand-lavender))] mb-6">
-              <Heart className="w-8 h-8 text-primary" />
+
+          {/* Logo + progress */}
+          <div className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <svg width="28" height="28" viewBox="0 0 120 120" fill="none">
+                <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill={BLUSH} />
+                <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill={BLUSH} />
+                <path d="M60 96 L60 112" stroke={BLUSH} strokeWidth="2" strokeLinecap="round" />
+                <path d="M60 104 C56 108, 50 110, 46 112" stroke={BLUSH} strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M60 104 C64 108, 70 110, 74 112" stroke={BLUSH} strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              <span className="font-display text-lg" style={{ color: CREAM }}>Cync</span>
             </div>
-            <div className="flex justify-center gap-2 mb-4">
-              {progressDots}
-            </div>
+            {step <= 3 && (
+              <div className="flex justify-center gap-2">
+                {progressDots}
+              </div>
+            )}
           </div>
 
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8">
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-semibold mb-2">
-                      Hey there, sugar!
-                    </h2>
-                    <p className="text-muted-foreground">
-                      I'm Aunt B. Let's get to know each other a little.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-base">
-                      What should I call you?
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Your name"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="text-lg py-6"
-                      data-testid="input-name"
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive">{errors.name}</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-semibold mb-2">
-                      Perfect, {formData.name}!
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Now let's figure out where you are in your cycle.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="lastPeriod" className="text-base flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      When did your last period start?
-                    </Label>
-                    <Input
-                      id="lastPeriod"
-                      type="date"
-                      value={formData.lastPeriodStart}
-                      onChange={(e) =>
-                        setFormData({ ...formData, lastPeriodStart: e.target.value })
-                      }
-                      max={new Date().toISOString().split("T")[0]}
-                      className="text-lg py-6"
-                      data-testid="input-last-period"
-                    />
-                    {errors.lastPeriodStart && (
-                      <p className="text-sm text-destructive">
-                        {errors.lastPeriodStart}
-                      </p>
-                    )}
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Don't worry if you're not sure — your best guess works!
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-semibold mb-2">
-                      Almost there!
-                    </h2>
-                    <p className="text-muted-foreground">
-                      How long is your typical cycle?
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <Label htmlFor="cycleLength" className="text-base">
-                      Average cycle length (in days)
-                    </Label>
-                    <div className="flex items-center gap-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            cycleLength: Math.max(20, formData.cycleLength - 1)
-                          })
-                        }
-                        data-testid="button-decrease-cycle"
-                      >
-                        -
-                      </Button>
-                      <Input
-                        id="cycleLength"
-                        type="number"
-                        min={20}
-                        max={45}
-                        value={formData.cycleLength}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            cycleLength: parseInt(e.target.value) || 28
-                          })
-                        }
-                        className="text-center text-2xl font-semibold py-6 w-24"
-                        data-testid="input-cycle-length"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            cycleLength: Math.min(45, formData.cycleLength + 1)
-                          })
-                        }
-                        data-testid="button-increase-cycle"
-                      >
-                        +
-                      </Button>
-                    </div>
-                    {errors.cycleLength && (
-                      <p className="text-sm text-destructive">
-                        {errors.cycleLength}
-                      </p>
-                    )}
-                    <p className="text-sm text-muted-foreground text-center">
-                      The average is 28 days, but everyone's different!
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[hsl(var(--brand-lavender))] mb-4">
-                      <Sparkles className="w-6 h-6 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-semibold mb-2">
-                      One more thing...
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Anything specific you want help with? (totally optional)
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Textarea
-                      placeholder="e.g., managing PMS symptoms, understanding my moods, planning around my cycle..."
-                      value={formData.concerns}
-                      onChange={(e) =>
-                        setFormData({ ...formData, concerns: e.target.value })
-                      }
-                      className="min-h-[120px] resize-none"
-                      data-testid="input-concerns"
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      This helps Aunt B give you more personalized support.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {errors.submit && (
-                <p className="text-sm text-destructive text-center mt-4">
-                  {errors.submit}
+          {/* Step 1 — Name */}
+          {step === 1 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="font-display text-3xl font-normal mb-3" style={{ color: CREAM }}>
+                  Hey sis, I'm Aunt B.
+                </h2>
+                <p style={{ color: CREAM_MUTED }}>
+                  Let's get to know each other a little.
                 </p>
-              )}
+              </div>
 
-              <div className="flex justify-between mt-8">
-                {step > 1 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleBack}
-                    data-testid="button-back"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
-                ) : (
-                  <div />
-                )}
+              <div className="space-y-3">
+                <Label htmlFor="name" className="text-sm font-medium" style={{ color: CREAM_MUTED }}>
+                  What should I call you?
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="text-lg py-6 border-0 rounded-xl"
+                  style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
+                  data-testid="input-name"
+                  onKeyDown={(e) => e.key === "Enter" && handleNext()}
+                />
+                {errors.name && <p className="text-sm" style={{ color: "#e87070" }}>{errors.name}</p>}
+              </div>
 
+              <Button
+                onClick={handleNext}
+                className="w-full py-6 text-base font-semibold rounded-xl"
+                style={{ background: BLUSH, color: BLACK }}
+                data-testid="button-next"
+              >
+                Nice to meet you
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2 — Last period */}
+          {step === 2 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="font-display text-3xl font-normal mb-3" style={{ color: CREAM }}>
+                  Hey {formData.name}.
+                </h2>
+                <p style={{ color: CREAM_MUTED }}>
+                  Let's figure out where you are in your cycle right now.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label htmlFor="lastPeriod" className="text-sm font-medium flex items-center gap-2" style={{ color: CREAM_MUTED }}>
+                  <Calendar className="w-4 h-4" />
+                  When did your last period start?
+                </Label>
+                <Input
+                  id="lastPeriod"
+                  type="date"
+                  value={formData.lastPeriodStart}
+                  onChange={(e) => setFormData({ ...formData, lastPeriodStart: e.target.value })}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="text-lg py-6 border-0 rounded-xl"
+                  style={{ background: "rgba(247,242,235,0.07)", color: CREAM, colorScheme: "dark" }}
+                  data-testid="input-last-period"
+                />
+                {errors.lastPeriodStart && <p className="text-sm" style={{ color: "#e87070" }}>{errors.lastPeriodStart}</p>}
+                <p className="text-sm" style={{ color: "rgba(247,242,235,0.4)" }}>
+                  Best guess is fine, love. We'll refine it as we go.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
                 <Button
-                  type="button"
+                  variant="ghost"
+                  onClick={handleBack}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
                   onClick={handleNext}
-                  disabled={createProfile.isPending}
-                  className="bg-primary text-primary-foreground"
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
                   data-testid="button-next"
                 >
-                  {createProfile.isPending ? (
-                    "Setting things up..."
-                  ) : step === 4 ? (
-                    <>
-                      Let's Go!
-                      <Heart className="w-4 h-4 ml-2" />
-                    </>
-                  ) : (
-                    <>
-                      Next
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
+                  Got it
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          )}
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            You can always update this later in settings
-          </p>
+          {/* Step 3 — Cycle length */}
+          {step === 3 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="font-display text-3xl font-normal mb-3" style={{ color: CREAM }}>
+                  Almost there.
+                </h2>
+                <p style={{ color: CREAM_MUTED }}>
+                  How long is your typical cycle?
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setFormData({ ...formData, cycleLength: Math.max(20, formData.cycleLength - 1) })}
+                    className="w-12 h-12 rounded-full border-0 text-xl"
+                    style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
+                    data-testid="button-decrease-cycle"
+                  >
+                    −
+                  </Button>
+                  <div className="text-center">
+                    <div className="font-display text-6xl font-normal" style={{ color: BLUSH }}>
+                      {formData.cycleLength}
+                    </div>
+                    <div className="text-sm mt-1" style={{ color: CREAM_MUTED }}>days</div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setFormData({ ...formData, cycleLength: Math.min(45, formData.cycleLength + 1) })}
+                    className="w-12 h-12 rounded-full border-0 text-xl"
+                    style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
+                    data-testid="button-increase-cycle"
+                  >
+                    +
+                  </Button>
+                </div>
+                {errors.cycleLength && <p className="text-sm text-center" style={{ color: "#e87070" }}>{errors.cycleLength}</p>}
+                <p className="text-sm text-center" style={{ color: "rgba(247,242,235,0.4)" }}>
+                  Average is 28 days — but your body doesn't have to be average.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleBack}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                  data-testid="button-next"
+                >
+                  That's me
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4 — Spoon gate for optional intake */}
+          {step === 4 && (
+            <div className="space-y-8 text-center">
+              <div>
+                <div className="text-4xl mb-4">🥄</div>
+                <h2 className="font-display text-3xl font-normal mb-4" style={{ color: CREAM }}>
+                  One last thing.
+                </h2>
+                <p className="text-lg leading-relaxed mb-2" style={{ color: CREAM_MUTED }}>
+                  If you want Aunt B to <em>really</em> know you, answer a few questions.
+                </p>
+                <p className="text-base leading-relaxed" style={{ color: "rgba(247,242,235,0.5)" }}>
+                  Only if you have enough spoons. If not, do it later — she'll still be here.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={handleNext}
+                  className="w-full py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                >
+                  I have spoons, let's go
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleSkipIntake}
+                  disabled={createProfile.isPending}
+                  className="w-full py-6 text-base rounded-xl"
+                  style={{ color: CREAM_MUTED, border: "1px solid rgba(247,242,235,0.1)" }}
+                  data-testid="button-skip-intake"
+                >
+                  {createProfile.isPending ? "Setting things up..." : "Save my spoons, skip for now"}
+                </Button>
+              </div>
+
+              {errors.submit && <p className="text-sm" style={{ color: "#e87070" }}>{errors.submit}</p>}
+            </div>
+          )}
+
+          {/* Step 5 — Optional intake quiz */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="font-display text-2xl font-normal mb-2" style={{ color: CREAM }}>
+                  Does any of this sound familiar?
+                </h2>
+                <p className="text-sm" style={{ color: CREAM_MUTED }}>
+                  Select everything that resonates. No wrong answers.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {intakeQuestions.map((q) => {
+                  const selected = intakeAnswers[q.id] === true;
+                  return (
+                    <button
+                      key={q.id}
+                      onClick={() => setIntakeAnswers(prev => ({ ...prev, [q.id]: !prev[q.id] }))}
+                      className="w-full text-left p-5 rounded-2xl transition-all duration-200"
+                      style={{
+                        background: selected ? `${BLUSH}18` : "rgba(247,242,235,0.04)",
+                        border: `1px solid ${selected ? BLUSH + "60" : "rgba(247,242,235,0.1)"}`,
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center"
+                          style={{
+                            background: selected ? BLUSH : "transparent",
+                            border: `1.5px solid ${selected ? BLUSH : "rgba(247,242,235,0.3)"}`,
+                          }}
+                        >
+                          {selected && (
+                            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                              <path d="M1 4L3.5 6.5L9 1" stroke={BLACK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium leading-snug mb-1" style={{ color: CREAM }}>
+                            {q.question}
+                          </p>
+                          <p className="text-xs leading-relaxed" style={{ color: "rgba(247,242,235,0.45)" }}>
+                            {q.subtext}
+                          </p>
+                          <span
+                            className="inline-block mt-2 text-xs px-2 py-0.5 rounded-full"
+                            style={{ background: selected ? `${SAGE}30` : "rgba(247,242,235,0.06)", color: selected ? SAGE : "rgba(247,242,235,0.35)" }}
+                          >
+                            {q.tag}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setStep(4)}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={() => createProfile.mutate(formData)}
+                  disabled={createProfile.isPending}
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                  data-testid="button-finish"
+                >
+                  {createProfile.isPending ? "Setting things up..." : "Take me in, Aunt B"}
+                </Button>
+              </div>
+
+              {errors.submit && <p className="text-sm text-center" style={{ color: "#e87070" }}>{errors.submit}</p>}
+            </div>
+          )}
+
+          {step <= 3 && (
+            <p className="text-center text-xs mt-8" style={{ color: "rgba(247,242,235,0.3)" }}>
+              You can always update this later in settings
+            </p>
+          )}
         </div>
       </div>
     </div>

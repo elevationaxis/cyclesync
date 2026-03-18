@@ -117,7 +117,36 @@ function ProtectedApp() {
   }, [setLocation]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      {/* Transparent logo watermarks — background texture */}
+      <div className="fixed top-[-80px] right-[-80px] pointer-events-none select-none z-0" style={{ opacity: 0.035 }}>
+        <svg width="340" height="340" viewBox="0 0 120 120" fill="none" className="text-foreground" style={{ color: 'currentColor' }}>
+          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
+          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
+          <path d="M44 98 C38 92, 30 94, 28 100 C34 98, 44 98, 44 98Z" fill="currentColor" opacity="0.7" />
+          <path d="M76 98 C82 92, 90 94, 92 100 C86 98, 76 98, 76 98Z" fill="currentColor" opacity="0.7" />
+          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M60 104 C56 108, 50 110, 46 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M60 104 C64 108, 70 110, 74 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="fixed bottom-[-100px] left-[-100px] pointer-events-none select-none z-0" style={{ opacity: 0.025 }}>
+        <svg width="420" height="420" viewBox="0 0 120 120" fill="none" className="text-foreground">
+          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
+          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
+          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M60 104 C56 108, 50 110, 46 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M60 104 C64 108, 70 110, 74 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="fixed top-[45%] right-[2%] pointer-events-none select-none z-0" style={{ opacity: 0.02 }}>
+        <svg width="160" height="160" viewBox="0 0 120 120" fill="none" className="text-foreground">
+          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
+          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
+          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+
       {showSplash && (
         <QuoteSplash
           onDismiss={() => setShowSplash(false)}
@@ -125,11 +154,13 @@ function ProtectedApp() {
           cycleLength={profileData?.cycleLength}
         />
       )}
-      <AppNavigation 
-        isPartnerView={isPartnerView}
-        onTogglePartnerView={() => setIsPartnerView(!isPartnerView)}
-      />
-      <AppRouter isPartnerView={isPartnerView} />
+      <div className="relative z-10">
+        <AppNavigation 
+          isPartnerView={isPartnerView}
+          onTogglePartnerView={() => setIsPartnerView(!isPartnerView)}
+        />
+        <AppRouter isPartnerView={isPartnerView} />
+      </div>
     </div>
   );
 }
