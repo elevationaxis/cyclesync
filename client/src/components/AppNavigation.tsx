@@ -1,6 +1,8 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Heart, Calendar, MessageCircle, BookOpen, Users, Music, HandHeart, MessagesSquare, CalendarDays, Utensils } from 'lucide-react';
+import { Heart, Calendar, MessageCircle, Users, Music, HandHeart, MessagesSquare, CalendarDays, Utensils, Sun, Moon } from 'lucide-react';
+import { CyncLogoMark } from './CyncLogo';
+import { useTheme } from './ThemeProvider';
 
 interface AppNavigationProps {
   isPartnerView?: boolean;
@@ -9,9 +11,10 @@ interface AppNavigationProps {
 
 export default function AppNavigation({ isPartnerView = false, onTogglePartnerView }: AppNavigationProps) {
   const [location] = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: Heart },
+    { path: '/dashboard', label: 'Dashboard', icon: Heart },
     { path: '/check-in', label: 'Check-In', icon: Calendar },
     { path: '/chat', label: 'Ask Aunt B', icon: MessageCircle },
     { path: '/spoons', label: 'Spoons', icon: Utensils },
@@ -27,8 +30,8 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
             <Link href="/">
-              <div className="flex items-center gap-2 hover-elevate px-2 py-1 rounded-lg transition-all cursor-pointer" data-testid="link-home">
-                <Heart className="w-6 h-6 text-primary fill-primary" />
+              <div className="flex items-center gap-2.5 hover-elevate px-2 py-1 rounded-lg transition-all cursor-pointer" data-testid="link-home">
+                <CyncLogoMark size={28} className="text-primary flex-shrink-0" />
                 <span className="font-display text-xl font-normal italic tracking-wide">Cync</span>
               </div>
             </Link>
@@ -53,7 +56,23 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Dark / Light Mode Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="w-9 h-9 rounded-full transition-all hover:bg-muted"
+              data-testid="button-theme-toggle"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Moon className="w-4 h-4 text-muted-foreground" />
+              )}
+            </Button>
+
             {onTogglePartnerView && (
               <Button
                 variant={isPartnerView ? 'default' : 'outline'}

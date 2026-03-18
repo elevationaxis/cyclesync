@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Flame/lotus petals top -->
+  <path d="M50 10 C50 10 38 22 38 34 C38 42 44 48 50 48 C56 48 62 42 62 34 C62 22 50 10 50 10Z" />
+  <!-- Left petal -->
+  <path d="M50 48 C50 48 34 36 28 46 C24 53 30 62 38 60 C44 58 50 48 50 48Z" />
+  <!-- Right petal -->
+  <path d="M50 48 C50 48 66 36 72 46 C76 53 70 62 62 60 C56 58 50 48 50 48Z" />
+  <!-- Inner flame detail left -->
+  <path d="M50 20 C50 20 44 28 44 36 C44 40 47 44 50 44" />
+  <!-- Inner flame detail right -->
+  <path d="M50 20 C50 20 56 28 56 36 C56 40 53 44 50 44" />
+  <!-- Roots -->
+  <path d="M50 62 L50 80" />
+  <path d="M50 68 C50 68 42 72 36 82" />
+  <path d="M50 68 C50 68 58 72 64 82" />
+  <path d="M50 74 C50 74 44 78 40 90" />
+  <path d="M50 74 C50 74 56 78 60 90" />
+  <path d="M50 78 C50 78 46 82 44 94" />
+  <path d="M50 78 C50 78 54 82 56 94" />
+  <path d="M50 80 C50 80 48 86 46 98" />
+  <path d="M50 80 C50 80 52 86 54 98" />
+</svg>

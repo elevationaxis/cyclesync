@@ -20,6 +20,7 @@ import OnboardingPage from "@/pages/OnboardingPage";
 import PartnerBriefPage from "@/pages/PartnerBriefPage";
 import CyncLinkPage from "@/pages/CyncLinkPage";
 import QuoteSplash from "@/components/QuoteSplash";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { useState, useEffect } from "react";
 
 const SPLASH_SESSION_KEY = "cync_splash_shown";
@@ -135,20 +136,22 @@ function ProtectedApp() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Switch>
-          <Route path="/" component={LandingWrapper} />
-          <Route path="/onboarding" component={OnboardingPage} />
-          <Route path="/partner-brief" component={PartnerBriefPage} />
-          <Route path="/cynclink/:token" component={CyncLinkPage} />
-          <Route>
-            <ProtectedApp />
-          </Route>
-        </Switch>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Switch>
+            <Route path="/" component={LandingWrapper} />
+            <Route path="/onboarding" component={OnboardingPage} />
+            <Route path="/partner-brief" component={PartnerBriefPage} />
+            <Route path="/cynclink/:token" component={CyncLinkPage} />
+            <Route>
+              <ProtectedApp />
+            </Route>
+          </Switch>
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
