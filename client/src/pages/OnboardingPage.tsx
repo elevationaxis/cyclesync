@@ -48,7 +48,7 @@ export default function OnboardingPage() {
 
     if (currentStep === 1) {
       if (!formData.name.trim()) {
-        newErrors.name = "Please tell me your name, honey";
+        newErrors.name = "Please tell me your name, love";
       }
     }
 

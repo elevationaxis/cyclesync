@@ -309,7 +309,7 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
             A word from Aunt B
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed italic mb-4" style={{ color: CREAM_MUTED }}>
-            "Honey, your cycle isn't a problem to solve. It's a language your body speaks fluently. I'm just here to help you translate."
+            "Sis, your cycle isn't a problem to solve. It's a language your body speaks fluently. I'm just here to help you translate."
           </blockquote>
           <p className="text-xs tracking-wider uppercase" style={{ color: SAGE }}>Your cycle companion</p>
         </div>

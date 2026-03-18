@@ -15,7 +15,7 @@ import { saveMoods, loadMoods, getProfileId, getUserName } from "@/lib/storage";
 
 const phaseMessages: Record<string, string[]> = {
   menstrual: [
-    "Hey honey, take it easy today. Your body is doing important work.",
+    "Hey sis, take it easy today. Your body is doing important work.",
     "Rest isn't lazy, love. It's necessary. Let me know if you need anything.",
     "Some days are for doing less, and that's more than okay.",
   ],
@@ -32,14 +32,14 @@ const phaseMessages: Record<string, string[]> = {
   luteal: [
     "Winding down is wisdom, not weakness. Listen to what you need.",
     "It's okay to slow down now. Your body knows what's coming.",
-    "Be gentle with yourself, honey. This phase asks for softness.",
+    "Be gentle with yourself, love. This phase asks for softness.",
   ],
 };
 
 const spoonMessages = {
-  low: "Baby, move slow today. Hydrate. One thing at a time.",
+  low: "Move slow today, love. Hydrate. One thing at a time.",
   medium: "You've got enough to get one meaningful thing done. Don't overspend.",
-  high: "Protect your spoons, honey — not everyone deserves them.",
+  high: "Protect your spoons, sis — not everyone deserves them.",
 };
 
 const moodOptions = [
