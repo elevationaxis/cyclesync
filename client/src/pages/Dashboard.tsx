@@ -5,6 +5,8 @@ import PhaseCard from '@/components/PhaseCard';
 import TipsCard from '@/components/TipsCard';
 import GentleWins from '@/components/GentleWins';
 import { getCurrentPhase, getPhaseInfo, calculateCycleDay, getPhaseForCycleLength } from '@/lib/cycleUtils';
+import { getNutritionForDay } from '@/lib/nutritionData';
+import { Link as WouterLink } from 'wouter';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -367,6 +369,70 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </section>
+
+      {/* Nourish Card */}
+      <section>
+        {(() => {
+          const nutrition = getNutritionForDay(cycleDay);
+          return (
+            <Card className="border-0 shadow-sm rounded-3xl overflow-hidden" style={{ background: `${nutrition.color}18`, border: `1px solid ${nutrition.color}30` }}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{nutrition.emoji}</span>
+                    <div>
+                      <h3 className="font-display font-medium italic">Nourish — {nutrition.phase} Phase</h3>
+                      <p className="text-xs text-muted-foreground">{nutrition.days}</p>
+                    </div>
+                  </div>
+                  <WouterLink href="/learn">
+                    <Button variant="ghost" size="sm" className="text-xs rounded-full" style={{ color: nutrition.color }}>
+                      All phases <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </WouterLink>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-2xl p-4" style={{ background: `${nutrition.color}15` }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-base">🥤</span>
+                      <span className="font-medium text-sm">{nutrition.smoothie.name}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">Smoothie</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nutrition.smoothie.ingredients.slice(0, 4).map((ing, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                          <span style={{ color: nutrition.accent }} className="mt-0.5 flex-shrink-0">·</span>
+                          {ing.split('(')[0].trim()}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs mt-2 italic" style={{ color: nutrition.color }}>+ {nutrition.smoothie.ingredients.length - 4} more — see full recipe in Learn</p>
+                  </div>
+                  <div className="rounded-2xl p-4" style={{ background: `${nutrition.color}15` }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-base">🥜</span>
+                      <span className="font-medium text-sm">{nutrition.trailMix.name}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">Trail Mix</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nutrition.trailMix.ingredients.slice(0, 4).map((ing, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                          <span style={{ color: nutrition.accent }} className="mt-0.5 flex-shrink-0">·</span>
+                          {ing.split('(')[0].trim()}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs mt-2 italic" style={{ color: nutrition.color }}>+ {nutrition.trailMix.ingredients.length - 4} more — see full recipe in Learn</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3 italic border-t pt-3" style={{ borderColor: `${nutrition.color}20` }}>
+                  {nutrition.smoothie.tip}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })()}
       </section>
 
       <section>
