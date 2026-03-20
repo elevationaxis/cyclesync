@@ -172,21 +172,41 @@ export default function PartnerSupportPage() {
               const res = await fetch("/api/partner-links", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ label: "My Partner" }),
               });
               const data = await res.json();
               const url = data.url || `${window.location.origin}/cynclink/${data.token}`;
-              navigator.clipboard.writeText(url).then(() => {
+              
+              // Try Web Share API first (works great on iOS Safari)
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: 'My Cync Partner Link',
+                    text: 'Check in on how I\'m doing today with Cync',
+                    url,
+                  });
+                  return;
+                } catch (shareErr) {
+                  // User cancelled share or share failed — fall through to clipboard
+                }
+              }
+              
+              // Try clipboard API
+              try {
+                await navigator.clipboard.writeText(url);
                 toast({
                   title: "CyncLink copied!",
                   description: "Share this with your partner — works on any device.",
                 });
-              }).catch(() => {
+              } catch {
+                // Clipboard blocked (common in PWA/iOS) — show URL so user can copy manually
                 toast({
                   title: "Your CyncLink",
                   description: url,
+                  duration: 10000,
                 });
-              });
+              }
             } catch {
               toast({
                 title: "Could not generate CyncLink",
