@@ -68,6 +68,10 @@ export interface IStorage {
   getPartnerLinkByToken(token: string): Promise<PartnerLink | undefined>;
   getPartnerLinksByUser(userId: string): Promise<PartnerLink[]>;
   deactivatePartnerLink(id: string): Promise<void>;
+
+  // Push Subscriptions (stubs until Capacitor native wrap)
+  savePushSubscription(sub: { userId: string; endpoint: string; p256dh: string; auth: string }): Promise<void>;
+  deletePushSubscription(endpoint: string): Promise<void>;
 }
 
 import { db } from "./db";
@@ -284,6 +288,14 @@ export class MemStorage implements IStorage {
 
   async deactivatePartnerLink(id: string): Promise<void> {
     await db.update(partnerLinks).set({ active: false }).where(eq(partnerLinks.id, id));
+  }
+
+  // Push Subscriptions — stubs until Capacitor native wrap
+  async savePushSubscription(sub: { userId: string; endpoint: string; p256dh: string; auth: string }): Promise<void> {
+    console.log("[push] subscription saved for user:", sub.userId);
+  }
+  async deletePushSubscription(endpoint: string): Promise<void> {
+    console.log("[push] subscription removed:", endpoint);
   }
 }
 

@@ -149,3 +149,19 @@ export const insertPartnerLinkSchema = createInsertSchema(partnerLinks).omit({
 });
 export type InsertPartnerLink = z.infer<typeof insertPartnerLinkSchema>;
 export type PartnerLink = typeof partnerLinks.$inferSelect;
+
+// Push notification subscriptions
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  endpoint: text("endpoint").notNull().unique(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;

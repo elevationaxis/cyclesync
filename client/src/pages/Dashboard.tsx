@@ -6,11 +6,10 @@ import TipsCard from '@/components/TipsCard';
 import GentleWins from '@/components/GentleWins';
 import { getCurrentPhase, getPhaseInfo, calculateCycleDay, getPhaseForCycleLength } from '@/lib/cycleUtils';
 import { getNutritionForDay } from '@/lib/nutritionData';
-import { Link as WouterLink } from 'wouter';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull } from "lucide-react";
+import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull, Brain, Flower2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { SpoonEntry, UserProfile } from "@shared/schema";
 import { saveMoods, loadMoods, getProfileId, getUserName } from "@/lib/storage";
@@ -55,17 +54,68 @@ const moodOptions = [
   { label: "Grateful", value: "grateful" },
 ];
 
+// Section header component with quick-glance summary and expand toggle
+function SectionAccordion({
+  icon: Icon,
+  title,
+  accent,
+  glance,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  accent: string;
+  glance: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-3xl border border-border/40 overflow-hidden shadow-sm">
+      {/* Header / quick glance — always visible */}
+      <button
+        className="w-full text-left"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-4 px-6 py-5" style={{ background: `${accent}10` }}>
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: `${accent}22` }}>
+            <Icon className="w-5 h-5" style={{ color: accent }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-display font-medium italic text-lg" style={{ color: accent }}>{title}</span>
+            </div>
+            <div className="text-sm text-muted-foreground truncate">{glance}</div>
+          </div>
+          <div className="flex-shrink-0 ml-2">
+            {open
+              ? <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
+          </div>
+        </div>
+      </button>
+
+      {/* Expanded content */}
+      {open && (
+        <div className="px-6 pb-6 pt-2 space-y-5 bg-background">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
 
   useEffect(() => {
     loadMoods().then(setSelectedMoods);
   }, []);
-  
+
   const profileId = getProfileId();
   const userName = getUserName();
 
-  const { data: profile, isLoading: profileLoading } = useQuery<UserProfile | null>({
+  const { data: profile } = useQuery<UserProfile | null>({
     queryKey: ["/api/profile", profileId],
     queryFn: async () => {
       if (!profileId) return null;
@@ -80,11 +130,7 @@ export default function Dashboard() {
     if (profile?.lastPeriodStart) {
       const day = calculateCycleDay(profile.lastPeriodStart, profile.cycleLength || 28);
       const phase = getPhaseForCycleLength(day, profile.cycleLength || 28);
-      return {
-        cycleDay: day,
-        currentPhase: phase,
-        phaseInfo: getPhaseInfo(phase),
-      };
+      return { cycleDay: day, currentPhase: phase, phaseInfo: getPhaseInfo(phase) };
     }
     return {
       cycleDay: 12,
@@ -97,9 +143,7 @@ export default function Dashboard() {
 
   const toggleMood = (value: string) => {
     setSelectedMoods(prev => {
-      const next = prev.includes(value)
-        ? prev.filter(m => m !== value)
-        : [...prev, value];
+      const next = prev.includes(value) ? prev.filter(m => m !== value) : [...prev, value];
       saveMoods(next);
       return next;
     });
@@ -145,23 +189,15 @@ export default function Dashboard() {
   };
 
   const tips = phaseTips[currentPhase];
+  const nutrition = getNutritionForDay(cycleDay);
 
-  const quickActions = [
-    { label: "Daily Check-In", icon: ClipboardCheck, href: "/check-in", description: "Log how you're feeling" },
-    { label: "Ask Aunt B", icon: MessageCircle, href: "/chat", description: "Get support and guidance" },
-    { label: "Breath Reset", icon: Wind, href: "/rituals", description: "Quick calm-down ritual" },
-    { label: "Partner Brief", icon: Heart, href: "/partner-support", description: "Share with your partner" },
-  ];
-
-  const remainingSpoons = spoonEntry 
-    ? spoonEntry.totalSpoons - spoonEntry.usedSpoons 
-    : null;
+  const remainingSpoons = spoonEntry ? spoonEntry.totalSpoons - spoonEntry.usedSpoons : null;
 
   const getSpoonLevel = (remaining: number | null, total: number | undefined) => {
     if (remaining === null || !total) return null;
-    const percentage = (remaining / total) * 100;
-    if (percentage <= 30) return 'low';
-    if (percentage <= 60) return 'medium';
+    const pct = (remaining / total) * 100;
+    if (pct <= 30) return 'low';
+    if (pct <= 60) return 'medium';
     return 'high';
   };
 
@@ -178,9 +214,19 @@ export default function Dashboard() {
 
   const SpoonIcon = getSpoonIcon(spoonLevel);
 
+  // Phase accent colors
+  const phaseAccent: Record<string, string> = {
+    menstrual: '#8B4A6B',
+    follicular: '#5B8A6B',
+    ovulatory: '#C4846E',
+    luteal: '#7A6B8A',
+  };
+  const accent = phaseAccent[currentPhase] || '#8B4A6B';
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-      {/* Page header */}
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      {/* ── Pinned header: always visible ── */}
       <div className="text-center pb-2">
         <h1 className="font-display text-3xl md:text-4xl font-normal italic text-foreground mb-1">
           {userName ? `Welcome back, ${userName.split(' ')[0]}` : 'Your Daily Cync'}
@@ -190,158 +236,63 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <section className="grid gap-6 md:grid-cols-[1fr_1.2fr]">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-lavender))] to-background rounded-3xl" data-testid="card-today-glance">
-          <CardContent className="p-6 md:p-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-5 h-5 text-primary" />
-              <h2 className="font-display text-lg font-medium">Today at a Glance</h2>
+      {/* ── Pinned phase + cycle glance card ── */}
+      <Card className="border-0 shadow-sm rounded-3xl" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: `${accent}22` }}>
+                <span className="text-2xl">{nutrition.emoji}</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display font-medium italic text-lg capitalize">{currentPhase}</span>
+                  <Badge variant="outline" className="text-xs rounded-full" style={{ borderColor: `${accent}50`, color: accent }}>Day {cycleDay}</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">{phaseInfo.energy} energy · {phaseInfo.supportTone}</p>
+              </div>
             </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Cycle Day</span>
-                <span className="text-2xl font-bold text-primary">{cycleDay}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Current Phase</span>
-                <span className="font-semibold capitalize">{currentPhase}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Energy Level</span>
-                <span className="font-medium">{phaseInfo.energy}</span>
-              </div>
-              
+            <div className="flex items-center gap-3">
               {remainingSpoons !== null && (
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    <Utensils className="w-4 h-4" />
-                    Spoons Today
-                  </span>
-                  <Link href="/spoons">
-                    <span className="font-semibold text-primary cursor-pointer hover:underline">
-                      {remainingSpoons} remaining
-                    </span>
-                  </Link>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <SpoonIcon className="w-4 h-4" />
+                  <span>{remainingSpoons} spoons</span>
                 </div>
               )}
+              <Link href="/check-in">
+                <Button size="sm" className="rounded-full" style={{ background: accent, color: '#fff' }}>
+                  Check In <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </Button>
+              </Link>
             </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <div className="mt-6 pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {phaseInfo.description}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-[hsl(var(--brand-copper)/0.12)] to-[hsl(var(--brand-sage)/0.08)] rounded-3xl" data-testid="card-aunt-b-message">
-          <CardContent className="p-6 md:p-8">
+      {/* ── MIND ── */}
+      <SectionAccordion
+        icon={Brain}
+        title="Mind"
+        accent="#7A6B8A"
+        glance={
+          <span className="italic">"{todaysMessage}"</span>
+        }
+      >
+        {/* Aunt B message */}
+        <Card className="border-0 bg-gradient-to-br from-[hsl(var(--brand-copper)/0.12)] to-[hsl(var(--brand-sage)/0.08)] rounded-2xl">
+          <CardContent className="p-5">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-14 h-14 rounded-full bg-[hsl(var(--brand-copper)/0.15)] flex items-center justify-center">
-                  <MessageCircle className="w-7 h-7 text-primary" />
-                </div>
-              </div>
-              <div className="flex-1 pt-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="font-display font-medium text-lg italic">Aunt B</span>
-                  <span className="font-label text-xs text-muted-foreground tracking-widest uppercase">Your Guide</span>
-                </div>
-                <p className="font-display font-normal italic text-foreground leading-relaxed text-lg">
-                  &ldquo;{todaysMessage}&rdquo;
-                </p>
-                <div className="mt-6">
-                  <Link href="/chat">
-                    <Button variant="secondary" className="rounded-full" data-testid="button-chat-with-aunt-b">
-                      Chat with Aunt B
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {spoonLevel && (
-        <section>
-          <Card className="border-0 shadow-sm bg-gradient-to-r from-[hsl(var(--brand-lavender)/0.5)] to-background" data-testid="card-spoon-message">
-            <CardContent className="p-5 md:p-6">
-              <div className="flex items-center gap-4">
-                <div className="flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    spoonLevel === 'low' ? 'bg-rose-100 dark:bg-rose-900/30' :
-                    spoonLevel === 'medium' ? 'bg-amber-100 dark:bg-amber-900/30' :
-                    'bg-emerald-100 dark:bg-emerald-900/30'
-                  }`}>
-                    <SpoonIcon className={`w-6 h-6 ${
-                      spoonLevel === 'low' ? 'text-rose-600 dark:text-rose-400' :
-                      spoonLevel === 'medium' ? 'text-amber-600 dark:text-amber-400' :
-                      'text-emerald-600 dark:text-emerald-400'
-                    }`} />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium capitalize">{spoonLevel} Spoons</span>
-                    <span className="text-xs text-muted-foreground">({remainingSpoons} of {spoonEntry?.totalSpoons})</span>
-                  </div>
-                  <p className="text-muted-foreground italic">
-                    "{spoonMessages[spoonLevel as keyof typeof spoonMessages]}"
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      )}
-
-      <section>
-        <h2 className="font-display text-xl font-normal italic mb-4">How are you feeling?</h2>
-        <div className="flex flex-wrap gap-2" data-testid="mood-chips-container">
-          {moodOptions.map((mood) => (
-            <Badge
-              key={mood.value}
-              variant={selectedMoods.includes(mood.value) ? "default" : "outline"}
-              className={`cursor-pointer font-label text-sm py-2 px-4 rounded-full transition-all tracking-wide ${
-                selectedMoods.includes(mood.value) 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'border-border/60'
-              }`}
-              onClick={() => toggleMood(mood.value)}
-              data-testid={`mood-chip-${mood.value}`}
-            >
-              {mood.label}
-            </Badge>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-6 md:grid-cols-2">
-        <Card className="border-0 shadow-sm bg-rose-soft rounded-3xl" data-testid="card-partner-preview">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-rose)/0.25)] flex items-center justify-center">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-copper)/0.15)] flex items-center justify-center flex-shrink-0">
+                <MessageCircle className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-display font-medium italic mb-2">Partner Support Today</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  {currentPhase === 'menstrual' && "Be extra gentle. She needs rest and comfort right now."}
-                  {currentPhase === 'follicular' && "Great time to plan something fun together. Her energy is rising!"}
-                  {currentPhase === 'ovulatory' && "She's feeling social and communicative. Quality time matters."}
-                  {currentPhase === 'luteal' && "Be extra patient. Luteal energy is winding down."}
+                <span className="font-display font-medium italic">Aunt B</span>
+                <p className="font-display font-normal italic text-foreground leading-relaxed mt-1">
+                  &ldquo;{todaysMessage}&rdquo;
                 </p>
-                <Link href="/partner-support">
-                  <Button size="sm" variant="outline" className="rounded-full" data-testid="button-partner-view">
-                    Open Partner View
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                <Link href="/chat">
+                  <Button variant="secondary" size="sm" className="rounded-full mt-3">
+                    Chat with Aunt B <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </Button>
                 </Link>
               </div>
@@ -349,141 +300,211 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm bg-sage-soft rounded-3xl" data-testid="card-energy-summary">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-sage)/0.2)] flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-sage" />
+        {/* Mood check-in */}
+        <div>
+          <h3 className="font-display font-medium italic mb-3 text-muted-foreground">How are you feeling?</h3>
+          <div className="flex flex-wrap gap-2">
+            {moodOptions.map((mood) => (
+              <Badge
+                key={mood.value}
+                variant={selectedMoods.includes(mood.value) ? "default" : "outline"}
+                className={`cursor-pointer font-label text-sm py-2 px-4 rounded-full transition-all tracking-wide ${
+                  selectedMoods.includes(mood.value) ? 'bg-primary text-primary-foreground' : 'border-border/60'
+                }`}
+                onClick={() => toggleMood(mood.value)}
+              >
+                {mood.label}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* Mind tips */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TipsCard category="Mind" tips={tips.Mind} />
+          <TipsCard category="Flow" tips={tips.Flow} />
+        </div>
+
+        {/* Gentle wins */}
+        <GentleWins />
+      </SectionAccordion>
+
+      {/* ── BODY ── */}
+      <SectionAccordion
+        icon={Flower2}
+        title="Body"
+        accent="#5B8A6B"
+        glance={
+          spoonLevel
+            ? <span>{spoonMessages[spoonLevel as keyof typeof spoonMessages]}</span>
+            : <span>{phaseInfo.focus}</span>
+        }
+      >
+        {/* Spoon tracker */}
+        {spoonLevel && (
+          <Card className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-lavender)/0.3)' }}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  spoonLevel === 'low' ? 'bg-rose-100 dark:bg-rose-900/30' :
+                  spoonLevel === 'medium' ? 'bg-amber-100 dark:bg-amber-900/30' :
+                  'bg-emerald-100 dark:bg-emerald-900/30'
+                }`}>
+                  <SpoonIcon className={`w-6 h-6 ${
+                    spoonLevel === 'low' ? 'text-rose-600' :
+                    spoonLevel === 'medium' ? 'text-amber-600' :
+                    'text-emerald-600'
+                  }`} />
                 </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium capitalize">{spoonLevel} Spoons</span>
+                    <span className="text-xs text-muted-foreground">({remainingSpoons} of {spoonEntry?.totalSpoons})</span>
+                  </div>
+                  <p className="text-muted-foreground italic text-sm">"{spoonMessages[spoonLevel as keyof typeof spoonMessages]}"</p>
+                </div>
+                <Link href="/spoons">
+                  <Button size="sm" variant="outline" className="rounded-full">Track</Button>
+                </Link>
               </div>
-              <div className="flex-1">
-                <h3 className="font-display font-medium italic mb-2">Energy Focus</h3>
-                <p className="text-muted-foreground text-sm mb-2">
-                  {phaseInfo.focus}
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  {phaseInfo.supportTone} energy this phase
-                </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Energy focus */}
+        <Card className="border-0 bg-sage-soft rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-start gap-3">
+              <Zap className="w-5 h-5 text-sage mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-display font-medium italic mb-1">Energy Focus</h3>
+                <p className="text-muted-foreground text-sm">{phaseInfo.focus}</p>
+                <p className="text-xs text-muted-foreground/80 italic mt-1">{phaseInfo.supportTone} energy this phase</p>
               </div>
             </div>
           </CardContent>
         </Card>
-      </section>
 
-      {/* Nourish Card */}
-      <section>
-        {(() => {
-          const nutrition = getNutritionForDay(cycleDay);
-          return (
-            <Card className="border-0 shadow-sm rounded-3xl overflow-hidden" style={{ background: `${nutrition.color}18`, border: `1px solid ${nutrition.color}30` }}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{nutrition.emoji}</span>
-                    <div>
-                      <h3 className="font-display font-medium italic">Nourish — {nutrition.phase} Phase</h3>
-                      <p className="text-xs text-muted-foreground">{nutrition.days}</p>
-                    </div>
-                  </div>
-                  <WouterLink href="/learn">
-                    <Button variant="ghost" size="sm" className="text-xs rounded-full" style={{ color: nutrition.color }}>
-                      All phases <ArrowRight className="w-3 h-3 ml-1" />
-                    </Button>
-                  </WouterLink>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-2xl p-4" style={{ background: `${nutrition.color}15` }}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-base">🥤</span>
-                      <span className="font-medium text-sm">{nutrition.smoothie.name}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">Smoothie</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nutrition.smoothie.ingredients.slice(0, 4).map((ing, i) => (
-                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
-                          <span style={{ color: nutrition.accent }} className="mt-0.5 flex-shrink-0">·</span>
-                          {ing.split('(')[0].trim()}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="text-xs mt-2 italic" style={{ color: nutrition.color }}>+ {nutrition.smoothie.ingredients.length - 4} more — see full recipe in Learn</p>
-                  </div>
-                  <div className="rounded-2xl p-4" style={{ background: `${nutrition.color}15` }}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-base">🥜</span>
-                      <span className="font-medium text-sm">{nutrition.trailMix.name}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">Trail Mix</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nutrition.trailMix.ingredients.slice(0, 4).map((ing, i) => (
-                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
-                          <span style={{ color: nutrition.accent }} className="mt-0.5 flex-shrink-0">·</span>
-                          {ing.split('(')[0].trim()}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="text-xs mt-2 italic" style={{ color: nutrition.color }}>+ {nutrition.trailMix.ingredients.length - 4} more — see full recipe in Learn</p>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground mt-3 italic border-t pt-3" style={{ borderColor: `${nutrition.color}20` }}>
-                  {nutrition.smoothie.tip}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })()}
-      </section>
-
-      <section>
-        <h2 className="font-display text-xl font-normal italic mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {quickActions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <Link key={action.href} href={action.href}>
-                <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full" data-testid={`card-action-${action.label.toLowerCase().replace(/\s+/g, '-')}`}>
-                  <CardContent className="p-5 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[hsl(var(--brand-lavender))] mb-3">
-                      <Icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="font-medium text-sm mb-1">{action.label}</h3>
-                    <p className="text-xs text-muted-foreground">{action.description}</p>
-                  </CardContent>
-                </Card>
+        {/* Nourish */}
+        <Card className="border-0 rounded-2xl overflow-hidden" style={{ background: `${nutrition.color}15`, border: `1px solid ${nutrition.color}25` }}>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{nutrition.emoji}</span>
+                <span className="font-display font-medium italic">Nourish — {nutrition.phase}</span>
+              </div>
+              <Link href="/learn">
+                <Button variant="ghost" size="sm" className="text-xs rounded-full" style={{ color: nutrition.color }}>
+                  Full recipes <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
               </Link>
-            );
-          })}
-        </div>
-      </section>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="rounded-xl p-3" style={{ background: `${nutrition.color}12` }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span>🥤</span>
+                  <span className="font-medium text-sm">{nutrition.smoothie.name}</span>
+                </div>
+                <ul className="space-y-1">
+                  {nutrition.smoothie.ingredients.slice(0, 4).map((ing, i) => (
+                    <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                      <span style={{ color: nutrition.accent }} className="flex-shrink-0">·</span>
+                      {ing.split('(')[0].trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: `${nutrition.color}12` }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span>🥜</span>
+                  <span className="font-medium text-sm">{nutrition.trailMix.name}</span>
+                </div>
+                <ul className="space-y-1">
+                  {nutrition.trailMix.ingredients.slice(0, 4).map((ing, i) => (
+                    <li key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                      <span style={{ color: nutrition.accent }} className="flex-shrink-0">·</span>
+                      {ing.split('(')[0].trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3 italic">{nutrition.smoothie.tip}</p>
+          </CardContent>
+        </Card>
 
-      <section>
-        <CycleCompass cycleDay={cycleDay} />
-      </section>
-
-      <section>
-        <h2 className="font-display text-xl font-normal italic mb-4">Today's Tips</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <TipsCard category="Mind" tips={tips.Mind} />
+        {/* Body tips */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <TipsCard category="Body" tips={tips.Body} />
           <TipsCard category="Food" tips={tips.Food} />
-          <TipsCard category="Flow" tips={tips.Flow} />
         </div>
-      </section>
+      </SectionAccordion>
 
-      <section>
-        <GentleWins />
-      </section>
+      {/* ── SOUL ── */}
+      <SectionAccordion
+        icon={Sparkles}
+        title="Soul"
+        accent="#C4846E"
+        glance={
+          <span>{phaseInfo.description}</span>
+        }
+      >
+        {/* Partner support */}
+        <Card className="border-0 bg-rose-soft rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--brand-rose)/0.25)] flex items-center justify-center flex-shrink-0">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-display font-medium italic mb-2">Partner Support Today</h3>
+                <p className="text-muted-foreground text-sm mb-3">
+                  {currentPhase === 'menstrual' && "Be extra gentle. She needs rest and comfort right now."}
+                  {currentPhase === 'follicular' && "Great time to plan something fun together. Her energy is rising!"}
+                  {currentPhase === 'ovulatory' && "She's feeling social and communicative. Quality time matters."}
+                  {currentPhase === 'luteal' && "Be extra patient. Luteal energy is winding down."}
+                </p>
+                <Link href="/partner-support">
+                  <Button size="sm" variant="outline" className="rounded-full">
+                    Open Partner View <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      <section>
-        <h2 className="font-display text-xl font-normal italic mb-4">Understanding the Phases</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <PhaseCard phase="menstrual" />
-          <PhaseCard phase="follicular" />
-          <PhaseCard phase="ovulatory" />
-          <PhaseCard phase="luteal" />
+        {/* Cycle compass */}
+        <CycleCompass cycleDay={cycleDay} />
+
+        {/* Rituals */}
+        <Card className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-lavender)/0.2)' }}>
+          <CardContent className="p-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Wind className="w-5 h-5 text-primary" />
+              <div>
+                <h3 className="font-display font-medium italic">Breath Reset</h3>
+                <p className="text-xs text-muted-foreground">Quick calm-down ritual</p>
+              </div>
+            </div>
+            <Link href="/rituals">
+              <Button size="sm" variant="outline" className="rounded-full">Open</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Phase cards */}
+        <div>
+          <h3 className="font-display font-medium italic mb-3 text-muted-foreground">Understanding the Phases</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <PhaseCard phase="menstrual" />
+            <PhaseCard phase="follicular" />
+            <PhaseCard phase="ovulatory" />
+            <PhaseCard phase="luteal" />
+          </div>
         </div>
-      </section>
+      </SectionAccordion>
+
     </div>
   );
 }

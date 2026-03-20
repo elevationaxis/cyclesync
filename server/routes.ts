@@ -612,6 +612,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Push Notification Routes ──
+
+  // Return VAPID public key so frontend can subscribe
+  app.get("/api/push/vapid-public-key", (_req, res) => {
+    const key = process.env.VAPID_PUBLIC_KEY;
+    if (!key) return res.status(500).json({ error: "VAPID not configured" });
+    res.json({ publicKey: key });
+  });
+
+  // Save a push subscription
+  app.post("/api/push/subscribe", async (req, res) => {
+    try {
+      const { endpoint, keys, userId } = req.body;
+      if (!endpoint || !keys?.p256dh || !keys?.auth) {
+        return res.status(400).json({ error: "Invalid subscription" });
+      }
+      const uid = userId || (req.session as any)?.userId || "guest";
+      await storage.savePushSubscription({ userId: uid, endpoint, p256dh: keys.p256dh, auth: keys.auth });
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Push subscribe error:", error);
+      res.status(500).json({ error: "Failed to save subscription" });
+    }
+  });
+
+  // Remove a push subscription
+  app.post("/api/push/unsubscribe", async (req, res) => {
+    try {
+      const { endpoint } = req.body;
+      if (!endpoint) return res.status(400).json({ error: "Missing endpoint" });
+      await storage.deletePushSubscription(endpoint);
+      res.json({ ok: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to remove subscription" });
+    }
+  });
+
+  // Send a test notification
+  app.post("/api/push/test", async (req, res) => {
+    try {
+      const vapidPublic = process.env.VAPID_PUBLIC_KEY;
+      const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
+      if (!vapidPublic || !vapidPrivate) {
+        return res.status(500).json({ error: "VAPID keys not configured on server" });
+      }
+      const webpush = await import("web-push");
+      webpush.default.setVapidDetails(
+        "mailto:cync@elevationaxis.com",
+        vapidPublic,
+        vapidPrivate
+      );
+      const { endpoint, keys } = req.body;
+      if (!endpoint || !keys) return res.status(400).json({ error: "Missing subscription" });
+      const payload = JSON.stringify({
+        title: "Aunt B is here 🌿",
+        body: "Just checking in — how are you feeling today, sis?",
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
+        url: "/check-in",
+      });
+      await webpush.default.sendNotification({ endpoint, keys }, payload);
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Push test error:", error);
+      res.status(500).json({ error: error.message || "Failed to send notification" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
