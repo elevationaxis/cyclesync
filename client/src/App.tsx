@@ -110,32 +110,49 @@ function ProtectedApp() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
-      {/* Transparent logo watermarks — background texture */}
+      {/* Transparent logo watermarks — correct brand mark */}
       <div className="fixed top-[-80px] right-[-80px] pointer-events-none select-none z-0" style={{ opacity: 0.035 }}>
-        <svg width="340" height="340" viewBox="0 0 120 120" fill="none" className="text-foreground" style={{ color: 'currentColor' }}>
-          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
-          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
-          <path d="M44 98 C38 92, 30 94, 28 100 C34 98, 44 98, 44 98Z" fill="currentColor" opacity="0.7" />
-          <path d="M76 98 C82 92, 90 94, 92 100 C86 98, 76 98, 76 98Z" fill="currentColor" opacity="0.7" />
-          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <path d="M60 104 C56 108, 50 110, 46 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M60 104 C64 108, 70 110, 74 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <svg width="340" height="370" viewBox="0 0 120 130" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" className="text-foreground" style={{ color: 'currentColor' }}>
+          <path d="M60 8 C57 16 52 24 52 34 C52 42 55 47 60 48 C65 47 68 42 68 34 C68 24 63 16 60 8Z" fill="currentColor" />
+          <path d="M60 20 C58 26 57 32 58 38 C59 43 61 43 62 38 C63 32 62 26 60 20Z" fill="currentColor" opacity="0.4" />
+          <path d="M52 36 C46 36 36 40 30 48 C25 55 28 65 37 66 C44 67 51 59 52 50 C53 45 53 40 52 36Z" fill="currentColor" />
+          <path d="M68 36 C74 36 84 40 90 48 C95 55 92 65 83 66 C76 67 69 59 68 50 C67 45 67 40 68 36Z" fill="currentColor" />
+          <path d="M52 50 C54 56 57 61 60 63 C63 61 66 56 68 50" />
+          <path d="M60 63 L60 73" />
+          <path d="M57 68 C50 72 40 77 24 88" />
+          <path d="M58 70 C53 76 46 82 36 96" />
+          <path d="M59 72 C57 79 55 87 53 102" />
+          <path d="M60 73 C60 81 60 90 60 104" />
+          <path d="M61 72 C63 79 65 87 67 102" />
+          <path d="M62 70 C67 76 74 82 84 96" />
+          <path d="M63 68 C70 72 80 77 96 88" />
         </svg>
       </div>
       <div className="fixed bottom-[-100px] left-[-100px] pointer-events-none select-none z-0" style={{ opacity: 0.025 }}>
-        <svg width="420" height="420" viewBox="0 0 120 120" fill="none" className="text-foreground">
-          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
-          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
-          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <path d="M60 104 C56 108, 50 110, 46 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M60 104 C64 108, 70 110, 74 112" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <svg width="420" height="455" viewBox="0 0 120 130" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" className="text-foreground">
+          <path d="M60 8 C57 16 52 24 52 34 C52 42 55 47 60 48 C65 47 68 42 68 34 C68 24 63 16 60 8Z" fill="currentColor" />
+          <path d="M52 36 C46 36 36 40 30 48 C25 55 28 65 37 66 C44 67 51 59 52 50 C53 45 53 40 52 36Z" fill="currentColor" />
+          <path d="M68 36 C74 36 84 40 90 48 C95 55 92 65 83 66 C76 67 69 59 68 50 C67 45 67 40 68 36Z" fill="currentColor" />
+          <path d="M52 50 C54 56 57 61 60 63 C63 61 66 56 68 50" />
+          <path d="M60 63 L60 73" />
+          <path d="M57 68 C50 72 40 77 24 88" />
+          <path d="M58 70 C53 76 46 82 36 96" />
+          <path d="M59 72 C57 79 55 87 53 102" />
+          <path d="M60 73 C60 81 60 90 60 104" />
+          <path d="M61 72 C63 79 65 87 67 102" />
+          <path d="M62 70 C67 76 74 82 84 96" />
+          <path d="M63 68 C70 72 80 77 96 88" />
         </svg>
       </div>
       <div className="fixed top-[45%] right-[2%] pointer-events-none select-none z-0" style={{ opacity: 0.02 }}>
-        <svg width="160" height="160" viewBox="0 0 120 120" fill="none" className="text-foreground">
-          <path d="M60 20 C60 20, 72 35, 68 50 C66 58, 70 62, 70 62 C70 62, 80 52, 76 38 C74 30, 78 22, 78 22 C78 22, 90 38, 86 55 C82 70, 70 78, 60 80 C50 78, 38 70, 34 55 C30 38, 42 22, 42 22 C42 22, 46 30, 44 38 C40 52, 50 62, 50 62 C50 62, 54 58, 52 50 C48 35, 60 20, 60 20Z" fill="currentColor" />
-          <path d="M60 80 C60 80, 48 88, 44 98 C52 94, 60 96, 60 96 C60 96, 68 94, 76 98 C72 88, 60 80, 60 80Z" fill="currentColor" />
-          <path d="M60 96 L60 112" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg width="160" height="174" viewBox="0 0 120 130" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" className="text-foreground">
+          <path d="M60 8 C57 16 52 24 52 34 C52 42 55 47 60 48 C65 47 68 42 68 34 C68 24 63 16 60 8Z" fill="currentColor" />
+          <path d="M52 36 C46 36 36 40 30 48 C25 55 28 65 37 66 C44 67 51 59 52 50 C53 45 53 40 52 36Z" fill="currentColor" />
+          <path d="M68 36 C74 36 84 40 90 48 C95 55 92 65 83 66 C76 67 69 59 68 50 C67 45 67 40 68 36Z" fill="currentColor" />
+          <path d="M60 63 L60 73" />
+          <path d="M57 68 C50 72 40 77 24 88" />
+          <path d="M60 73 C60 81 60 90 60 104" />
+          <path d="M63 68 C70 72 80 77 96 88" />
         </svg>
       </div>
 
