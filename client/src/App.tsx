@@ -23,7 +23,7 @@ import QuoteSplash from "@/components/QuoteSplash";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useState, useEffect } from "react";
 
-const SPLASH_SESSION_KEY = "cync_splash_shown";
+// Splash fires on every app open — no session gating
 
 function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
   if (isPartnerView) {
@@ -71,7 +71,6 @@ function LandingWrapper() {
 
 function ProtectedApp() {
   const [isPartnerView, setIsPartnerView] = useState(false);
-  const [showSplash, setShowSplash] = useState(false);
   const [profileData, setProfileData] = useState<{ lastPeriodStart?: string | null; cycleLength?: number } | null>(null);
   const [, setLocation] = useLocation();
 
@@ -104,13 +103,6 @@ function ProtectedApp() {
           } else if (!user.isGuest) {
             setLocation("/onboarding");
           }
-        }
-
-        // Show splash once per session
-        const splashShown = sessionStorage.getItem(SPLASH_SESSION_KEY);
-        if (!splashShown) {
-          setShowSplash(true);
-          sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
         }
       })
       .catch(() => setLocation("/onboarding"));
@@ -147,13 +139,7 @@ function ProtectedApp() {
         </svg>
       </div>
 
-      {showSplash && (
-        <QuoteSplash
-          onDismiss={() => setShowSplash(false)}
-          lastPeriodStart={profileData?.lastPeriodStart}
-          cycleLength={profileData?.cycleLength}
-        />
-      )}
+
       <div className="relative z-10">
         <AppNavigation 
           isPartnerView={isPartnerView}
@@ -166,19 +152,29 @@ function ProtectedApp() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Switch>
-            <Route path="/" component={LandingWrapper} />
-            <Route path="/onboarding" component={OnboardingPage} />
-            <Route path="/partner-brief" component={PartnerBriefPage} />
-            <Route path="/cynclink/:token" component={CyncLinkPage} />
-            <Route>
-              <ProtectedApp />
-            </Route>
-          </Switch>
+          {/* Splash always fires first on every open, before any routing */}
+          {showSplash && (
+            <QuoteSplash
+              onDismiss={() => setShowSplash(false)}
+            />
+          )}
+          {!showSplash && (
+            <Switch>
+              <Route path="/" component={LandingWrapper} />
+              <Route path="/onboarding" component={OnboardingPage} />
+              <Route path="/partner-brief" component={PartnerBriefPage} />
+              <Route path="/cynclink/:token" component={CyncLinkPage} />
+              <Route>
+                <ProtectedApp />
+              </Route>
+            </Switch>
+          )}
           <Toaster />
         </TooltipProvider>
       </QueryClientProvider>
