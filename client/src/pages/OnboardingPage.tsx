@@ -10,33 +10,16 @@ import { apiRequest } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
 
 // Transparent logo watermark SVG
-function LogoWatermark({ size = 200, opacity = 0.04, className = "" }: { size?: number; opacity?: number; className?: string }) {
+function LogoWatermark({ size = 200, opacity = 0.08, className = "" }: { size?: number; opacity?: number; className?: string }) {
   return (
-    <svg
+    <img
+      src="/logo-mark.png"
+      alt=""
       width={size}
-      height={Math.round(size * 1.08)}
-      viewBox="0 0 120 130"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      height={size}
       className={`pointer-events-none select-none ${className}`}
-      style={{ opacity }}
-    >
-      <path d="M60 8 C57 16 52 24 52 34 C52 42 55 47 60 48 C65 47 68 42 68 34 C68 24 63 16 60 8Z" fill="currentColor" />
-      <path d="M52 36 C46 36 36 40 30 48 C25 55 28 65 37 66 C44 67 51 59 52 50 C53 45 53 40 52 36Z" fill="currentColor" />
-      <path d="M68 36 C74 36 84 40 90 48 C95 55 92 65 83 66 C76 67 69 59 68 50 C67 45 67 40 68 36Z" fill="currentColor" />
-      <path d="M52 50 C54 56 57 61 60 63 C63 61 66 56 68 50" />
-      <path d="M60 63 L60 73" />
-      <path d="M57 68 C50 72 40 77 24 88" />
-      <path d="M58 70 C53 76 46 82 36 96" />
-      <path d="M59 72 C57 79 55 87 53 102" />
-      <path d="M60 73 C60 81 60 90 60 104" />
-      <path d="M61 72 C63 79 65 87 67 102" />
-      <path d="M62 70 C67 76 74 82 84 96" />
-      <path d="M63 68 C70 72 80 77 96 88" />
-    </svg>
+      style={{ opacity, objectFit: 'contain' }}
+    />
   );
 }
 
@@ -207,18 +190,7 @@ export default function OnboardingPage() {
           {/* Logo + progress */}
           <div className="text-center mb-10">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <svg width="28" height="30" viewBox="0 0 120 130" fill="none" stroke={BLUSH} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M60 8 C57 16 52 24 52 34 C52 42 55 47 60 48 C65 47 68 42 68 34 C68 24 63 16 60 8Z" fill={BLUSH} />
-                <path d="M52 36 C46 36 36 40 30 48 C25 55 28 65 37 66 C44 67 51 59 52 50 C53 45 53 40 52 36Z" fill={BLUSH} />
-                <path d="M68 36 C74 36 84 40 90 48 C95 55 92 65 83 66 C76 67 69 59 68 50 C67 45 67 40 68 36Z" fill={BLUSH} />
-                <path d="M52 50 C54 56 57 61 60 63 C63 61 66 56 68 50" />
-                <path d="M60 63 L60 73" />
-                <path d="M57 68 C50 72 40 77 24 88" />
-                <path d="M58 70 C53 76 46 82 36 96" />
-                <path d="M60 73 C60 81 60 90 60 104" />
-                <path d="M62 70 C67 76 74 82 84 96" />
-                <path d="M63 68 C70 72 80 77 96 88" />
-              </svg>
+              <img src="/logo-mark.png" alt="Cync" width={28} height={28} style={{ objectFit: 'contain' }} />
               <span className="font-display text-lg" style={{ color: CREAM }}>Cync</span>
             </div>
             {step <= 3 && (
