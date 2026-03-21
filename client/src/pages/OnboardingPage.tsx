@@ -293,12 +293,17 @@ export default function OnboardingPage() {
                 {errors.name && <p className="text-sm" style={{ color: "#e87070" }}>{errors.name}</p>}
               </div>
 
+              {/* Disclaimer */}
+              <p className="text-xs text-center" style={{ color: 'rgba(247,242,235,0.35)', lineHeight: '1.5' }}>
+                Cync and Aunt B are for informational and wellness purposes only — not medical advice. Always consult a qualified healthcare provider before making changes to your health routine.
+              </p>
+
               <Button
                 onClick={handleNext}
                 className="w-full py-6 text-base font-semibold rounded-xl"
                 style={{ background: BLUSH, color: BLACK }}
               >
-                Nice to meet you
+                I understand — let's go
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
