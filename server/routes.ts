@@ -42,13 +42,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message } = req.body;
+      const { message, profileId, cycleDay, currentPhase } = req.body;
       
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const reply = await askAuntB(message);
+      // Build profile context for Aunt B if available
+      let profileContext: Record<string, unknown> | undefined;
+      if (profileId) {
+        try {
+          const profile = await storage.getUserProfile(profileId);
+          if (profile) {
+            profileContext = {
+              name: profile.name,
+              cycleStatus: profile.cycleStatus,
+              cycleReason: profile.cycleReason,
+              concerns: profile.concerns,
+              cycleDay: cycleDay || null,
+              currentPhase: currentPhase || null,
+            };
+          }
+        } catch (e) {
+          // Non-fatal — Aunt B can still respond without profile context
+        }
+      }
+
+      const reply = await askAuntB(message, profileContext);
       return res.json({ reply });
     } catch (error) {
       console.error("Error in /api/chat:", error);
@@ -367,9 +387,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/profile", async (req, res) => {
     try {
       const body = { ...req.body };
+      // Handle lastPeriodStart — optional for no-period users
       if (body.lastPeriodStart && typeof body.lastPeriodStart === 'string') {
         body.lastPeriodStart = new Date(body.lastPeriodStart);
+      } else if (!body.lastPeriodStart) {
+        // No-period users: set a sentinel date far in the past so DB constraint is satisfied
+        // but cycleStatus will tell us not to use it
+        body.lastPeriodStart = body.cycleStatus === 'no_period' ? null : undefined;
       }
+      // Pass through cycleStatus and cycleReason
       const data = insertUserProfileSchema.parse(body);
       const profile = await storage.createUserProfile(data);
       return res.json(profile);

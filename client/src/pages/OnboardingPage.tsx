@@ -2,14 +2,13 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, ArrowLeft, Calendar } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
 
-// Transparent logo watermark SVG
+// Transparent logo watermark
 function LogoWatermark({ size = 200, opacity = 0.08, className = "" }: { size?: number; opacity?: number; className?: string }) {
   return (
     <img
@@ -56,6 +55,45 @@ const intakeQuestions = [
   },
 ];
 
+const noPeriodReasons = [
+  {
+    id: "hysterectomy",
+    label: "Hysterectomy",
+    subtext: "Surgical removal of uterus — with or without ovaries",
+    emoji: "🌿"
+  },
+  {
+    id: "menopause",
+    label: "Menopause",
+    subtext: "Periods have stopped for 12+ months",
+    emoji: "🌙"
+  },
+  {
+    id: "perimenopause",
+    label: "Perimenopause",
+    subtext: "Cycles are irregular or changing — the in-between",
+    emoji: "🌊"
+  },
+  {
+    id: "pcos",
+    label: "PCOS or other condition",
+    subtext: "Polycystic ovary syndrome or another reason periods are absent",
+    emoji: "🌸"
+  },
+  {
+    id: "birth_control",
+    label: "Hormonal birth control",
+    subtext: "IUD, implant, injection, or pill that stopped your period",
+    emoji: "💊"
+  },
+  {
+    id: "other",
+    label: "Something else",
+    subtext: "My situation is different — I'll tell Aunt B more later",
+    emoji: "✨"
+  },
+];
+
 export default function OnboardingPage() {
   const [, setLocation] = useLocation();
   const [step, setStep] = useState(1);
@@ -63,29 +101,35 @@ export default function OnboardingPage() {
     name: "",
     lastPeriodStart: "",
     cycleLength: 28,
-    concerns: ""
+    concerns: "",
+    cycleStatus: "cycling" as "cycling" | "no_period",
+    cycleReason: "" as string
   });
   const [intakeAnswers, setIntakeAnswers] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showIntake, setShowIntake] = useState<boolean | null>(null); // null = not decided yet
 
   const createProfile = useMutation({
     mutationFn: async (data: typeof formData) => {
-      // Build concerns from intake answers + any free text
       const intakeTags = Object.entries(intakeAnswers)
         .filter(([, val]) => val)
         .map(([key]) => intakeQuestions.find(q => q.id === key)?.tag)
         .filter(Boolean)
         .join(", ");
-      
       const fullConcerns = [intakeTags, data.concerns].filter(Boolean).join(" | ");
 
-      const response = await apiRequest("POST", "/api/profile", {
+      const payload: Record<string, unknown> = {
         name: data.name,
-        lastPeriodStart: data.lastPeriodStart,
         cycleLength: data.cycleLength,
-        concerns: fullConcerns || null
-      });
+        concerns: fullConcerns || null,
+        cycleStatus: data.cycleStatus,
+        cycleReason: data.cycleReason || null
+      };
+
+      if (data.cycleStatus === "cycling" && data.lastPeriodStart) {
+        payload.lastPeriodStart = data.lastPeriodStart;
+      }
+
+      const response = await apiRequest("POST", "/api/profile", payload);
       return response.json() as Promise<UserProfile>;
     },
     onSuccess: (profile) => {
@@ -109,7 +153,7 @@ export default function OnboardingPage() {
       }
     }
 
-    if (currentStep === 2) {
+    if (currentStep === 2 && formData.cycleStatus === "cycling") {
       if (!formData.lastPeriodStart) {
         newErrors.lastPeriodStart = "I need this to track your cycle accurately";
       } else {
@@ -121,7 +165,13 @@ export default function OnboardingPage() {
       }
     }
 
-    if (currentStep === 3) {
+    if (currentStep === 2.5 && formData.cycleStatus === "no_period") {
+      if (!formData.cycleReason) {
+        newErrors.cycleReason = "Help Aunt B understand your situation";
+      }
+    }
+
+    if (currentStep === 3 && formData.cycleStatus === "cycling") {
       if (formData.cycleLength < 20 || formData.cycleLength > 45) {
         newErrors.cycleLength = "Typical cycles are between 20-45 days";
       }
@@ -132,55 +182,69 @@ export default function OnboardingPage() {
   };
 
   const handleNext = () => {
-    if (validateStep(step)) {
-      if (step < 3) {
-        setStep(step + 1);
-      } else if (step === 3) {
-        // Step 4 = spoon gate for optional intake
-        setStep(4);
-      } else if (step === 4) {
-        // They chose to do the intake quiz
-        setStep(5);
-      } else if (step === 5) {
-        // Done with intake, finish
-        createProfile.mutate(formData);
+    if (step === 1) {
+      if (validateStep(1)) setStep(2);
+    } else if (step === 2) {
+      if (formData.cycleStatus === "cycling") {
+        if (validateStep(2)) setStep(3);
+      } else {
+        // no_period — go to why quiz (step 2.5 represented as step 25)
+        setStep(25);
       }
+    } else if (step === 25) {
+      if (!formData.cycleReason) {
+        setErrors({ cycleReason: "Help Aunt B understand your situation" });
+        return;
+      }
+      setErrors({});
+      setStep(4); // skip cycle length for no-period users
+    } else if (step === 3) {
+      if (validateStep(3)) setStep(4);
+    } else if (step === 4) {
+      setStep(5);
+    } else if (step === 5) {
+      createProfile.mutate(formData);
     }
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      setErrors({});
+    if (step === 2) setStep(1);
+    else if (step === 25) setStep(2);
+    else if (step === 3) setStep(2);
+    else if (step === 4) {
+      if (formData.cycleStatus === "no_period") setStep(25);
+      else setStep(3);
     }
+    else if (step === 5) setStep(4);
+    setErrors({});
   };
 
   const handleSkipIntake = () => {
     createProfile.mutate(formData);
   };
 
-  const totalSteps = 3;
+  const progressStep = step <= 3 ? step : step === 25 ? 2 : 3;
   const progressDots = [1, 2, 3].map((num) => (
     <div
       key={num}
       className="w-2 h-2 rounded-full transition-all duration-300"
       style={{
-        background: num === Math.min(step, 3) ? BLUSH : num < Math.min(step, 3) ? SAGE : "rgba(247,242,235,0.2)"
+        background: num === Math.min(progressStep, 3) ? BLUSH : num < Math.min(progressStep, 3) ? SAGE : "rgba(247,242,235,0.2)"
       }}
     />
   ));
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: BLACK, color: CREAM }}>
-      
+
       {/* Background watermarks */}
-      <div className="absolute top-[-40px] right-[-40px] text-[#E8B4A0]">
+      <div className="absolute top-[-40px] right-[-40px]">
         <LogoWatermark size={280} opacity={0.05} />
       </div>
-      <div className="absolute bottom-[-60px] left-[-60px] text-[#7A9E7E]">
+      <div className="absolute bottom-[-60px] left-[-60px]">
         <LogoWatermark size={320} opacity={0.04} />
       </div>
-      <div className="absolute top-[40%] left-[5%] text-[#F7F2EB]">
+      <div className="absolute top-[40%] left-[5%]">
         <LogoWatermark size={120} opacity={0.03} />
       </div>
 
@@ -224,7 +288,6 @@ export default function OnboardingPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="text-lg py-6 border-0 rounded-xl"
                   style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
-                  data-testid="input-name"
                   onKeyDown={(e) => e.key === "Enter" && handleNext()}
                 />
                 {errors.name && <p className="text-sm" style={{ color: "#e87070" }}>{errors.name}</p>}
@@ -234,7 +297,6 @@ export default function OnboardingPage() {
                 onClick={handleNext}
                 className="w-full py-6 text-base font-semibold rounded-xl"
                 style={{ background: BLUSH, color: BLACK }}
-                data-testid="button-next"
               >
                 Nice to meet you
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -242,7 +304,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 2 — Last period */}
+          {/* Step 2 — Last period (cycling path) */}
           {step === 2 && (
             <div className="space-y-8">
               <div className="text-center">
@@ -263,17 +325,36 @@ export default function OnboardingPage() {
                   id="lastPeriod"
                   type="date"
                   value={formData.lastPeriodStart}
-                  onChange={(e) => setFormData({ ...formData, lastPeriodStart: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, lastPeriodStart: e.target.value, cycleStatus: "cycling" })}
                   max={new Date().toISOString().split("T")[0]}
                   className="text-lg py-6 border-0 rounded-xl"
                   style={{ background: "rgba(247,242,235,0.07)", color: CREAM, colorScheme: "dark" }}
-                  data-testid="input-last-period"
                 />
                 {errors.lastPeriodStart && <p className="text-sm" style={{ color: "#e87070" }}>{errors.lastPeriodStart}</p>}
                 <p className="text-sm" style={{ color: "rgba(247,242,235,0.4)" }}>
                   Best guess is fine, love. We'll refine it as we go.
                 </p>
               </div>
+
+              {/* No period option */}
+              <button
+                onClick={() => {
+                  setFormData({ ...formData, cycleStatus: "no_period", lastPeriodStart: "" });
+                  setStep(25);
+                }}
+                className="w-full text-left p-4 rounded-xl transition-all duration-200"
+                style={{
+                  background: "rgba(247,242,235,0.04)",
+                  border: "1px solid rgba(247,242,235,0.12)"
+                }}
+              >
+                <p className="text-sm font-medium" style={{ color: CREAM_MUTED }}>
+                  I don't have those anymore
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "rgba(247,242,235,0.35)" }}>
+                  Hysterectomy, menopause, perimenopause, or something else
+                </p>
+              </button>
 
               <div className="flex gap-3">
                 <Button
@@ -288,7 +369,6 @@ export default function OnboardingPage() {
                   onClick={handleNext}
                   className="flex-1 py-6 text-base font-semibold rounded-xl"
                   style={{ background: BLUSH, color: BLACK }}
-                  data-testid="button-next"
                 >
                   Got it
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -297,7 +377,84 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 3 — Cycle length */}
+          {/* Step 2.5 — No period: why quiz */}
+          {step === 25 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="font-display text-2xl font-normal mb-3" style={{ color: CREAM }}>
+                  Got it, {formData.name}.
+                </h2>
+                <p style={{ color: CREAM_MUTED }}>
+                  Help Aunt B understand your body better. What's your situation?
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {noPeriodReasons.map((reason) => {
+                  const selected = formData.cycleReason === reason.id;
+                  return (
+                    <button
+                      key={reason.id}
+                      onClick={() => {
+                        setFormData({ ...formData, cycleReason: reason.id });
+                        setErrors({});
+                      }}
+                      className="w-full text-left p-4 rounded-xl transition-all duration-200"
+                      style={{
+                        background: selected ? `${BLUSH}18` : "rgba(247,242,235,0.04)",
+                        border: `1px solid ${selected ? BLUSH + "60" : "rgba(247,242,235,0.1)"}`,
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{reason.emoji}</span>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium" style={{ color: CREAM }}>{reason.label}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "rgba(247,242,235,0.45)" }}>{reason.subtext}</p>
+                        </div>
+                        <div
+                          className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center"
+                          style={{
+                            background: selected ? BLUSH : "transparent",
+                            border: `1.5px solid ${selected ? BLUSH : "rgba(247,242,235,0.3)"}`,
+                          }}
+                        >
+                          {selected && (
+                            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                              <path d="M1 4L3.5 6.5L9 1" stroke={BLACK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {errors.cycleReason && <p className="text-sm" style={{ color: "#e87070" }}>{errors.cycleReason}</p>}
+
+              <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleBack}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={!formData.cycleReason}
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK, opacity: formData.cycleReason ? 1 : 0.5 }}
+                >
+                  That's me
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3 — Cycle length (cycling users only) */}
           {step === 3 && (
             <div className="space-y-8">
               <div className="text-center">
@@ -318,7 +475,6 @@ export default function OnboardingPage() {
                     onClick={() => setFormData({ ...formData, cycleLength: Math.max(20, formData.cycleLength - 1) })}
                     className="w-12 h-12 rounded-full border-0 text-xl"
                     style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
-                    data-testid="button-decrease-cycle"
                   >
                     −
                   </Button>
@@ -335,7 +491,6 @@ export default function OnboardingPage() {
                     onClick={() => setFormData({ ...formData, cycleLength: Math.min(45, formData.cycleLength + 1) })}
                     className="w-12 h-12 rounded-full border-0 text-xl"
                     style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
-                    data-testid="button-increase-cycle"
                   >
                     +
                   </Button>
@@ -359,7 +514,6 @@ export default function OnboardingPage() {
                   onClick={handleNext}
                   className="flex-1 py-6 text-base font-semibold rounded-xl"
                   style={{ background: BLUSH, color: BLACK }}
-                  data-testid="button-next"
                 >
                   That's me
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -399,7 +553,6 @@ export default function OnboardingPage() {
                   disabled={createProfile.isPending}
                   className="w-full py-6 text-base rounded-xl"
                   style={{ color: CREAM_MUTED, border: "1px solid rgba(247,242,235,0.1)" }}
-                  data-testid="button-skip-intake"
                 >
                   {createProfile.isPending ? "Setting things up..." : "Save my spoons, skip for now"}
                 </Button>
@@ -482,7 +635,6 @@ export default function OnboardingPage() {
                   disabled={createProfile.isPending}
                   className="flex-1 py-6 text-base font-semibold rounded-xl"
                   style={{ background: BLUSH, color: BLACK }}
-                  data-testid="button-finish"
                 >
                   {createProfile.isPending ? "Setting things up..." : "Take me in, Aunt B"}
                 </Button>
@@ -492,7 +644,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {step <= 3 && (
+          {(step === 1 || step === 2 || step === 3) && (
             <p className="text-center text-xs mt-8" style={{ color: "rgba(247,242,235,0.3)" }}>
               You can always update this later in settings
             </p>

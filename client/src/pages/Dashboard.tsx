@@ -126,7 +126,17 @@ export default function Dashboard() {
     enabled: !!profileId,
   });
 
+  const isNoPeriod = profile?.cycleStatus === 'no_period';
+
   const { cycleDay, currentPhase, phaseInfo } = useMemo(() => {
+    if (isNoPeriod) {
+      // No-period users: use a neutral 'follicular' baseline — symptom-based, not cycle-day-based
+      return {
+        cycleDay: null,
+        currentPhase: 'follicular' as const,
+        phaseInfo: getPhaseInfo('follicular'),
+      };
+    }
     if (profile?.lastPeriodStart) {
       const day = calculateCycleDay(profile.lastPeriodStart, profile.cycleLength || 28);
       const phase = getPhaseForCycleLength(day, profile.cycleLength || 28);
@@ -137,7 +147,7 @@ export default function Dashboard() {
       currentPhase: getCurrentPhase(12),
       phaseInfo: getPhaseInfo(getCurrentPhase(12)),
     };
-  }, [profile]);
+  }, [profile, isNoPeriod]);
 
   const userId = profileId || "demo-user";
 
@@ -232,7 +242,7 @@ export default function Dashboard() {
           {userName ? `Welcome back, ${userName.split(' ')[0]}` : 'Your Daily Cync'}
         </h1>
         <p className="font-label text-base text-muted-foreground tracking-wide">
-          {phaseInfo.name} · Day {cycleDay}
+          {isNoPeriod ? 'Hormone Tracking Mode' : `${phaseInfo.name} · Day ${cycleDay}`}
         </p>
       </div>
 
@@ -246,10 +256,22 @@ export default function Dashboard() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-medium italic text-lg capitalize">{currentPhase}</span>
-                  <Badge variant="outline" className="text-xs rounded-full" style={{ borderColor: `${accent}50`, color: accent }}>Day {cycleDay}</Badge>
+                  <span className="font-display font-medium italic text-lg capitalize">
+                    {isNoPeriod ? 'How are you feeling?' : currentPhase}
+                  </span>
+                  {!isNoPeriod && cycleDay && (
+                    <Badge variant="outline" className="text-xs rounded-full" style={{ borderColor: `${accent}50`, color: accent }}>Day {cycleDay}</Badge>
+                  )}
+                  {isNoPeriod && (
+                    <Badge variant="outline" className="text-xs rounded-full" style={{ borderColor: `${accent}50`, color: accent }}>Symptom-Based</Badge>
+                  )}
                 </div>
-                <p className="text-sm text-muted-foreground">{phaseInfo.energy} energy · {phaseInfo.supportTone}</p>
+                <p className="text-sm text-muted-foreground">
+                  {isNoPeriod
+                    ? 'Tracking your body by how you feel, not cycle day'
+                    : `${phaseInfo.energy} energy · ${phaseInfo.supportTone}`
+                  }
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">

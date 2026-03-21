@@ -100,9 +100,11 @@ export const userProfiles = pgTable("user_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").unique(),
   name: text("name").notNull(),
-  lastPeriodStart: timestamp("last_period_start").notNull(),
+  lastPeriodStart: timestamp("last_period_start"),
   cycleLength: integer("cycle_length").notNull().default(28),
   concerns: text("concerns"),
+  cycleStatus: text("cycle_status").default("cycling"), // cycling | no_period
+  cycleReason: text("cycle_reason"), // hysterectomy | menopause | perimenopause | pcos | birth_control | other
   createdAt: timestamp("created_at").defaultNow(),
 });
 
