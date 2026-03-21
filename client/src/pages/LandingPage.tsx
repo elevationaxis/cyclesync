@@ -81,8 +81,8 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5" style={{ borderBottom: "1px solid rgba(247,242,235,0.08)" }}>
         <div className="flex items-center gap-2.5">
-          <BrandMark size={28} />
-          <span className="font-display text-lg" data-testid="text-brand-name">Chaos <span style={{ opacity: 0.4 }}>&</span> Co</span>
+          <img src="/logo-mark.png" alt="Cync" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+          <span className="font-display text-lg" data-testid="text-brand-name">Cync</span>
         </div>
         <Button
           variant="outline"
@@ -358,11 +358,11 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
       <footer className="px-6 md:px-12 py-10" style={{ borderTop: "1px solid rgba(247,242,235,0.06)" }}>
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <BrandMark size={18} color="#6b5e54" />
-            <span className="font-display text-sm" style={{ color: "#6b5e54" }}>Chaos & Co</span>
+            <img src="/logo-mark.png" alt="Cync" style={{ width: 18, height: 18, objectFit: 'contain', opacity: 0.6 }} />
+            <span className="font-display text-sm" style={{ color: "#6b5e54" }}>Cync</span>
           </div>
           <p className="text-xs" style={{ color: "#483220" }} data-testid="text-footer">
-            Cync — part of Chaos & Co. Made with intention.
+            Cync by Chaos & Co. Made with intention.
           </p>
         </div>
       </footer>
