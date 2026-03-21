@@ -13,3 +13,21 @@ if (!process.env.DATABASE_URL) {
 
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle({ client: pool, schema });
+
+// Auto-migrate: ensure all columns exist on startup (safe to run repeatedly)
+export async function ensureSchema(): Promise<void> {
+  const client = await pool.connect();
+  try {
+    // Add cycleStatus and cycleReason columns if missing (added in no-period update)
+    await client.query(`
+      ALTER TABLE user_profiles
+        ADD COLUMN IF NOT EXISTS cycle_status TEXT DEFAULT 'cycling',
+        ADD COLUMN IF NOT EXISTS cycle_reason TEXT
+    `);
+    console.log('[db] Schema columns verified');
+  } catch (err) {
+    console.error('[db] Schema migration warning:', err);
+  } finally {
+    client.release();
+  }
+}

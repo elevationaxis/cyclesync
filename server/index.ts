@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { ensureSchema } from "./db";
 
 const app = express();
 
@@ -63,6 +64,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Ensure DB schema is up to date (adds missing columns safely)
+  await ensureSchema();
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
