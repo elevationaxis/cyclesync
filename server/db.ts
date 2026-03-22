@@ -24,6 +24,11 @@ export async function ensureSchema(): Promise<void> {
         ADD COLUMN IF NOT EXISTS cycle_status TEXT DEFAULT 'cycling',
         ADD COLUMN IF NOT EXISTS cycle_reason TEXT
     `);
+    // Drop NOT NULL constraint on last_period_start so no-period users can create profiles
+    await client.query(`
+      ALTER TABLE user_profiles
+        ALTER COLUMN last_period_start DROP NOT NULL
+    `);
     console.log('[db] Schema columns verified');
   } catch (err) {
     console.error('[db] Schema migration warning:', err);

@@ -391,17 +391,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (body.lastPeriodStart && typeof body.lastPeriodStart === 'string') {
         body.lastPeriodStart = new Date(body.lastPeriodStart);
       } else if (!body.lastPeriodStart) {
-        // No-period users: set a sentinel date far in the past so DB constraint is satisfied
-        // but cycleStatus will tell us not to use it
-        body.lastPeriodStart = body.cycleStatus === 'no_period' ? null : undefined;
+        // No-period users: lastPeriodStart is null
+        body.lastPeriodStart = null;
       }
-      // Pass through cycleStatus and cycleReason
-      const data = insertUserProfileSchema.parse(body);
-      const profile = await storage.createUserProfile(data);
+      // Ensure cycleStatus and cycleReason pass through
+      body.cycleStatus = body.cycleStatus || 'cycling';
+      body.cycleReason = body.cycleReason || null;
+      // Use partial schema parse to allow null lastPeriodStart
+      const data = insertUserProfileSchema.partial().required({ name: true, cycleLength: true }).parse(body);
+      const profile = await storage.createUserProfile(data as any);
       return res.json(profile);
     } catch (error) {
       console.error("Error creating profile:", error);
       if (error instanceof Error && error.name === 'ZodError') {
+        console.error("Zod validation error:", JSON.stringify((error as any).errors));
         return res.status(400).json({ error: "Invalid profile data" });
       }
       return res.status(500).json({ error: "Failed to create profile" });
