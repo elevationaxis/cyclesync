@@ -54,6 +54,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const profile = await storage.getUserProfile(profileId);
           if (profile) {
+            // Fetch today's spoon entry to give Aunt B energy context
+            let remainingSpoons: number | null = null;
+            let totalSpoons: number | null = null;
+            try {
+              if (profile.userId) {
+                const spoonEntry = await storage.getTodaySpoonEntry(profile.userId);
+                if (spoonEntry) {
+                  totalSpoons = spoonEntry.totalSpoons;
+                  remainingSpoons = Math.max(0, spoonEntry.totalSpoons - spoonEntry.usedSpoons);
+                }
+              }
+            } catch (e) {
+              // Non-fatal — spoon context is optional
+            }
             profileContext = {
               name: profile.name,
               cycleStatus: profile.cycleStatus,
@@ -64,6 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               age: (profile as any).age || null,
               relationshipStatus: (profile as any).relationshipStatus || null,
               partnerWillingness: (profile as any).partnerWillingness || null,
+              remainingSpoons,
+              totalSpoons,
             };
           }
         } catch (e) {

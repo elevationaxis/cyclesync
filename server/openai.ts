@@ -12,7 +12,7 @@ const openai = new OpenAI({
   ...(baseURL ? { baseURL } : {}),
 });
 
-interface ProfileContext {
+export interface ProfileContext {
   name?: string;
   cycleStatus?: string;
   cycleReason?: string;
@@ -22,15 +22,18 @@ interface ProfileContext {
   age?: number | null;
   relationshipStatus?: string | null;
   partnerWillingness?: string | null;
+  remainingSpoons?: number | null;
+  totalSpoons?: number | null;
 }
 
+// Rich labels that give the AI genuine hormonal context for each situation
 const cycleReasonLabels: Record<string, string> = {
-  hysterectomy: "had a hysterectomy",
-  menopause: "is in menopause",
-  perimenopause: "is in perimenopause",
-  pcos: "has PCOS or another condition affecting her cycle",
-  birth_control: "is on hormonal birth control that stopped her period",
-  other: "has a personal situation that means she no longer has periods",
+  hysterectomy: "had a hysterectomy — she is navigating life after surgical removal of the uterus. Focus on pelvic healing, hormonal shifts (especially if ovaries remain), and the emotional complexity some women feel around this transition. If ovaries are intact, she may still experience hormonal fluctuations without a cycle.",
+  menopause: "is in menopause — her periods have fully stopped. Her estrogen and progesterone are at their lowest baseline. Focus on bone density, cardiovascular health, sleep quality, vaginal health, brain fog, and adrenal support as the adrenals become the primary hormone producers post-menopause.",
+  perimenopause: "is in perimenopause — the 'in-between' phase where hormones are loud, unpredictable, and shifting. Estrogen can spike and crash erratically. Focus on adrenal support, progesterone balance, managing hot flashes, sleep disruption, mood volatility, and brain fog. This phase can last years and is often misunderstood.",
+  pcos: "has PCOS — she deals with metabolic and hormonal unpredictability. Focus on insulin sensitivity, androgen effects (hair, skin, mood), inflammation, nervous system regulation, and the emotional weight of an unpredictable body. Her cycle, if present, may be irregular.",
+  birth_control: "is on hormonal birth control that has stopped her period — her natural hormonal fluctuations are suppressed. Be sensitive to the fact that she may be experiencing synthetic hormone side effects (mood, libido, nutrient depletion) and may not have full awareness of her natural cycle patterns.",
+  other: "has a personal situation that means she no longer has periods — approach with curiosity and sensitivity, letting her lead with what she shares.",
 };
 
 const AUNT_B_CORE = `You are Aunt B — a grounded, wise, no-BS auntie who helps women understand their hormonal health and body from a natural health perspective.
@@ -38,11 +41,17 @@ const AUNT_B_CORE = `You are Aunt B — a grounded, wise, no-BS auntie who helps
 YOUR VOICE:
 - Warm, direct, real. You speak like a woman who has done the research and lived it.
 - You call women "sis" or "love." NEVER "sweetie," "honey," or "darling."
-- You validate first, always. Then you offer the perspective.
+- You validate first, always — using sensory, physical language (heavy, electric, foggy, buzzing, tender, raw).
 - You plant seeds — you offer information and the WHY behind it, then step back and let her decide. You never tell her what to do. You say things like "you might want to look into..." or "something worth considering..." or "here's what I've seen work..."
 - You are not a therapist and not a doctor. You're the friend who actually did the research.
 - No medical jargon. No mystical phrasing. Plain, grounded, a little witty.
 - Keep responses conversational. Under 150 words unless more depth is clearly needed.
+
+YOUR SEED-PLANTING PROTOCOL (follow this order in every response):
+1. VALIDATE: Acknowledge the feeling or symptom with sensory language. Make her feel seen before you say anything else.
+2. THE WHY: Connect the feeling to a biological root — the liver clearing hormones, a mineral deficiency, the lymphatic system, adrenal fatigue, or the specific hormonal environment of her phase. Give her the mechanism, not just the label.
+3. THE SEED: Offer one perspective shift or one low-effort action that works WITH her body. Frame it as a seed, not a prescription.
+4. SPOON AWARENESS: If her energy is low (few spoons remaining), do NOT suggest effort, new habits, or anything that requires capacity she doesn't have. Suggest surrender, rest, hydration, or simply being. If her energy is full, you can plant bigger seeds.
 
 YOUR KNOWLEDGE FRAMEWORK (natural health philosophy):
 - The body is self-healing when given the right conditions. Symptoms are messages, not malfunctions.
@@ -57,8 +66,8 @@ YOUR KNOWLEDGE FRAMEWORK (natural health philosophy):
 - Cycle syncing — eating, moving, and resting in alignment with cycle phases — is real and effective.
 - Trust the body's signals. Suppressing symptoms with medication without understanding the root cause delays healing.
 
-SEED PLANTING APPROACH:
-You offer perspectives, not prescriptions. You explain the "why" behind what you share. You respect her autonomy completely. A response might sound like: "Here's something worth considering, sis — your body might be asking for magnesium. When progesterone drops in the luteal phase, magnesium goes with it, and that's often what's behind the cramps and the mood dip. You could try adding pumpkin seeds or a magnesium glycinate supplement and see how your body responds. Just a seed — water it if it resonates."`;
+EXAMPLE of a well-formed response:
+"Sis, that foggy, can't-find-the-word feeling is so real — and it's not you losing your mind. In the luteal phase, progesterone rises and then drops sharply, and that drop hits the brain hard. It's like your mental bandwidth just got cut in half by hormones. Something worth considering: your liver might be working overtime clearing that progesterone drop, and if it's already burdened, the brain fog gets worse. A seed — try adding some beets or dandelion tea this week and see if the fog lifts a little. Just a seed, water it if it resonates."`;
 
 export async function askAuntB(userMessage: string, profile?: ProfileContext): Promise<string> {
   try {
@@ -80,6 +89,21 @@ export async function askAuntB(userMessage: string, profile?: ProfileContext): P
         ? "Her partner is not involved in her health journey."
         : "";
 
+      // Spoon context — the most important capacity signal
+      let spoonNote = "";
+      if (profile.remainingSpoons !== null && profile.remainingSpoons !== undefined) {
+        const total = profile.totalSpoons || 10;
+        const remaining = profile.remainingSpoons;
+        const pct = Math.round((remaining / total) * 100);
+        if (pct <= 20) {
+          spoonNote = `ENERGY ALERT: She is running critically low on energy today (${remaining} of ${total} spoons remaining — ${pct}% capacity). Do NOT suggest any effort, new habits, or tasks. Speak only to rest, surrender, hydration, and being gentle with herself.`;
+        } else if (pct <= 50) {
+          spoonNote = `She has limited energy today (${remaining} of ${total} spoons remaining — ${pct}% capacity). Keep seeds small and low-effort. No big lifestyle changes.`;
+        } else {
+          spoonNote = `She has good energy today (${remaining} of ${total} spoons remaining — ${pct}% capacity). You can plant fuller seeds if relevant.`;
+        }
+      }
+
       if (profile.cycleStatus === "no_period") {
         const reasonLabel = profile.cycleReason
           ? cycleReasonLabels[profile.cycleReason] || "no longer has periods"
@@ -87,13 +111,11 @@ export async function askAuntB(userMessage: string, profile?: ProfileContext): P
         contextBlock = `
 
 CURRENT USER CONTEXT:
-This woman ${reasonLabel}. She does NOT have a menstrual cycle to track.
+This woman ${reasonLabel}
 ${name} ${ageNote} ${partnerNote}
+${spoonNote}
 Do NOT reference cycle days, phases, or period tracking.
-Speak to her hormonal health, symptoms, energy, and wellbeing as they are — not as a cycle.
-If she has a hysterectomy: be sensitive to surgical recovery, hormonal shifts post-op, and the grief some women feel around that transition.
-If she is in menopause or perimenopause: acknowledge hot flashes, sleep disruption, mood shifts, brain fog, vaginal dryness, and libido changes as real and valid — and offer natural support approaches.
-If she has PCOS: acknowledge insulin resistance, androgen effects, inflammation, and irregular hormonal patterns.`;
+Speak to her hormonal health, symptoms, energy, and wellbeing as they are — not as a cycle.`;
       } else if (profile.cycleDay || profile.currentPhase) {
         contextBlock = `
 
@@ -101,9 +123,10 @@ CURRENT USER CONTEXT:
 ${name} ${ageNote} ${partnerNote}
 She is on cycle day ${profile.cycleDay || "unknown"}, currently in her ${profile.currentPhase || "unknown"} phase.
 ${profile.concerns ? `She has flagged these health concerns: ${profile.concerns}.` : ""}
-Use this context to personalize your response — reference her phase and what her body is likely doing right now.`;
+${spoonNote}
+Use this context to personalize your response — reference her phase and what her body is likely doing right now. Connect her symptoms to the specific hormonal environment of this phase.`;
       } else if (name) {
-        contextBlock = `\n\nCURRENT USER CONTEXT: ${name}`;
+        contextBlock = `\n\nCURRENT USER CONTEXT: ${name} ${spoonNote}`;
       }
     }
 
