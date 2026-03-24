@@ -23,6 +23,8 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  getAllProfiles(): Promise<UserProfile[]>;
   
   // Rituals
   createRitual(ritual: InsertRitual): Promise<Ritual>;
@@ -96,6 +98,14 @@ export class MemStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email!));
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async getAllProfiles(): Promise<UserProfile[]> {
+    return db.select().from(userProfiles).orderBy(desc(userProfiles.createdAt));
   }
 
   async createRitual(ritual: InsertRitual): Promise<Ritual> {

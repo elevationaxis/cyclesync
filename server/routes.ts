@@ -712,6 +712,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Admin API (protected by ADMIN_SECRET env var) ──
+  app.get("/api/admin/stats", async (req, res) => {
+    const secret = process.env.ADMIN_SECRET;
+    const provided = req.headers["x-admin-secret"] || req.query.secret;
+    if (!secret || provided !== secret) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const [allUsers, allProfiles] = await Promise.all([
+        storage.getAllUsers(),
+        storage.getAllProfiles(),
+      ]);
+      const safeUsers = allUsers.map(({ password, ...u }) => u);
+      const realUsers = safeUsers.filter(u => !u.username.startsWith("guest_"));
+      const guestUsers = safeUsers.filter(u => u.username.startsWith("guest_"));
+      const signupsByDay: Record<string, number> = {};
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000);
+        signupsByDay[d.toISOString().slice(0, 10)] = 0;
+      }
+      for (const u of realUsers) {
+        if (u.createdAt) {
+          const day = new Date(u.createdAt).toISOString().slice(0, 10);
+          if (day in signupsByDay) signupsByDay[day]++;
+        }
+      }
+      res.json({
+        totalUsers: realUsers.length,
+        totalGuests: guestUsers.length,
+        totalProfiles: allProfiles.length,
+        recentUsers: safeUsers.slice(0, 100),
+        signupsByDay,
+        profiles: allProfiles.slice(0, 100),
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

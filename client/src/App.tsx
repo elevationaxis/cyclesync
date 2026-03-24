@@ -19,6 +19,7 @@ import LandingPage from "@/pages/LandingPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import PartnerBriefPage from "@/pages/PartnerBriefPage";
 import CyncLinkPage from "@/pages/CyncLinkPage";
+import AdminPage from "@/pages/AdminPage";
 import QuoteSplash from "@/components/QuoteSplash";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -208,6 +209,7 @@ function App() {
               <Route path="/onboarding" component={OnboardingPage} />
               <Route path="/partner-brief" component={PartnerBriefPage} />
               <Route path="/cynclink/:token" component={CyncLinkPage} />
+              <Route path="/admin" component={AdminPage} />
               <Route>
                 <ProtectedApp />
               </Route>
