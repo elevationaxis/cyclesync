@@ -506,7 +506,7 @@ export default function Dashboard() {
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-display font-medium italic mb-2">Partner Support Today</h3>
+                <h3 className="font-display font-medium italic mb-2">CyncLink</h3>
                 <p className="text-muted-foreground text-sm mb-3">
                   {currentPhase === 'menstrual' && "Be extra gentle. She needs rest and comfort right now."}
                   {currentPhase === 'follicular' && "Great time to plan something fun together. Her energy is rising!"}
@@ -515,7 +515,7 @@ export default function Dashboard() {
                 </p>
                 <Link href="/partner-support">
                   <Button size="sm" variant="outline" className="rounded-full">
-                    Open Partner View <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                    Open CyncLink <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </Button>
                 </Link>
               </div>
