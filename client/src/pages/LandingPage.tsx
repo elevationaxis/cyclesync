@@ -210,6 +210,9 @@ export default function LandingPage({ onGetStarted, onTryAsGuest, onSignIn }: La
         <p className="text-xs font-medium tracking-[0.25em] uppercase mb-8" style={{ color: SAGE }}>
           For the women who feel everything
         </p>
+        <p className="text-sm font-semibold tracking-wide mb-5" style={{ color: BLUSH }}>
+          You're not inconsistent. You've been misaligned.
+        </p>
         <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-7">
           Your body's been trying to tell you something.{" "}
           <span style={{ color: BLUSH }}>We'll help you hear it.</span>

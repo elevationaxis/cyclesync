@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, ClipboardCheck, Wind, Heart, Utensils, Calendar, ArrowRight, Users, Zap, Battery, BatteryLow, BatteryMedium, BatteryFull, Brain, Flower2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import type { SpoonEntry, UserProfile } from "@shared/schema";
+import type { SpoonEntry, UserProfile, Ritual, CommunityPost } from "@shared/schema";
 import { saveMoods, loadMoods, getProfileId, getUserName } from "@/lib/storage";
 
 const phaseMessages: Record<string, string[]> = {
@@ -224,6 +224,28 @@ export default function Dashboard() {
 
   const SpoonIcon = getSpoonIcon(spoonLevel);
 
+  // Fetch phase-matched ritual for dashboard card
+  const { data: phaseRituals } = useQuery<Ritual[]>({
+    queryKey: ["/api/rituals", currentPhase],
+    queryFn: async () => {
+      const response = await fetch(`/api/rituals?phase=${currentPhase}`);
+      if (!response.ok) return [];
+      return response.json();
+    },
+  });
+  const featuredRitual = phaseRituals?.[0] ?? null;
+
+  // Fetch top 2 phase-matched community posts
+  const { data: phasePosts } = useQuery<CommunityPost[]>({
+    queryKey: ["/api/community-posts", currentPhase],
+    queryFn: async () => {
+      const response = await fetch(`/api/community-posts?phase=${currentPhase}`);
+      if (!response.ok) return [];
+      const all: CommunityPost[] = await response.json();
+      return all.sort((a, b) => (b.upvotes ?? 0) - (a.upvotes ?? 0)).slice(0, 2);
+    },
+  });
+
   // Phase accent colors
   const phaseAccent: Record<string, string> = {
     menstrual: '#8B4A6B',
@@ -272,6 +294,11 @@ export default function Dashboard() {
                     : `${phaseInfo.energy} energy · ${phaseInfo.supportTone}`
                   }
                 </p>
+                {!isNoPeriod && (
+                  <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'hsl(var(--muted-foreground)/0.7)' }}>
+                    <span className="italic font-medium">Why this phase?</span> {phaseInfo.description}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -499,14 +526,20 @@ export default function Dashboard() {
         {/* Cycle compass — hidden for no-period users */}
         {!isNoPeriod && <CycleCompass cycleDay={cycleDay} />}
 
-        {/* Rituals */}
+        {/* Ritual — phase-matched or fallback */}
         <Card className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-lavender)/0.2)' }}>
           <CardContent className="p-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Wind className="w-5 h-5 text-primary" />
               <div>
-                <h3 className="font-display font-medium italic">Breath Reset</h3>
-                <p className="text-xs text-muted-foreground">Quick calm-down ritual</p>
+                <h3 className="font-display font-medium italic">
+                  {featuredRitual ? featuredRitual.title : 'Breath Reset'}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {featuredRitual
+                    ? `${featuredRitual.duration ?? 'A few minutes'} · ${currentPhase} ritual`
+                    : 'Quick calm-down ritual'}
+                </p>
               </div>
             </div>
             <Link href="/rituals">
@@ -514,6 +547,27 @@ export default function Dashboard() {
             </Link>
           </CardContent>
         </Card>
+
+        {/* Community — top 2 phase-matched posts */}
+        {phasePosts && phasePosts.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="font-display font-medium italic text-sm text-muted-foreground px-1">From the community this phase</h3>
+            {phasePosts.map(post => (
+              <Card key={post.id} className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-copper)/0.08)' }}>
+                <CardContent className="p-4">
+                  <p className="text-sm font-medium mb-1">{post.question}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{post.answer}</p>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs text-muted-foreground">{post.upvotes ?? 0} found this helpful</span>
+                    <Link href="/community">
+                      <Button size="sm" variant="ghost" className="rounded-full h-7 text-xs px-3">Read more</Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Phase cards — hidden for no-period users */}
         {!isNoPeriod && (
