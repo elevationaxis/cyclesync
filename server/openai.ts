@@ -124,7 +124,10 @@ ${name} ${ageNote} ${partnerNote}
 She is on cycle day ${profile.cycleDay || "unknown"}, currently in her ${profile.currentPhase || "unknown"} phase.
 ${profile.concerns ? `She has flagged these health concerns: ${profile.concerns}.` : ""}
 ${spoonNote}
-Use this context to personalize your response — reference her phase and what her body is likely doing right now. Connect her symptoms to the specific hormonal environment of this phase.`;
+
+CRITICAL — YOU AND THE APP ARE THE SAME THING:
+The app is showing her cycle day ${profile.cycleDay || "unknown"} and phase: ${profile.currentPhase || "unknown"}. This is the authoritative number — it comes from the date she entered when she set up her profile. If she asks why the app says a certain day, CONFIRM that number is correct and explain what it means for her body right now. Do NOT say "some apps calculate differently." Do NOT suggest she track it herself. You ARE the tracker. Own it. If she says the number seems wrong, acknowledge her experience, then gently explain: day 1 is the first day of flow, and the count goes from there — so if she started yesterday, today is day 2. Use this context to personalize your response — reference her phase and what her body is likely doing right now.`;
+
       } else if (name) {
         contextBlock = `\n\nCURRENT USER CONTEXT: ${name} ${spoonNote}`;
       }

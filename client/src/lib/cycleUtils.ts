@@ -11,7 +11,21 @@ export interface PhaseInfo {
 }
 
 export function calculateCycleDay(lastPeriodStart: Date | string, cycleLength: number = 28): number {
-  const startDate = typeof lastPeriodStart === 'string' ? new Date(lastPeriodStart) : lastPeriodStart;
+  let startDate: Date;
+  if (typeof lastPeriodStart === 'string') {
+    // If it's a date-only string like "2025-03-23", parse as LOCAL time
+    // to avoid UTC offset shifting the date by a day in US timezones
+    if (/^\d{4}-\d{2}-\d{2}$/.test(lastPeriodStart)) {
+      const [year, month, day] = lastPeriodStart.split('-').map(Number);
+      startDate = new Date(year, month - 1, day);
+    } else {
+      // Full ISO timestamp — use as-is, then normalize to midnight local
+      startDate = new Date(lastPeriodStart);
+    }
+  } else {
+    startDate = new Date(lastPeriodStart);
+  }
+  
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   startDate.setHours(0, 0, 0, 0);
@@ -19,6 +33,8 @@ export function calculateCycleDay(lastPeriodStart: Date | string, cycleLength: n
   const diffTime = today.getTime() - startDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
+  // diffDays = 0 means today is day 1 (period started today)
+  // diffDays = 1 means yesterday was day 1, today is day 2
   const cycleDay = (diffDays % cycleLength) + 1;
   return cycleDay;
 }
