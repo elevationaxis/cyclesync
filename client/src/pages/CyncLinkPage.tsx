@@ -57,8 +57,17 @@ const PHASE_SUPPORT_TIPS: Record<string, string[]> = {
 };
 
 function getPhaseInfo(lastPeriodStart: string, cycleLength: number) {
-  const start = new Date(lastPeriodStart);
+  // Parse date-only strings as local time to avoid UTC offset shifting the date
+  let start: Date;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(lastPeriodStart)) {
+    const [year, month, day] = lastPeriodStart.split('-').map(Number);
+    start = new Date(year, month - 1, day);
+  } else {
+    start = new Date(lastPeriodStart);
+  }
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
   const daysSince = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   const dayInCycle = (daysSince % cycleLength) + 1;
   const menstrualEnd = 5;

@@ -76,8 +76,17 @@ const PHASE_QUOTES: Record<string, { quote: string; attribution: string }[]> = {
 
 function getCurrentPhase(lastPeriodStart?: string | null, cycleLength = 28): string {
   if (!lastPeriodStart) return "default";
-  const start = new Date(lastPeriodStart);
+  // Parse date-only strings as local time to avoid UTC offset shifting the date
+  let start: Date;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(lastPeriodStart)) {
+    const [year, month, day] = lastPeriodStart.split('-').map(Number);
+    start = new Date(year, month - 1, day);
+  } else {
+    start = new Date(lastPeriodStart);
+  }
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
   const daysSince = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   const dayInCycle = (daysSince % cycleLength) + 1;
 
