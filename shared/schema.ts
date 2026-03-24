@@ -144,6 +144,7 @@ export const partnerLinks = pgTable("partner_links", {
   token: text("token").notNull().unique(),
   label: text("label").default("My Partner"),
   active: boolean("active").notNull().default(true),
+  privacyTier: text("privacy_tier").notNull().default("deep"), // surface | deep
   createdAt: timestamp("created_at").defaultNow(),
   expiresAt: timestamp("expires_at"),
 });

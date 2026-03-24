@@ -32,6 +32,22 @@ export async function ensureSchema(): Promise<void> {
       ALTER TABLE user_profiles
         ALTER COLUMN last_period_start DROP NOT NULL
     `);
+    // Add privacy_tier to partner_links
+    await client.query(`
+      ALTER TABLE partner_links
+        ADD COLUMN IF NOT EXISTS privacy_tier TEXT NOT NULL DEFAULT 'deep'
+    `);
+    // Create partner_actions table for "I Got This" feature
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS partner_actions (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+        partner_link_id VARCHAR NOT NULL,
+        user_id VARCHAR NOT NULL,
+        action_text TEXT NOT NULL,
+        claimed_at TIMESTAMP DEFAULT NOW(),
+        notified BOOLEAN DEFAULT FALSE
+      )
+    `);
     console.log('[db] Schema columns verified');
   } catch (err) {
     console.error('[db] Schema migration warning:', err);

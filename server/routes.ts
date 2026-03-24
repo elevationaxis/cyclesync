@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, pool } from "./storage";
 import { askAuntB } from "./openai";
 import { seedStarterContent } from "./seed";
 import multer from "multer";
@@ -593,11 +593,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { label } = req.body;
       const { randomBytes } = await import("crypto");
       const token = randomBytes(16).toString("hex");
+      const privacyTier = req.body.privacyTier === "surface" ? "surface" : "deep";
       const link = await storage.createPartnerLink({
         userId,
         token,
         label: label || "My Partner",
         active: true,
+        privacyTier,
         expiresAt: null,
       });
       const baseUrl = req.headers.origin || `${req.protocol}://${req.get("host")}`;
@@ -644,19 +646,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!profile) {
         return res.status(404).json({ error: "Profile not found" });
       }
+      const privacyTier = (link as any).privacyTier || "deep";
       const spoons = await storage.getTodaySpoonEntry(link.userId);
+      // Surface tier: only spoon level and vibe
+      if (privacyTier === "surface") {
+        return res.json({
+          partnerName: profile.name,
+          privacyTier: "surface",
+          label: link.label,
+          spoons: spoons ? { totalSpoons: spoons.totalSpoons, usedSpoons: spoons.usedSpoons } : null,
+          lastPeriodStart: null,
+          cycleLength: profile.cycleLength,
+          latestCheckIn: null,
+          linkId: link.id,
+        });
+      }
+      // Deep tier: full details
       const latest = await storage.getLatestCheckIn(link.userId);
+      // Fetch claimed partner actions for this link
+      const actions = await pool.query(
+        `SELECT action_text, claimed_at FROM partner_actions WHERE partner_link_id = $1 ORDER BY claimed_at DESC LIMIT 5`,
+        [link.id]
+      );
       return res.json({
         partnerName: profile.name,
+        privacyTier: "deep",
         lastPeriodStart: profile.lastPeriodStart,
         cycleLength: profile.cycleLength,
+        cycleStatus: (profile as any).cycleStatus || "cycling",
         spoons: spoons || null,
         latestCheckIn: latest ? { ...latest, symptoms: JSON.parse(latest.symptoms) } : null,
         label: link.label,
+        linkId: link.id,
+        claimedActions: actions.rows,
       });
     } catch (error) {
       console.error("Error fetching CyncLink data:", error);
       return res.status(500).json({ error: "Failed to load CyncLink" });
+    }
+  });
+
+  // Partner claims a support action ("I Got This")
+  app.post("/api/cynclink/:token/actions", async (req, res) => {
+    try {
+      const link = await storage.getPartnerLinkByToken(req.params.token);
+      if (!link || !link.active) {
+        return res.status(404).json({ error: "CyncLink not found" });
+      }
+      const { actionText } = req.body;
+      if (!actionText || typeof actionText !== "string") {
+        return res.status(400).json({ error: "actionText is required" });
+      }
+      await pool.query(
+        `INSERT INTO partner_actions (partner_link_id, user_id, action_text) VALUES ($1, $2, $3)`,
+        [link.id, link.userId, actionText.trim()]
+      );
+      return res.json({ ok: true, message: "Action claimed!" });
+    } catch (error) {
+      console.error("Error claiming partner action:", error);
+      return res.status(500).json({ error: "Failed to claim action" });
+    }
+  });
+
+  // User fetches their partner's claimed actions
+  app.get("/api/partner-actions", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId || (req.query.userId as string) || "demo-user";
+      const result = await pool.query(
+        `SELECT pa.action_text, pa.claimed_at, pl.label
+         FROM partner_actions pa
+         JOIN partner_links pl ON pa.partner_link_id = pl.id
+         WHERE pa.user_id = $1
+         ORDER BY pa.claimed_at DESC
+         LIMIT 10`,
+        [userId]
+      );
+      return res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching partner actions:", error);
+      return res.status(500).json({ error: "Failed to fetch partner actions" });
     }
   });
 
