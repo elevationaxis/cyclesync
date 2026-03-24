@@ -211,9 +211,11 @@ export default function OnboardingPage() {
         return;
       }
       setErrors({});
-      setStep(4); // skip cycle length for no-period users
+      setStep(35); // spoon theory explainer before the intake gate
     } else if (step === 3) {
-      if (validateStep(3)) setStep(4);
+      if (validateStep(3)) setStep(35); // 35 = spoon theory explainer
+    } else if (step === 35) {
+      setStep(4); // spoon explainer always advances
     } else if (step === 4) {
       setStep(5);
     } else if (step === 5) {
@@ -228,10 +230,11 @@ export default function OnboardingPage() {
     else if (step === 2) setStep(15);
     else if (step === 25) setStep(2);
     else if (step === 3) setStep(2);
-    else if (step === 4) {
+    else if (step === 35) {
       if (formData.cycleStatus === "no_period") setStep(25);
       else setStep(3);
     }
+    else if (step === 4) setStep(35);
     else if (step === 5) setStep(4);
     else if (step === 6) setStep(5);
     setErrors({});
@@ -683,6 +686,61 @@ export default function OnboardingPage() {
                   style={{ background: BLUSH, color: BLACK }}
                 >
                   That's me
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3.5 — Spoon theory explainer */}
+          {step === 35 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <div className="text-5xl mb-5">🥄</div>
+                <h2 className="font-display text-3xl font-normal mb-4" style={{ color: CREAM }}>
+                  A quick thing about spoons.
+                </h2>
+              </div>
+
+              <div
+                className="rounded-2xl p-6 space-y-4"
+                style={{ background: "rgba(247,242,235,0.05)", border: "1px solid rgba(247,242,235,0.1)" }}
+              >
+                <p className="text-base leading-relaxed" style={{ color: CREAM_MUTED }}>
+                  <strong style={{ color: CREAM }}>Spoon theory</strong> is a way of talking about energy — especially when you don't have a lot of it.
+                </p>
+                <p className="text-base leading-relaxed" style={{ color: CREAM_MUTED }}>
+                  The idea: imagine you start each day with a certain number of spoons. Every task — getting dressed, making a call, going to the store — costs one. When they're gone, they're gone.
+                </p>
+                <p className="text-base leading-relaxed" style={{ color: CREAM_MUTED }}>
+                  In Cync, you'll use spoons to tell us how much energy you actually have today. Aunt B uses that to adjust what she suggests — so she's never asking you to do more than you've got.
+                </p>
+              </div>
+
+              <div
+                className="rounded-xl p-4 text-center"
+                style={{ background: `${BLUSH}12`, border: `1px solid ${BLUSH}30` }}
+              >
+                <p className="text-sm" style={{ color: BLUSH }}>
+                  "Don't have the spoons?" = you're running low today. No explanation needed.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleBack}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                >
+                  Got it
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>

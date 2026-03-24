@@ -107,6 +107,14 @@ function SectionAccordion({
 
 export default function Dashboard() {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  const [spoonIntroSeen, setSpoonIntroSeen] = useState<boolean>(
+    () => localStorage.getItem('cync_spoonIntroSeen') === 'true'
+  );
+
+  const dismissSpoonIntro = () => {
+    localStorage.setItem('cync_spoonIntroSeen', 'true');
+    setSpoonIntroSeen(true);
+  };
 
   useEffect(() => {
     loadMoods().then(setSelectedMoods);
@@ -389,6 +397,31 @@ export default function Dashboard() {
             : <span>{phaseInfo.focus}</span>
         }
       >
+        {/* One-time spoon theory intro card */}
+        {!spoonIntroSeen && (
+          <div
+            className="rounded-2xl p-5"
+            style={{ background: 'rgba(232,180,160,0.08)', border: '1px solid rgba(232,180,160,0.25)' }}
+          >
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">🥄</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold mb-1" style={{ color: '#E8B4A0' }}>What are spoons?</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(247,242,235,0.65)' }}>
+                  Spoon theory is a way of talking about energy. You start each day with a set number of spoons — every task costs one. When they're gone, they're gone. In Cync, your spoon count tells Aunt B how much you've actually got today.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={dismissSpoonIntro}
+              className="mt-4 text-xs w-full text-center"
+              style={{ color: 'rgba(247,242,235,0.35)', letterSpacing: '0.05em' }}
+            >
+              Got it — don't show this again
+            </button>
+          </div>
+        )}
+
         {/* Spoon tracker */}
         {spoonLevel && (
           <Card className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-lavender)/0.3)' }}>
