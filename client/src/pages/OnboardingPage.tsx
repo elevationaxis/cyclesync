@@ -104,7 +104,10 @@ export default function OnboardingPage() {
     cycleLength: 28,
     concerns: "",
     cycleStatus: "cycling" as "cycling" | "no_period",
-    cycleReason: "" as string
+    cycleReason: "" as string,
+    age: "" as string,
+    relationshipStatus: "" as string,
+    partnerWillingness: "" as string,
   });
   const [intakeAnswers, setIntakeAnswers] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -127,7 +130,10 @@ export default function OnboardingPage() {
         cycleLength: data.cycleLength,
         concerns: fullConcerns || null,
         cycleStatus: data.cycleStatus,
-        cycleReason: data.cycleReason || null
+        cycleReason: data.cycleReason || null,
+        age: data.age ? parseInt(data.age) : null,
+        relationshipStatus: data.relationshipStatus || null,
+        partnerWillingness: data.partnerWillingness || null,
       };
 
       if (data.cycleStatus === "cycling" && data.lastPeriodStart) {
@@ -189,7 +195,9 @@ export default function OnboardingPage() {
 
   const handleNext = () => {
     if (step === 1) {
-      if (validateStep(1)) setStep(2);
+      if (validateStep(1)) setStep(15); // step 15 = age + relationship (between 1 and 2)
+    } else if (step === 15) {
+      setStep(2); // age/relationship is optional, always advance
     } else if (step === 2) {
       if (formData.cycleStatus === "cycling") {
         if (validateStep(2)) setStep(3);
@@ -216,7 +224,8 @@ export default function OnboardingPage() {
   };
 
   const handleBack = () => {
-    if (step === 2) setStep(1);
+    if (step === 15) setStep(1);
+    else if (step === 2) setStep(15);
     else if (step === 25) setStep(2);
     else if (step === 3) setStep(2);
     else if (step === 4) {
@@ -353,6 +362,112 @@ export default function OnboardingPage() {
                 I understand — let's go
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
+            </div>
+          )}
+
+          {/* Step 1.5 — Age + relationship (optional, skippable) */}
+          {step === 15 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="font-display text-3xl font-normal mb-3" style={{ color: CREAM }}>
+                  Nice to meet you, {formData.name}.
+                </h2>
+                <p style={{ color: CREAM_MUTED }}>
+                  A little more context helps Aunt B give better guidance. All optional.
+                </p>
+              </div>
+
+              {/* Age */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium" style={{ color: CREAM_MUTED }}>How old are you?</Label>
+                <Input
+                  type="number"
+                  placeholder="Your age"
+                  min={13}
+                  max={99}
+                  value={formData.age}
+                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  className="text-lg py-6 border-0 rounded-xl"
+                  style={{ background: "rgba(247,242,235,0.07)", color: CREAM }}
+                />
+              </div>
+
+              {/* Relationship status */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium" style={{ color: CREAM_MUTED }}>Relationship status?</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: "single", label: "Single" },
+                    { id: "partnered", label: "In a relationship" },
+                    { id: "married", label: "Married" },
+                    { id: "complicated", label: "It's complicated" },
+                    { id: "prefer_not_to_say", label: "Prefer not to say" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setFormData({ ...formData, relationshipStatus: formData.relationshipStatus === opt.id ? "" : opt.id })}
+                      className="text-sm py-3 px-4 rounded-xl text-left transition-all"
+                      style={{
+                        background: formData.relationshipStatus === opt.id ? `${BLUSH}18` : "rgba(247,242,235,0.04)",
+                        border: `1px solid ${formData.relationshipStatus === opt.id ? BLUSH + "60" : "rgba(247,242,235,0.1)"}`,
+                        color: formData.relationshipStatus === opt.id ? CREAM : CREAM_MUTED,
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Partner willingness — only if partnered/married */}
+              {(formData.relationshipStatus === "partnered" || formData.relationshipStatus === "married") && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium" style={{ color: CREAM_MUTED }}>Is your partner open to learning about your cycle?</Label>
+                  <div className="space-y-2">
+                    {[
+                      { id: "open", label: "Yes, very open", sub: "They want to understand and support me" },
+                      { id: "learning", label: "Getting there", sub: "Still learning but trying" },
+                      { id: "not_involved", label: "Not really", sub: "They're not involved in this" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setFormData({ ...formData, partnerWillingness: formData.partnerWillingness === opt.id ? "" : opt.id })}
+                        className="w-full text-left p-3 rounded-xl transition-all"
+                        style={{
+                          background: formData.partnerWillingness === opt.id ? `${BLUSH}18` : "rgba(247,242,235,0.04)",
+                          border: `1px solid ${formData.partnerWillingness === opt.id ? BLUSH + "60" : "rgba(247,242,235,0.1)"}`,
+                        }}
+                      >
+                        <p className="text-sm font-medium" style={{ color: CREAM }}>{opt.label}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "rgba(247,242,235,0.45)" }}>{opt.sub}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleBack}
+                  className="px-4 py-6 rounded-xl"
+                  style={{ color: CREAM_MUTED }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="flex-1 py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+
+              <p className="text-center text-xs" style={{ color: "rgba(247,242,235,0.25)" }}>
+                Skip anything you'd rather not share — Aunt B won't judge.
+              </p>
             </div>
           )}
 

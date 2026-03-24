@@ -61,6 +61,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               concerns: profile.concerns,
               cycleDay: cycleDay || null,
               currentPhase: currentPhase || null,
+              age: (profile as any).age || null,
+              relationshipStatus: (profile as any).relationshipStatus || null,
+              partnerWillingness: (profile as any).partnerWillingness || null,
             };
           }
         } catch (e) {

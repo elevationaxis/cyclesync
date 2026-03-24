@@ -413,7 +413,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">{nutrition.emoji}</span>
-                <span className="font-display font-medium italic">Nourish — {nutrition.phase}</span>
+                <span className="font-display font-medium italic">Nourish{!isNoPeriod ? ` — ${nutrition.phase}` : ""}</span>
               </div>
               <Link href="/learn">
                 <Button variant="ghost" size="sm" className="text-xs rounded-full" style={{ color: nutrition.color }}>
@@ -496,8 +496,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Cycle compass */}
-        <CycleCompass cycleDay={cycleDay} />
+        {/* Cycle compass — hidden for no-period users */}
+        {!isNoPeriod && <CycleCompass cycleDay={cycleDay} />}
 
         {/* Rituals */}
         <Card className="border-0 rounded-2xl" style={{ background: 'hsl(var(--brand-lavender)/0.2)' }}>
@@ -515,16 +515,18 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Phase cards */}
-        <div>
-          <h3 className="font-display font-medium italic mb-3 text-muted-foreground">Understanding the Phases</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <PhaseCard phase="menstrual" />
-            <PhaseCard phase="follicular" />
-            <PhaseCard phase="ovulatory" />
-            <PhaseCard phase="luteal" />
+        {/* Phase cards — hidden for no-period users */}
+        {!isNoPeriod && (
+          <div>
+            <h3 className="font-display font-medium italic mb-3 text-muted-foreground">Understanding the Phases</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <PhaseCard phase="menstrual" />
+              <PhaseCard phase="follicular" />
+              <PhaseCard phase="ovulatory" />
+              <PhaseCard phase="luteal" />
+            </div>
           </div>
-        </div>
+        )}
       </SectionAccordion>
 
     </div>

@@ -105,6 +105,9 @@ export const userProfiles = pgTable("user_profiles", {
   concerns: text("concerns"),
   cycleStatus: text("cycle_status").default("cycling"), // cycling | no_period
   cycleReason: text("cycle_reason"), // hysterectomy | menopause | perimenopause | pcos | birth_control | other
+  age: integer("age"), // optional
+  relationshipStatus: text("relationship_status"), // single | partnered | married | complicated | prefer_not_to_say
+  partnerWillingness: text("partner_willingness"), // open | learning | not_involved | no_partner
   createdAt: timestamp("created_at").defaultNow(),
 });
 

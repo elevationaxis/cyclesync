@@ -19,6 +19,9 @@ interface ProfileContext {
   concerns?: string;
   cycleDay?: number | null;
   currentPhase?: string | null;
+  age?: number | null;
+  relationshipStatus?: string | null;
+  partnerWillingness?: string | null;
 }
 
 const cycleReasonLabels: Record<string, string> = {
@@ -68,6 +71,14 @@ export async function askAuntB(userMessage: string, profile?: ProfileContext): P
 
     if (profile) {
       const name = profile.name ? `Her name is ${profile.name}.` : "";
+      const ageNote = profile.age ? `She is ${profile.age} years old.` : "";
+      const partnerNote = profile.partnerWillingness === "open"
+        ? "Her partner is open and supportive of her health journey."
+        : profile.partnerWillingness === "learning"
+        ? "Her partner is still learning about her health needs."
+        : profile.partnerWillingness === "not_involved"
+        ? "Her partner is not involved in her health journey."
+        : "";
 
       if (profile.cycleStatus === "no_period") {
         const reasonLabel = profile.cycleReason
@@ -77,7 +88,7 @@ export async function askAuntB(userMessage: string, profile?: ProfileContext): P
 
 CURRENT USER CONTEXT:
 This woman ${reasonLabel}. She does NOT have a menstrual cycle to track.
-${name}
+${name} ${ageNote} ${partnerNote}
 Do NOT reference cycle days, phases, or period tracking.
 Speak to her hormonal health, symptoms, energy, and wellbeing as they are — not as a cycle.
 If she has a hysterectomy: be sensitive to surgical recovery, hormonal shifts post-op, and the grief some women feel around that transition.
@@ -87,7 +98,7 @@ If she has PCOS: acknowledge insulin resistance, androgen effects, inflammation,
         contextBlock = `
 
 CURRENT USER CONTEXT:
-${name}
+${name} ${ageNote} ${partnerNote}
 She is on cycle day ${profile.cycleDay || "unknown"}, currently in her ${profile.currentPhase || "unknown"} phase.
 ${profile.concerns ? `She has flagged these health concerns: ${profile.concerns}.` : ""}
 Use this context to personalize your response — reference her phase and what her body is likely doing right now.`;
