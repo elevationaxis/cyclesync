@@ -27,6 +27,7 @@ const SAGE = "#7A9E7E";
 const CREAM = "#F7F2EB";
 const BLACK = "#0D0B0A";
 const CREAM_MUTED = "#c4b29a";
+const CREAM_DIM = "#8a7d74";
 
 const intakeQuestions = [
   {
@@ -108,6 +109,10 @@ export default function OnboardingPage() {
   const [intakeAnswers, setIntakeAnswers] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Step 6 — optional account creation
+  const [accountData, setAccountData] = useState({ username: "", password: "", confirmPassword: "" });
+  const [createdProfileId, setCreatedProfileId] = useState<string | null>(null);
+
   const createProfile = useMutation({
     mutationFn: async (data: typeof formData) => {
       const intakeTags = Object.entries(intakeAnswers)
@@ -136,7 +141,8 @@ export default function OnboardingPage() {
       localStorage.setItem("cycleSync_hasStarted", "true");
       localStorage.setItem("cycleSync_profileId", profile.id);
       localStorage.setItem("cycleSync_userName", profile.name);
-      setLocation("/dashboard");
+      setCreatedProfileId(profile.id);
+      setStep(6); // Go to account creation step
     },
     onError: (error) => {
       console.error("Error creating profile:", error);
@@ -204,6 +210,8 @@ export default function OnboardingPage() {
       setStep(5);
     } else if (step === 5) {
       createProfile.mutate(formData);
+    } else if (step === 6) {
+      handleCreateAccount();
     }
   };
 
@@ -216,11 +224,50 @@ export default function OnboardingPage() {
       else setStep(3);
     }
     else if (step === 5) setStep(4);
+    else if (step === 6) setStep(5);
     setErrors({});
   };
 
   const handleSkipIntake = () => {
     createProfile.mutate(formData);
+  };
+
+  const handleCreateAccount = async () => {
+    const newErrors: Record<string, string> = {};
+    if (!accountData.username.trim()) newErrors.username = "Choose a username, love";
+    if (accountData.password.length < 6) newErrors.password = "At least 6 characters";
+    if (accountData.password !== accountData.confirmPassword) newErrors.confirmPassword = "Passwords don't match";
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username: accountData.username, password: accountData.password }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setErrors({ username: data.error || "Username already taken" });
+        return;
+      }
+      const user = await res.json();
+      // Link the profile to the new account
+      if (createdProfileId) {
+        await fetch(`/api/profile/${createdProfileId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ userId: user.id }),
+        });
+      }
+      setLocation("/dashboard");
+    } catch {
+      setErrors({ username: "Something went wrong. Please try again." });
+    }
+  };
+
+  const handleSkipAccount = () => {
+    setLocation("/dashboard");
   };
 
   const progressStep = step <= 3 ? step : step === 25 ? 2 : 3;
@@ -646,6 +693,105 @@ export default function OnboardingPage() {
               </div>
 
               {errors.submit && <p className="text-sm text-center" style={{ color: "#e87070" }}>{errors.submit}</p>}
+            </div>
+          )}
+
+          {/* Step 6 — Save your progress (optional account creation) */}
+          {step === 6 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🔐</div>
+                <h2 className="font-display text-2xl md:text-3xl font-normal mb-3" style={{ color: CREAM }}>
+                  Save your progress
+                </h2>
+                <p className="text-sm leading-relaxed" style={{ color: CREAM_MUTED }}>
+                  Create an account so you can come back to your data anytime — from any device.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="text-xs font-medium tracking-wide uppercase mb-2 block" style={{ color: CREAM_DIM }}>
+                    Choose a username
+                  </label>
+                  <input
+                    type="text"
+                    value={accountData.username}
+                    onChange={e => setAccountData(prev => ({ ...prev, username: e.target.value }))}
+                    placeholder="something you'll remember"
+                    autoComplete="username"
+                    className="w-full bg-transparent border-0 border-b py-3 text-base outline-none"
+                    style={{
+                      borderBottom: `1px solid ${errors.username ? '#e87070' : 'rgba(247,242,235,0.2)'}`,
+                      color: CREAM,
+                      caretColor: BLUSH,
+                    }}
+                  />
+                  {errors.username && <p className="text-xs mt-1" style={{ color: "#e87070" }}>{errors.username}</p>}
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium tracking-wide uppercase mb-2 block" style={{ color: CREAM_DIM }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={accountData.password}
+                    onChange={e => setAccountData(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="at least 6 characters"
+                    autoComplete="new-password"
+                    className="w-full bg-transparent border-0 border-b py-3 text-base outline-none"
+                    style={{
+                      borderBottom: `1px solid ${errors.password ? '#e87070' : 'rgba(247,242,235,0.2)'}`,
+                      color: CREAM,
+                      caretColor: BLUSH,
+                    }}
+                  />
+                  {errors.password && <p className="text-xs mt-1" style={{ color: "#e87070" }}>{errors.password}</p>}
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium tracking-wide uppercase mb-2 block" style={{ color: CREAM_DIM }}>
+                    Confirm password
+                  </label>
+                  <input
+                    type="password"
+                    value={accountData.confirmPassword}
+                    onChange={e => setAccountData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    className="w-full bg-transparent border-0 border-b py-3 text-base outline-none"
+                    style={{
+                      borderBottom: `1px solid ${errors.confirmPassword ? '#e87070' : 'rgba(247,242,235,0.2)'}`,
+                      color: CREAM,
+                      caretColor: BLUSH,
+                    }}
+                  />
+                  {errors.confirmPassword && <p className="text-xs mt-1" style={{ color: "#e87070" }}>{errors.confirmPassword}</p>}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={handleCreateAccount}
+                  className="w-full py-6 text-base font-semibold rounded-xl"
+                  style={{ background: BLUSH, color: BLACK }}
+                >
+                  Save my progress
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleSkipAccount}
+                  className="w-full py-4 text-sm rounded-xl"
+                  style={{ color: CREAM_DIM }}
+                >
+                  Skip for now — I'll come back as a guest
+                </Button>
+              </div>
+
+              <p className="text-center text-xs" style={{ color: "rgba(247,242,235,0.25)" }}>
+                No email required. Just a username and password.
+              </p>
             </div>
           )}
 

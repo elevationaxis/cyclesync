@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CircleDot, MessageCircle, Utensils, Users, Calendar, BookOpen, ChevronDown, Heart, Moon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, CircleDot, MessageCircle, Utensils, Users, Calendar, BookOpen, ChevronDown, Heart, Moon, X } from "lucide-react";
 
 const BLUSH = "#E8B4A0";
 const SAGE = "#7A9E7E";
@@ -12,17 +13,7 @@ const CREAM_DIM = "#8a7d74";
 interface LandingPageProps {
   onGetStarted: () => void;
   onTryAsGuest?: () => void;
-}
-
-function BrandMark({ size = 32, color = "#F7F2EB" }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="22" stroke={color} strokeWidth="2" />
-      <path d="M14 28 C14 28, 18 14, 24 20 C30 26, 34 12, 34 12" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <circle cx="14" cy="28" r="3" fill={color} opacity="0.8" />
-      <circle cx="34" cy="12" r="3" fill={color} opacity="0.4" />
-    </svg>
-  );
+  onSignIn?: (username: string, password: string) => Promise<string | null>;
 }
 
 const features = [
@@ -71,12 +62,118 @@ const phases = [
   { phase: "Luteal", desc: "Slow & protect", days: "Days 18–28", color: CREAM_MUTED },
 ];
 
-export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, onTryAsGuest, onSignIn }: LandingPageProps) {
   const [openFeature, setOpenFeature] = useState<number | null>(null);
   const [activePhase, setActivePhase] = useState<number>(0);
 
+  // Sign-in modal state
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [signInUsername, setSignInUsername] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+  const [signInError, setSignInError] = useState<string | null>(null);
+  const [signInLoading, setSignInLoading] = useState(false);
+
+  const handleSignInSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!onSignIn) return;
+    setSignInError(null);
+    setSignInLoading(true);
+    const error = await onSignIn(signInUsername, signInPassword);
+    setSignInLoading(false);
+    if (error) setSignInError(error);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: BLACK, color: CREAM }}>
+
+      {/* Sign-in modal overlay */}
+      {showSignIn && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ background: "rgba(13,11,10,0.85)", backdropFilter: "blur(6px)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowSignIn(false); }}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl p-8 relative"
+            style={{ background: "#1a1614", border: "1px solid rgba(247,242,235,0.1)" }}
+          >
+            <button
+              onClick={() => setShowSignIn(false)}
+              className="absolute top-5 right-5 opacity-40 hover:opacity-70 transition-opacity"
+            >
+              <X className="w-5 h-5" style={{ color: CREAM }} />
+            </button>
+
+            <div className="flex items-center gap-2 mb-6">
+              <img src="/logo-mark.png" alt="Cync" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+              <span className="font-display text-base" style={{ color: CREAM }}>Welcome back</span>
+            </div>
+
+            <form onSubmit={handleSignInSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-medium tracking-wide uppercase mb-1.5 block" style={{ color: CREAM_DIM }}>
+                  Username
+                </label>
+                <Input
+                  type="text"
+                  value={signInUsername}
+                  onChange={e => setSignInUsername(e.target.value)}
+                  placeholder="your username"
+                  autoComplete="username"
+                  className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0 text-base"
+                  style={{
+                    borderBottom: `1px solid rgba(247,242,235,0.2)`,
+                    color: CREAM,
+                    caretColor: BLUSH,
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium tracking-wide uppercase mb-1.5 block" style={{ color: CREAM_DIM }}>
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  value={signInPassword}
+                  onChange={e => setSignInPassword(e.target.value)}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0 text-base"
+                  style={{
+                    borderBottom: `1px solid rgba(247,242,235,0.2)`,
+                    color: CREAM,
+                    caretColor: BLUSH,
+                  }}
+                />
+              </div>
+
+              {signInError && (
+                <p className="text-sm" style={{ color: "#e87070" }}>{signInError}</p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={signInLoading || !signInUsername || !signInPassword}
+                className="w-full py-6 text-base font-semibold rounded-xl mt-2"
+                style={{ background: BLUSH, color: BLACK }}
+              >
+                {signInLoading ? "Signing in..." : "Take me home"}
+              </Button>
+            </form>
+
+            <p className="text-center text-xs mt-5" style={{ color: CREAM_DIM }}>
+              New here?{" "}
+              <button
+                onClick={() => { setShowSignIn(false); onGetStarted(); }}
+                className="underline underline-offset-2"
+                style={{ color: BLUSH }}
+              >
+                Start with Cync
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5" style={{ borderBottom: "1px solid rgba(247,242,235,0.08)" }}>
@@ -84,16 +181,28 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
           <img src="/logo-mark.png" alt="Cync" style={{ width: 28, height: 28, objectFit: 'contain' }} />
           <span className="font-display text-lg" data-testid="text-brand-name">Cync</span>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onGetStarted}
-          className="bg-transparent"
-          style={{ borderColor: `${BLUSH}66`, color: BLUSH }}
-          data-testid="button-nav-get-started"
-        >
-          Get Started
-        </Button>
+        <div className="flex items-center gap-3">
+          {onSignIn && (
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="text-sm"
+              style={{ color: CREAM_DIM }}
+              data-testid="button-sign-in"
+            >
+              Sign in
+            </button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onGetStarted}
+            className="bg-transparent"
+            style={{ borderColor: `${BLUSH}66`, color: BLUSH }}
+            data-testid="button-nav-get-started"
+          >
+            Get Started
+          </Button>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -132,6 +241,18 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
             </Button>
           )}
         </div>
+        {onSignIn && (
+          <p className="text-sm mt-6" style={{ color: CREAM_DIM }}>
+            Already have an account?{" "}
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="underline underline-offset-2"
+              style={{ color: BLUSH }}
+            >
+              Sign in
+            </button>
+          </p>
+        )}
       </section>
 
       {/* Features — Interactive Accordion */}
@@ -351,6 +472,18 @@ export default function LandingPage({ onGetStarted, onTryAsGuest }: LandingPageP
               </Button>
             )}
           </div>
+          {onSignIn && (
+            <p className="text-sm mt-6" style={{ color: CREAM_DIM }}>
+              Already have an account?{" "}
+              <button
+                onClick={() => setShowSignIn(true)}
+                className="underline underline-offset-2"
+                style={{ color: BLUSH }}
+              >
+                Sign in
+              </button>
+            </p>
+          )}
         </div>
       </section>
 

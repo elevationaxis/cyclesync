@@ -20,6 +20,7 @@ import OnboardingPage from "@/pages/OnboardingPage";
 import PartnerBriefPage from "@/pages/PartnerBriefPage";
 import CyncLinkPage from "@/pages/CyncLinkPage";
 import QuoteSplash from "@/components/QuoteSplash";
+import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useState, useEffect } from "react";
 
@@ -48,6 +49,31 @@ function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
 
 function LandingWrapper() {
   const [, setLocation] = useLocation();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    // If there's already a real (non-guest) session, skip the landing page
+    fetch("/api/auth/me", { credentials: "include" })
+      .then(r => r.ok ? r.json() : null)
+      .then(async (user) => {
+        if (user && !user.isGuest) {
+          // Real returning user — check they have a profile then send to dashboard
+          const profileRes = await fetch(`/api/profile/user/${user.id}`, { credentials: "include" });
+          if (profileRes.ok) {
+            setLocation("/dashboard");
+            return;
+          }
+        }
+        // Guest session or no session — clear stale guest localStorage and show landing
+        if (user?.isGuest) {
+          // Destroy the stale guest session so the next "Try as Guest" gets a fresh one
+          await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        }
+        localStorage.removeItem("cycleSync_profileId");
+        setChecking(false);
+      })
+      .catch(() => setChecking(false));
+  }, [setLocation]);
 
   const handleGetStarted = () => {
     setLocation("/onboarding");
@@ -57,7 +83,6 @@ function LandingWrapper() {
     try {
       const res = await fetch("/api/auth/guest", { method: "POST", credentials: "include" });
       if (res.ok) {
-        // Mark profile as set so ProtectedApp doesn't redirect to onboarding
         localStorage.setItem("cycleSync_profileId", "guest");
         setLocation("/dashboard");
       }
@@ -66,7 +91,37 @@ function LandingWrapper() {
     }
   };
 
-  return <LandingPage onGetStarted={handleGetStarted} onTryAsGuest={handleTryAsGuest} />;
+  const handleSignIn = async (username: string, password: string): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        setLocation("/dashboard");
+        return null;
+      }
+      const data = await res.json();
+      return data.error || "Invalid username or password";
+    } catch {
+      return "Something went wrong. Please try again.";
+    }
+  };
+
+  if (checking) {
+    // Brief blank screen while we check session — avoids flash of landing for returning users
+    return null;
+  }
+
+  return (
+    <LandingPage
+      onGetStarted={handleGetStarted}
+      onTryAsGuest={handleTryAsGuest}
+      onSignIn={handleSignIn}
+    />
+  );
 }
 
 function ProtectedApp() {
@@ -121,7 +176,6 @@ function ProtectedApp() {
         <img src="/logo-mark.png" alt="" width={160} height={160} style={{ objectFit: 'contain' }} />
       </div>
 
-
       <div className="relative z-10">
         <AppNavigation 
           isPartnerView={isPartnerView}
@@ -140,6 +194,8 @@ function App() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          {/* ScrollToTop fires on every route change — lands at top of every page */}
+          <ScrollToTop />
           {/* Splash always fires first on every open, before any routing */}
           {showSplash && (
             <QuoteSplash
