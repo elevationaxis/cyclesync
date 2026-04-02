@@ -12,11 +12,14 @@ interface Message {
   content: string;
 }
 
-interface AskAuntBProps {
+export interface AskAuntBProps {
   onSendMessage?: (message: string) => Promise<string>;
+  cycleDay?: number | null;
+  currentPhase?: string;
+  profileId?: string;
 }
 
-export default function AskAuntB({ onSendMessage }: AskAuntBProps) {
+export default function AskAuntB({ onSendMessage, cycleDay, currentPhase, profileId }: AskAuntBProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -40,9 +43,27 @@ export default function AskAuntB({ onSendMessage }: AskAuntBProps) {
     setInput('');
     setIsLoading(true);
 
-    const response = onSendMessage 
-      ? await onSendMessage(input)
-      : "That's a great question! Your body's wisdom is speaking to you. Take a deep breath and listen to what it needs right now.";
+    let response: string;
+    if (onSendMessage) {
+      response = await onSendMessage(input);
+    } else {
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: input,
+            cycleDay: cycleDay ?? null,
+            currentPhase: currentPhase ?? null,
+            profileId: profileId ?? null,
+          }),
+        });
+        const data = await res.json();
+        response = data.response || data.message || "I'm here, love. Try again in a moment.";
+      } catch {
+        response = "Something went sideways on my end. Try again.";
+      }
+    }
 
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),

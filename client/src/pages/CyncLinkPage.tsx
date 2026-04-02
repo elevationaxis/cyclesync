@@ -142,7 +142,7 @@ export default function CyncLinkPage() {
         body: JSON.stringify({ actionText }),
       });
       if (res.ok) {
-        setClaimedActions(prev => new Set([...prev, actionText]));
+        setClaimedActions(prev => new Set(Array.from(prev).concat(actionText)));
         setClaimSuccess(actionText);
         setTimeout(() => setClaimSuccess(null), 3000);
       }
