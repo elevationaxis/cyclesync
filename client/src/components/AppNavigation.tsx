@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Heart, Calendar, MessageCircle, Users, Music, HandHeart, MessagesSquare, CalendarDays, Utensils, Sun, Moon, Link2 } from 'lucide-react';
+import { Heart, Calendar, MessageCircle, Users, Music, HandHeart, MessagesSquare, CalendarDays, Utensils, Sun, Moon, Link2, Settings } from 'lucide-react';
 import { CyncLogoMark } from './CyncLogo';
 import { useTheme } from './ThemeProvider';
 
@@ -22,6 +22,7 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
     { path: '/partner-support', label: 'CyncLink', icon: Link2 },
     { path: '/community', label: 'Community', icon: MessagesSquare },
     { path: '/calendar', label: 'Calendar', icon: CalendarDays },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (

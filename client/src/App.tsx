@@ -14,6 +14,7 @@ import RitualsPage from "@/pages/RitualsPage";
 import PartnerSupportPage from "@/pages/PartnerSupportPage";
 import CommunityPage from "@/pages/CommunityPage";
 import CalendarPage from "@/pages/CalendarPage";
+import SettingsPage from "@/pages/SettingsPage";
 import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
 import LandingPage from "@/pages/LandingPage";
 import OnboardingPage from "@/pages/OnboardingPage";
@@ -43,6 +44,7 @@ function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
       <Route path="/community" component={CommunityPage} />
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/spoons" component={SpoonTrackerPage} />
+      <Route path="/settings" component={SettingsPage} />
       <Route component={NotFound} />
     </Switch>
   );
