@@ -59,7 +59,7 @@ export default function AskAuntB({ onSendMessage, cycleDay, currentPhase, profil
           }),
         });
         const data = await res.json();
-        response = data.response || data.message || "I'm here, love. Try again in a moment.";
+        response = data.reply || data.response || data.message || "I'm here, love. Try again in a moment.";
       } catch {
         response = "Something went sideways on my end. Try again.";
       }
