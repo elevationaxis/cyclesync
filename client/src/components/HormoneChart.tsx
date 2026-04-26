@@ -92,7 +92,7 @@ export default function HormoneChart({ cycleDay, cycleLength = 28 }: HormoneChar
     { name: "Flow", startDay: 1, endDay: Math.round(cycleLength * 0.18), color: "#8B4A6B", label: "Flow" },
     { name: "Bloom", startDay: Math.round(cycleLength * 0.18) + 1, endDay: Math.round(cycleLength * 0.46), color: "#5B8A6B", label: "Bloom" },
     { name: "Spark", startDay: Math.round(cycleLength * 0.46) + 1, endDay: Math.round(cycleLength * 0.61), color: "#C4846E", label: "Spark" },
-    { name: "Alchemy", startDay: Math.round(cycleLength * 0.61) + 1, endDay: cycleLength, color: "#7A6B8A", label: "Alchemy" },
+    { name: "Recharge", startDay: Math.round(cycleLength * 0.61) + 1, endDay: cycleLength, color: "#7A6B8A", label: "Recharge" },
   ];
 
   const currentX = cycleDay ? dayToX(Math.min(cycleDay, cycleLength)) : null;

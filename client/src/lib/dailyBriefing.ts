@@ -95,7 +95,7 @@ const bloom: PhaseContent = [
     eat: "Eat fresh, light foods today — salads, sprouts, raw vegetables. Your digestion is stronger now and your body is ready for them.",
     drink: "Add beet juice or beet to a smoothie today. It supports your liver and gives you nitric oxide for circulation and energy.",
     journal: "Write this: who do I want to be this cycle? What version of myself am I moving toward?",
-    dontDo: "Don't ignore the creative ideas that come up right now. Write them down — they'll be harder to access in Alchemy.",
+    dontDo: "Don't ignore the creative ideas that come up right now. Write them down — they'll be harder to access in Recharge.",
     supplement: "Take a probiotic today. Gut health directly affects estrogen metabolism — a good probiotic supports the whole system.",
   },
   {
@@ -130,7 +130,7 @@ const spark: PhaseContent = [
     eat: "Eat zinc-rich foods today — pumpkin seeds, chickpeas, or cashews. Zinc is essential for ovulation.",
     drink: "Drink water with electrolytes today. Your body temperature rises slightly during ovulation — stay hydrated.",
     journal: "Write this: what am I most proud of right now? What have I built this cycle?",
-    dontDo: "Don't overbook yourself for the next two weeks. Alchemy is coming and you'll need that space.",
+    dontDo: "Don't overbook yourself for the next two weeks. Recharge is coming and you'll need that space.",
     supplement: "Take vitamin E today — 200–400 IU. It supports egg quality and cervical health.",
   },
   {
@@ -146,7 +146,7 @@ const spark: PhaseContent = [
     eat: "Eat fiber-rich foods today — beans, lentils, or vegetables. Support your liver in clearing the estrogen peak happening right now.",
     drink: "Drink coconut water today. Natural electrolytes, supports hydration during peak physical output.",
     journal: "Write this: what am I ready to commit to — out loud, to myself?",
-    dontDo: "Don't skip liver support today. Estrogen is peaking and it needs to clear cleanly or it carries into Alchemy.",
+    dontDo: "Don't skip liver support today. Estrogen is peaking and it needs to clear cleanly or it carries into Recharge.",
     supplement: "Take omega-3s today. Anti-inflammatory support during ovulation, which is an inflammatory process.",
   },
   {
@@ -162,7 +162,7 @@ const spark: PhaseContent = [
     eat: "Eat leafy greens and cruciferous vegetables today. Keep your liver clearing estrogen so it doesn't accumulate after ovulation.",
     drink: "Start your morning with warm lemon water. Keeps the liver moving during the estrogen peak.",
     journal: "Write this: what would I do today if I were operating from my fullest self?",
-    dontDo: "Don't say yes to everything just because you feel like you can handle it. Future you is in Alchemy — be kind to her.",
+    dontDo: "Don't say yes to everything just because you feel like you can handle it. Future you is in Recharge — be kind to her.",
     supplement: "Take magnesium glycinate tonight. It supports smooth muscle relaxation and reduces ovulation cramping.",
   },
 ];
@@ -170,15 +170,15 @@ const spark: PhaseContent = [
 const alchemy: PhaseContent = [
   {
     move: "Go for a walk, swim, or do yoga today — lower intensity, longer duration. Your body is in a different gear.",
-    eat: "Add a magnesium-rich food to your next meal — dark chocolate, leafy greens, almonds, or black beans. Magnesium drops in Alchemy and it affects everything.",
+    eat: "Add a magnesium-rich food to your next meal — dark chocolate, leafy greens, almonds, or black beans. Magnesium drops in Recharge and it affects everything.",
     drink: "Make dandelion root tea today. It's one of the most important things you can drink right now for liver support.",
     journal: "Write this: what is this phase trying to show me? What keeps coming up that I keep pushing down?",
-    dontDo: "Don't make major decisions from the low point of Alchemy. Write it down and revisit it in Bloom.",
-    supplement: "Take magnesium glycinate tonight — 300–400mg. It's the single most important supplement for Alchemy.",
+    dontDo: "Don't make major decisions from the low point of Recharge. Write it down and revisit it in Bloom.",
+    supplement: "Take magnesium glycinate tonight — 300–400mg. It's the single most important supplement for Recharge.",
   },
   {
     move: "Do gentle strength training today — lighter weights, more reps. Keep moving but don't push for PRs.",
-    eat: "Eat complex carbohydrates today — sweet potatoes, brown rice, or oats. Your body craves carbs in Alchemy for serotonin. Feed it real ones.",
+    eat: "Eat complex carbohydrates today — sweet potatoes, brown rice, or oats. Your body craves carbs in Recharge for serotonin. Feed it real ones.",
     drink: "Make chamomile tea tonight. It reduces anxiety, supports sleep, and calms your nervous system during the hormonal shift.",
     journal: "Write this: what am I actually feeling right now — underneath the irritability, the heaviness, the fog?",
     dontDo: "Don't skip magnesium today. Most of what feels like PMS is magnesium deficiency.",
@@ -189,7 +189,7 @@ const alchemy: PhaseContent = [
     eat: "Eat pumpkin seeds and sunflower seeds today. Zinc and vitamin E support progesterone and reduce PMS symptoms.",
     drink: "Mix magnesium powder (like Natural Calm) into warm water and drink it tonight. It replaces what you're losing.",
     journal: "Write this: what boundaries have I been letting slide? What needs to be said or changed?",
-    dontDo: "Don't fight the inward pull today. Alchemy is not a malfunction — it's a season. Let yourself go inward.",
+    dontDo: "Don't fight the inward pull today. Recharge is not a malfunction — it's a season. Let yourself go inward.",
     supplement: "Take B6 today. It supports progesterone and serotonin production — reduces mood symptoms significantly.",
   },
   {
@@ -198,12 +198,12 @@ const alchemy: PhaseContent = [
     drink: "Make lemon balm tea tonight. It calms your nervous system, reduces cortisol, and helps you sleep.",
     journal: "Write this: what does my body need that I haven't been giving it?",
     dontDo: "Don't overcommit socially today. Your energy for people is lower right now and that's okay — protect it.",
-    supplement: "Take evening primrose oil today. It reduces breast tenderness, bloating, and mood symptoms. Take through Alchemy only.",
+    supplement: "Take evening primrose oil today. It reduces breast tenderness, bloating, and mood symptoms. Take through Recharge only.",
   },
   {
-    move: "Spend 10 minutes stretching and foam rolling today. Your muscles hold more tension in Alchemy — release it intentionally.",
-    eat: "Eat warm, cooked foods today — soup, stew, or roasted vegetables. Your digestion slows in Alchemy. Make it easy on yourself.",
-    drink: "Make ginger tea today. It's anti-inflammatory, supports digestion, and reduces the bloating that often comes with Alchemy.",
+    move: "Spend 10 minutes stretching and foam rolling today. Your muscles hold more tension in Recharge — release it intentionally.",
+    eat: "Eat warm, cooked foods today — soup, stew, or roasted vegetables. Your digestion slows in Recharge. Make it easy on yourself.",
+    drink: "Make ginger tea today. It's anti-inflammatory, supports digestion, and reduces the bloating that often comes with Recharge.",
     journal: "Write this: what am I holding onto that's ready to be released with this cycle?",
     dontDo: "Don't eat sugar or processed food today. They spike cortisol and make everything worse — this is the phase where food choices matter most.",
     supplement: "Take ashwagandha today. It reduces cortisol and supports your adrenals during the hormonal drop.",
@@ -213,7 +213,7 @@ const alchemy: PhaseContent = [
     eat: "Add one iron-rich food to your next meal — dark leafy greens, lentils, or legumes. Your body is building toward the next release.",
     drink: "Drink something warm today — tea, broth, or warm water with lemon. Your body needs warmth right now.",
     journal: "Write this: what would I tell myself right now if I were my own best friend?",
-    dontDo: "Don't ignore the signals. If Alchemy is consistently brutal, that's information — not just 'bad PMS.' Note the patterns.",
+    dontDo: "Don't ignore the signals. If Recharge is consistently brutal, that's information — not just 'bad PMS.' Note the patterns.",
     supplement: "Take DIM today. It supports healthy estrogen clearance during the progesterone drop — reduces bloating, mood swings, and breast tenderness.",
   },
 ];

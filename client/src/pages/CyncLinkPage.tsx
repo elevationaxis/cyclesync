@@ -47,7 +47,7 @@ const PHASE_SUPPORT_TIPS: Record<string, string[]> = {
     "Be present — put the phone down",
     "Match her energy — she's feeling good",
   ],
-  Alchemy: [
+  Recharge: [
     "Give her extra grace if she seems quiet or withdrawn",
     "Ask 'what do you need?' instead of guessing",
     "Handle more household tasks this week",
@@ -95,10 +95,10 @@ function getPhaseInfo(lastPeriodStart: string, cycleLength: number) {
     color = "#C4846E";
     partnerTip = "She's in her Radiance phase — peak energy and connection. She's likely feeling confident and communicative. Make time for quality connection.";
   } else {
-    phase = "Alchemy";
+    phase = "Recharge";
     emoji = "🍂";
     color = "#8B6A3E";
-    partnerTip = "She's in her Alchemy phase — introspective and sensitive. She may need more space or reassurance. This isn't personal. Check in gently, don't take quiet personally.";
+    partnerTip = "She's in her Recharge phase — introspective and sensitive. She may need more space or reassurance. This isn't personal. Check in gently, don't take quiet personally.";
   }
 
   return { phase, emoji, color, partnerTip, dayInCycle };
