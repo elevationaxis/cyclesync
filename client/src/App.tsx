@@ -21,6 +21,7 @@ import OnboardingPage from "@/pages/OnboardingPage";
 import PartnerBriefPage from "@/pages/PartnerBriefPage";
 import CyncLinkPage from "@/pages/CyncLinkPage";
 import AdminPage from "@/pages/AdminPage";
+import GuestPreviewPage from "@/pages/GuestPreviewPage";
 import QuoteSplash from "@/components/QuoteSplash";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -87,7 +88,7 @@ function LandingWrapper() {
       const res = await fetch("/api/auth/guest", { method: "POST", credentials: "include" });
       if (res.ok) {
         localStorage.setItem("cycleSync_profileId", "guest");
-        setLocation("/dashboard");
+        setLocation("/guest-preview");
       }
     } catch (e) {
       console.error("Guest login failed", e);
@@ -209,6 +210,20 @@ function App() {
             <Switch>
               <Route path="/" component={LandingWrapper} />
               <Route path="/onboarding" component={OnboardingPage} />
+              <Route path="/guest-preview" component={() => {
+                const [, nav] = useLocation();
+                return (
+                  <GuestPreviewPage
+                    onSignUp={(energy, mood) => {
+                      const params = new URLSearchParams();
+                      params.set("fromGuest", "true");
+                      if (energy !== null) params.set("energy", String(energy));
+                      if (mood) params.set("mood", mood);
+                      nav(`/onboarding?${params.toString()}`);
+                    }}
+                  />
+                );
+              }} />
               <Route path="/partner-brief" component={PartnerBriefPage} />
               <Route path="/cynclink/:token" component={CyncLinkPage} />
               <Route path="/admin" component={AdminPage} />

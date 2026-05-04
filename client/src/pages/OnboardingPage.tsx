@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,12 +97,17 @@ const noPeriodReasons = [
 
 export default function OnboardingPage() {
   const [, setLocation] = useLocation();
-  const [step, setStep] = useState(1);
+  const search = useSearch();
+  const searchParams = new URLSearchParams(search);
+  const fromGuest = searchParams.get("fromGuest") === "true";
+  const guestMood = searchParams.get("mood") || "";
+
+  const [step, setStep] = useState(fromGuest ? 2 : 1);
   const [formData, setFormData] = useState({
-    name: "",
+    name: fromGuest ? "Guest" : "",
     lastPeriodStart: "",
     cycleLength: 28,
-    concerns: "",
+    concerns: guestMood ? `Mood on arrival: ${guestMood}` : "",
     cycleStatus: "cycling" as "cycling" | "no_period",
     cycleReason: "" as string,
     age: "" as string,
