@@ -191,6 +191,21 @@ function ProtectedApp() {
   );
 }
 
+function GuestPreviewRoute() {
+  const [, nav] = useLocation();
+  return (
+    <GuestPreviewPage
+      onSignUp={(energy, mood) => {
+        const params = new URLSearchParams();
+        params.set("fromGuest", "true");
+        if (energy !== null) params.set("energy", String(energy));
+        if (mood) params.set("mood", mood);
+        nav(`/onboarding?${params.toString()}`);
+      }}
+    />
+  );
+}
+
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
@@ -210,20 +225,7 @@ function App() {
             <Switch>
               <Route path="/" component={LandingWrapper} />
               <Route path="/onboarding" component={OnboardingPage} />
-              <Route path="/guest-preview" component={() => {
-                const [, nav] = useLocation();
-                return (
-                  <GuestPreviewPage
-                    onSignUp={(energy, mood) => {
-                      const params = new URLSearchParams();
-                      params.set("fromGuest", "true");
-                      if (energy !== null) params.set("energy", String(energy));
-                      if (mood) params.set("mood", mood);
-                      nav(`/onboarding?${params.toString()}`);
-                    }}
-                  />
-                );
-              }} />
+              <Route path="/guest-preview" component={GuestPreviewRoute} />
               <Route path="/partner-brief" component={PartnerBriefPage} />
               <Route path="/cynclink/:token" component={CyncLinkPage} />
               <Route path="/admin" component={AdminPage} />

@@ -44,7 +44,7 @@ const PHASE_QUOTES: Record<string, { quote: string; attribution: string }[]> = {
       attribution: "Aunt B",
     },
   ],
-  alchemy: [
+  recharge: [
     {
       quote: "What feels heavy right now is asking to be transformed, not carried.",
       attribution: "Aunt B",
@@ -93,14 +93,14 @@ function getCurrentPhase(lastPeriodStart?: string | null, cycleLength = 28): str
   if (dayInCycle <= 5) return "reset";
   if (dayInCycle <= Math.round(cycleLength * 0.45)) return "spark";
   if (dayInCycle <= Math.round(cycleLength * 0.55)) return "radiance";
-  return "alchemy";
+  return "recharge";
 }
 
 const PHASE_COLORS: Record<string, { bg: string; accent: string; moon: string }> = {
   reset: { bg: "#0D0B0A", accent: "#8B4A6B", moon: "🌑" },
   spark: { bg: "#0A0D0B", accent: "#7A9E7E", moon: "🌱" },
   radiance: { bg: "#0D0A08", accent: "#C4846E", moon: "🌕" },
-  alchemy: { bg: "#0B0A08", accent: "#B07D52", moon: "🍂" },
+  recharge: { bg: "#0B0A08", accent: "#B07D52", moon: "🍂" },
   default: { bg: "#0D0B0A", accent: "#B07D52", moon: "🌙" },
 };
 

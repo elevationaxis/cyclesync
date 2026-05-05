@@ -167,7 +167,7 @@ const spark: PhaseContent = [
   },
 ];
 
-const alchemy: PhaseContent = [
+const recharge: PhaseContent = [
   {
     move: "Go for a walk, swim, or do yoga today — lower intensity, longer duration. Your body is in a different gear.",
     eat: "Add a magnesium-rich food to your next meal — dark chocolate, leafy greens, almonds, or black beans. Magnesium drops in Recharge and it affects everything.",
@@ -222,7 +222,7 @@ const phaseMap: Record<string, PhaseContent> = {
   menstrual: flow,
   follicular: bloom,
   ovulatory: spark,
-  luteal: alchemy,
+  luteal: recharge,
 };
 
 export function getDailyBriefing(
