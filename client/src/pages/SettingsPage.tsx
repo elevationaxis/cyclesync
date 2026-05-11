@@ -253,6 +253,13 @@ export default function SettingsPage() {
           </button>
         </div>
 
+        {/* Privacy reassurance */}
+        <div style={{ padding: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "0.5rem" }}>
+          <p style={{ color: "#6A5A4A", fontSize: "0.78rem", lineHeight: 1.6, textAlign: "center", margin: 0 }}>
+            Your data stays yours. We don't sell it, share it, or use it to train anything.
+          </p>
+        </div>
+
       </div>
     </div>
   );

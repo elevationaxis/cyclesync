@@ -18,9 +18,7 @@ export default function AppNavigation({ isPartnerView = false, onTogglePartnerVi
     { path: '/check-in', label: 'Check-In', icon: Calendar },
     { path: '/chat', label: 'Ask Aunt B', icon: MessageCircle },
     { path: '/spoons', label: 'Spoons', icon: Utensils },
-    { path: '/rituals', label: 'Rituals', icon: Music },
     { path: '/partner-support', label: 'CyncLink', icon: Link2 },
-    { path: '/community', label: 'Community', icon: MessagesSquare },
     { path: '/calendar', label: 'Calendar', icon: CalendarDays },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];

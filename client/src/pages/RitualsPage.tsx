@@ -230,17 +230,7 @@ export default function RitualsPage() {
                         <p className="text-sm text-muted-foreground">Media coming soon</p>
                       </div>
                     )}
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(ritual.id)}
-                      disabled={deleteMutation.isPending}
-                      className="w-full"
-                      data-testid={`button-delete-${ritual.id}`}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </Button>
+                    {/* Delete button hidden from public view — admin only */}
                   </CardContent>
                 </Card>
               ))}

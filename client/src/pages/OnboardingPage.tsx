@@ -357,9 +357,12 @@ export default function OnboardingPage() {
                 {errors.name && <p className="text-sm" style={{ color: "#e87070" }}>{errors.name}</p>}
               </div>
 
-              {/* Disclaimer */}
+              {/* Disclaimer + privacy */}
               <p className="text-xs text-center" style={{ color: 'rgba(247,242,235,0.35)', lineHeight: '1.5' }}>
                 Cync and Aunt B are for informational and wellness purposes only — not medical advice. Always consult a qualified healthcare provider before making changes to your health routine.
+              </p>
+              <p className="text-xs text-center" style={{ color: 'rgba(247,242,235,0.25)', lineHeight: '1.5', marginTop: '-1rem' }}>
+                Your data stays yours. We don’t sell it, share it, or use it to train anything.
               </p>
 
               <Button

@@ -10,9 +10,9 @@ import CheckInPage from "@/pages/CheckInPage";
 import ChatPage from "@/pages/ChatPage";
 import LearnPage from "@/pages/LearnPage";
 import PartnerViewPage from "@/pages/PartnerViewPage";
-import RitualsPage from "@/pages/RitualsPage";
+// import RitualsPage from "@/pages/RitualsPage"; // hidden until ready
 import PartnerSupportPage from "@/pages/PartnerSupportPage";
-import CommunityPage from "@/pages/CommunityPage";
+// import CommunityPage from "@/pages/CommunityPage"; // hidden until ready
 import CalendarPage from "@/pages/CalendarPage";
 import SettingsPage from "@/pages/SettingsPage";
 import SpoonTrackerPage from "@/pages/SpoonTrackerPage";
@@ -40,9 +40,9 @@ function AppRouter({ isPartnerView }: { isPartnerView: boolean }) {
       <Route path="/check-in" component={CheckInPage} />
       <Route path="/chat" component={ChatPage} />
       <Route path="/learn" component={LearnPage} />
-      <Route path="/rituals" component={RitualsPage} />
+      {/* /rituals — hidden until ready */}
       <Route path="/partner-support" component={PartnerSupportPage} />
-      <Route path="/community" component={CommunityPage} />
+      {/* /community — hidden until ready */}
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/spoons" component={SpoonTrackerPage} />
       <Route path="/settings" component={SettingsPage} />
