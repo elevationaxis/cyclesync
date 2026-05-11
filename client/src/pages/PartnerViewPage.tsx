@@ -22,75 +22,77 @@ const PARTNER_PHASE_CONFIG: Record<
     name: "Flow",
     icon: "🌊",
     accent: "#8B4A6B",
-    headline: "She's in her lowest energy phase right now.",
-    context: "Think rest, quiet, and no pressure. This isn't personal — it's biology.",
+    headline: "She's in her rest phase. Her body is doing a lot right now.",
+    context: "This isn't a mood — it's biology. Low energy, inward focus, and needing warmth are all exactly on schedule.",
     howToShowUp: [
-      "Be patient and gentle",
-      "Take things off her plate if you can",
-      "Keep the environment calm",
+      "Take something off her plate without asking",
+      "Bring warmth — a blanket, a hot drink, food she doesn't have to think about",
+      "Sit with her without needing her to perform",
     ],
     avoid: [
-      "Expecting high energy",
-      "Taking distance personally",
-      "Pushing plans or decisions",
+      "Expecting her to show up at full capacity",
+      "Making her explain why she's tired",
+      "Planning anything that requires her to be 'on'",
     ],
     whyExplainer:
-      "Her body is releasing and resetting right now. Hormones are at their lowest point. What looks like withdrawal is actually her body doing significant internal work. The best thing you can do is be steady and low-demand.",
+      "Her hormones just dropped to their lowest point of the entire cycle. Her body is releasing and resetting — physically and emotionally. What looks like withdrawal is actually her conserving energy for something important happening under the surface. She doesn't need to be fixed. She needs to be held steady. Your job right now is to be the least demanding thing in her day.",
   },
   follicular: {
     name: "Bloom",
     icon: "🌱",
     accent: "#5B8A6B",
-    headline: "Her energy is coming back online.",
-    context: "She's more open, curious, and ready to engage. Good time to connect.",
+    headline: "She's coming back online. This is a good window.",
+    context: "Energy is building. She's more curious, more open, more herself. Meet her there.",
     howToShowUp: [
-      "Talk things out with her",
-      "Support new ideas she brings up",
-      "Be present and engaged",
+      "Ask what she's been thinking about — and actually listen",
+      "Make a plan together, even something small",
+      "Be present and engaged, not distracted",
     ],
     avoid: [
-      "Shutting ideas down too quickly",
-      "Being distant or unavailable",
+      "Shutting down ideas before she finishes the sentence",
+      "Being checked out when she's trying to connect",
+      "Wasting the window on small arguments",
     ],
     whyExplainer:
-      "Estrogen is rising and her brain is literally more optimistic and creative right now. She's coming out of her reset and opening back up. Conversations go well in this phase — use it.",
+      "Estrogen is rising and her brain is literally running more optimistically right now. She's coming out of the inward pull of her rest phase and opening back up. Conversations go better in this phase. Ideas come easier. She's more forgiving and more curious. If there's something you've been wanting to talk about or plan together, now is a good time.",
   },
   ovulatory: {
     name: "Spark",
     icon: "⚡",
     accent: "#C4846E",
-    headline: "This is her highest energy and most social phase.",
-    context: "She's more expressive, connected, and confident. Match her energy.",
+    headline: "She's at her best right now. Match her energy.",
+    context: "This is her most social, expressive, and connected phase. She wants real time with you.",
     howToShowUp: [
-      "Spend quality time together",
-      "Be attentive and engaged",
-      "Match her energy — she's feeling good",
+      "Make real time for her — not just proximity",
+      "Tell her something specific you appreciate about her",
+      "Say yes to plans, dates, or anything that involves being together",
     ],
     avoid: [
-      "Being distracted or disconnected",
-      "Taking her effort for granted",
+      "Being on your phone when she's trying to connect",
+      "Taking her effort for granted because she makes it look easy",
+      "Missing this window — it's the shortest phase",
     ],
     whyExplainer:
-      "She's at peak hormonal output right now — estrogen and LH are both high. She's magnetic, communicative, and outward-facing. This is the best time for important conversations and quality connection.",
+      "Estrogen and LH are both peaking. She's magnetic, communicative, and outward-facing — this is the phase where she's most naturally herself at full volume. She wants connection, not just coexistence. If you're present right now, she'll feel it deeply. If you're checked out, she'll feel that too. This is the phase where small gestures land the biggest.",
   },
   luteal: {
     name: "Recharge",
     icon: "🔋",
     accent: "#7A6B8A",
-    headline: "She's more inward right now and easier to overwhelm.",
-    context: "She's not upset at you — she's just in a lower energy phase. Think calm, steady, low pressure.",
+    headline: "She's more inward right now. This is not about you.",
+    context: "Her nervous system is more sensitive. She notices everything. The best move is steady and low-demand.",
     howToShowUp: [
-      "Keep things simple and steady",
-      "Give space when she needs it",
-      "Don't take things personally",
+      "Be consistent — predictability feels like safety right now",
+      "Ask 'what do you need?' instead of guessing or fixing",
+      "Handle things without waiting to be asked",
     ],
     avoid: [
-      "Pushing decisions",
-      "Overloading her with questions",
-      "Escalating small things",
+      "Taking her quiet or irritability personally",
+      "Pushing big decisions or heavy conversations",
+      "Adding to her mental load — she's already carrying a lot",
     ],
     whyExplainer:
-      "Progesterone is dropping and her nervous system is more sensitive. Clarity is actually high right now — she notices everything. The best move is to be steady and low-demand. You don't need to fix anything. Just don't make it heavier.",
+      "Progesterone is dropping and her nervous system is running hot. She's not being dramatic — she's actually more sensitive to stress, noise, and emotional weight right now. The frustrating part: her clarity is also high, which means she's noticing everything, including what you're not doing. You don't need to be perfect. You need to be steady. Don't make it heavier. Don't add noise. Just show up consistently and let her have her space.",
   },
 };
 
@@ -145,8 +147,7 @@ function WelcomeOverlay({
             margin: "0 0 2rem",
           }}
         >
-          This helps you understand {partnerName}'s cycle in real time — so you
-          can show up for her without guessing.
+          {partnerName} gave you access to this so you don't have to guess anymore. Here's where she is right now.
         </p>
         <button
           onClick={onDismiss}
@@ -547,10 +548,10 @@ export default function PartnerViewPage() {
             >
               <span style={{ color: "#9A8A7A", fontSize: "0.8rem" }}>
                 {spoonsLeft <= 3
-                  ? "Running low — keep it simple today"
+                  ? "Running on empty — low-demand only today"
                   : spoonsLeft <= 6
-                  ? "Moderate energy"
-                  : "Good energy today"}
+                  ? "Some energy, but don't push it"
+                  : "She's got energy today — good time to connect"}
               </span>
               <span style={{ color: spoonColor, fontSize: "0.85rem", fontWeight: 700 }}>
                 {spoonsLeft}/{spoonEntry.totalSpoons}

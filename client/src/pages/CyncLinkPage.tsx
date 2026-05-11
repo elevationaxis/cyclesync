@@ -27,32 +27,32 @@ interface CyncLinkData {
 
 const PHASE_SUPPORT_TIPS: Record<string, string[]> = {
   Reset: [
-    "Pick up dinner so she doesn't have to cook",
-    "Bring her a heating pad or hot water bottle",
-    "Handle one household task without being asked",
-    "Give her uninterrupted quiet time",
-    "Watch something comforting together",
+    "Pick up food so she doesn't have to think about dinner",
+    "Bring a heating pad or hot water bottle without being asked",
+    "Handle one thing on the household list — quietly, without a report",
+    "Give her uninterrupted quiet time, no check-ins needed",
+    "Sit with her with no agenda — just be there",
   ],
   Spark: [
-    "Plan something fun — she has the energy for it",
-    "Ask about her ideas and actually listen",
-    "Try something new together this week",
-    "Encourage her projects and goals",
-    "Be spontaneous — she'll love it right now",
+    "Ask about something she's been working on and actually listen",
+    "Plan something low-key together — even a walk counts",
+    "Try one new thing together this week, anything",
+    "Tell her you noticed something she did well lately",
+    "Be available — she's in a talkative phase and she wants you",
   ],
   Radiance: [
-    "Make time for real connection today",
-    "Tell her something you genuinely appreciate about her",
-    "Plan a date or quality time together",
-    "Be present — put the phone down",
-    "Match her energy — she's feeling good",
+    "Make real time today — put the phone down, be present",
+    "Tell her something specific you appreciate about her",
+    "Plan a date or quality time — she'll remember this phase",
+    "Match her energy — she's feeling good and wants company",
+    "Say yes to something she suggests without negotiating it down",
   ],
   Recharge: [
-    "Give her extra grace if she seems quiet or withdrawn",
+    "Give her grace if she seems quiet — it's not about you",
     "Ask 'what do you need?' instead of guessing",
-    "Handle more household tasks this week",
-    "Don't take her quiet personally — it's not about you",
-    "Bring her favorite snack without being asked",
+    "Take on more household tasks this week without announcing it",
+    "Bring her favorite snack or comfort food without being asked",
+    "Don't push for resolution on anything — just be steady",
   ],
 };
 
@@ -83,22 +83,22 @@ function getPhaseInfo(lastPeriodStart: string, cycleLength: number) {
     phase = "Reset";
     emoji = "🌑";
     color = "#8B4A6B";
-    partnerTip = "She's in her Reset phase — her body needs rest and warmth. Low energy is normal right now. A heating pad, her favorite comfort food, or just sitting quietly together goes a long way.";
+    partnerTip = "She's in her rest phase right now. Her body is doing significant internal work and her energy is at its lowest point of the cycle. This isn't a mood — it's biology. Warmth, quiet, and taking things off her plate is the whole playbook today.";
   } else if (dayInCycle <= follicularEnd) {
     phase = "Spark";
     emoji = "🌱";
     color = "#5B8A6B";
-    partnerTip = "She's in her Spark phase — energy is building and she's feeling more social and optimistic. Great time for new plans, conversations, or trying something new together.";
+    partnerTip = "She's in her Spark phase — energy is building and she's feeling more like herself. She's curious, more optimistic, and open to connecting. Good time for plans, real conversations, or just being present together.";
   } else if (dayInCycle <= ovulatoryEnd) {
     phase = "Radiance";
     emoji = "🌕";
     color = "#C4846E";
-    partnerTip = "She's in her Radiance phase — peak energy and connection. She's likely feeling confident and communicative. Make time for quality connection.";
+    partnerTip = "She's in her Radiance phase — peak energy, peak connection. She's likely feeling confident and wants real time with you. This is the shortest phase of the cycle. Don't waste it being half-present.";
   } else {
     phase = "Recharge";
     emoji = "🍂";
     color = "#8B6A3E";
-    partnerTip = "She's in her Recharge phase — introspective and sensitive. She may need more space or reassurance. This isn't personal. Check in gently, don't take quiet personally.";
+    partnerTip = "She's in her Recharge phase — more inward, more sensitive, easier to overwhelm. Her nervous system is running hot right now. This is not personal. Be steady, keep things low-demand, and don't add to her mental load.";
   }
 
   return { phase, emoji, color, partnerTip, dayInCycle };
