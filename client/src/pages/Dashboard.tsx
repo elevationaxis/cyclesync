@@ -1,14 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import AskAuntB from "@/components/AskAuntB";
 import {
   calculateCycleDay,
   getPhaseForCycleLength,
 } from "@/lib/cycleUtils";
-import { getPhaseStartDay } from "@/lib/dailyBriefing";
-import { Button } from "@/components/ui/button";
+import { getDailyBriefing, getPhaseStartDay } from "@/lib/dailyBriefing";
 import { useQuery } from "@tanstack/react-query";
-import type { SpoonEntry, UserProfile } from "@shared/schema";
+import type { UserProfile } from "@shared/schema";
 import { getProfileId, getUserName } from "@/lib/storage";
 
 // ── Phase config ─────────────────────────────────────────────────────────────
@@ -16,78 +15,145 @@ const PHASE_CONFIG: Record<
   string,
   {
     name: string;
-    icon: string;
+    subtitle: string;
     accent: string;
-    todayFeelsLike: string;
-    focus: string;
-    do: string[];
-    avoid: string[];
-    patternToWatch: string;
+    bg: string;
+    description: string;
+    mind: string[];
+    body: string[];
+    soul: string[];
   }
 > = {
   menstrual: {
     name: "Flow",
-    icon: "🌊",
+    subtitle: "Let Go",
     accent: "#8B4A6B",
-    todayFeelsLike: "Everything feels slower — and that's okay.",
-    focus: "Rest and reset",
-    do: ["Rest without guilt", "Keep things minimal"],
-    avoid: ["Pushing productivity", "Overcommitting"],
-    patternToWatch:
-      "You may feel more depleted if you pushed hard in Recharge. Notice if rest today helps you recover faster.",
+    bg: "#8B4A6B",
+    description:
+      "Everything feels slower today — and that's not a flaw, it's a feature. Your body is doing significant internal work. The most productive thing you can do right now is rest without guilt and let the cycle complete itself.",
+    mind: [
+      "Zero expectations today. Your cognitive processing is naturally slower. Do the bare minimum to keep the wheels turning — nothing more.",
+      "Clear the mental clutter. Write down everything you're stressing about, then close the notebook. You're not allowed to solve those problems until Bloom.",
+      "Don't believe everything you think today. Your inner critic is louder during Flow. Notice the thought, then let it pass.",
+    ],
+    body: [
+      "Deep rest and warmth. Skip the intense workout. A heating pad, magnesium-rich foods, and the Flow tea blend are your best tools today.",
+      "Gentle movement only — a slow walk or restorative yoga. Your hormones are at their lowest; treat your body like it's recovering from a marathon.",
+      "Nourishment over restriction. Your body needs dense, warm, grounding foods to rebuild what it's shedding. This is not the day to skip meals.",
+    ],
+    soul: [
+      "Permission to cancel. You do not owe anyone your energy today. Send the 'I can't make it' text and retreat without apology.",
+      "Radical acceptance. Stop fighting the fatigue. The more you resist the need to rest, the longer the exhaustion lasts. Surrender to the slow down.",
+      "Reflection. Flow is the phase where your intuition is sharpest. What is no longer working in your life? Let it bleed out with this cycle.",
+    ],
   },
   follicular: {
     name: "Bloom",
-    icon: "🌱",
+    subtitle: "Open Up",
     accent: "#5B8A6B",
-    todayFeelsLike: "Things feel a little lighter and easier.",
-    focus: "Start small, stay curious",
-    do: ["Try something new", "Take light action"],
-    avoid: ["Overloading your schedule", "Starting too many things"],
-    patternToWatch:
-      "Your energy is building. Notice what ideas feel exciting — they're worth writing down before Recharge makes them harder to access.",
+    bg: "#5B8A6B",
+    description:
+      "The heavy fatigue is lifting and something is waking back up. Your estrogen is rising, your brain is primed for new ideas, and your body is ready to move again. This is your planning window — use it.",
+    mind: [
+      "Strategize. Your brain is wired for structural thinking right now. Map out the month, build the plan, set the goals. This is your best cognitive window.",
+      "Tackle the hard tasks. That project you've been putting off? Do it now. Your cognitive endurance is peaking, making it easier to focus for long stretches.",
+      "Learn something new. Your neuroplasticity is high right now. If you need to master a new skill or absorb complex information, this is the window.",
+    ],
+    body: [
+      "Shake off the winter. Estrogen is rising, bringing your energy back online. Ease back into cardio or strength training — your body is ready.",
+      "Fresh, vibrant nourishment. Feed your body light, energizing foods — think salads, fruits, and lean proteins to match your rising energy.",
+      "Cruciferous vegetables. Broccoli, cauliflower, and kale help your liver process rising estrogen and keep your hormones balanced.",
+    ],
+    soul: [
+      "Curiosity. What feels exciting right now? Follow the spark. This is the time to brainstorm without editing yourself.",
+      "Initiate. Send the pitch, start the conversation, launch the idea. The energy of Bloom is all about forward momentum.",
+      "Prioritize your own goals. It's easy to use this fresh energy to serve everyone else. Stop. Take the first 10% and apply it to your own ambitions.",
+    ],
   },
   ovulatory: {
     name: "Spark",
-    icon: "⚡",
+    subtitle: "Turn Up",
     accent: "#C4846E",
-    todayFeelsLike: "You've got more energy and presence today.",
-    focus: "Connect and express",
-    do: ["Have important conversations", "Show up and engage"],
-    avoid: ["Overextending", "Saying yes to everything"],
-    patternToWatch:
-      "This is your peak window. Notice what you accomplish here — it sets the tone for how Recharge feels in two weeks.",
+    bg: "#C4846E",
+    description:
+      "You are magnetic right now. Your estrogen is peaking, your testosterone is surging, and your verbal fluency is at its absolute highest. This is your window to be seen, to speak, and to lead. Don't waste it hiding.",
+    mind: [
+      "The hardest conversation on your list. Your verbal fluency and emotional resilience are at their highest. Ask for the raise, set the boundary, pitch the client. You are bulletproof today.",
+      "Collaborate. You are highly empathetic and communicative right now. This is the best time for team meetings, networking, and joint problem-solving.",
+      "Advocate for yourself. You have the clarity and confidence to ask for exactly what you need. Do not dilute your requests.",
+    ],
+    body: [
+      "High-intensity output. Your testosterone is surging alongside your estrogen. This is your window for PRs in the gym, heavy lifting, and intense cardio. Use the power.",
+      "Fuel the surge. Your metabolism is speeding up. Complex carbohydrates and high-quality proteins will sustain this high-energy output.",
+      "Liver support. As estrogen peaks, your liver works hard to clear it. Support it with leafy greens and plenty of water to prevent estrogen dominance later.",
+    ],
+    soul: [
+      "Be seen. You are magnetic right now. Stop hiding behind the laptop. Go out, connect, lead the meeting, and let people experience your energy.",
+      "Celebrate yourself. The Spark phase is the summer of your cycle. Enjoy the warmth, the confidence, and the feeling of being fully alive.",
+      "Joy. Remember what it feels like to just have fun? Go find it today. Laugh loudly, be spontaneous, and let the heavy responsibilities wait.",
+    ],
   },
   luteal: {
     name: "Recharge",
-    icon: "🔋",
+    subtitle: "Come Home",
     accent: "#7A6B8A",
-    todayFeelsLike: "Things might feel a little heavier today.",
-    focus: "Simplify and protect your energy",
-    do: ["Finish what matters", "Keep things simple"],
-    avoid: ["Overcommitting", "Starting something new"],
-    patternToWatch:
-      "You may feel more overwhelmed if you've taken on too much earlier this week. Notice the pattern — it's information.",
+    bg: "#7A6B8A",
+    description:
+      "Your energy is turning inward and your tolerance for noise is dropping. That's not a problem — it's your nervous system asking for protection. Honor it. Finish what matters, say no to what doesn't, and start coming home to yourself.",
+    mind: [
+      "Close the loops. You are highly detail-oriented right now. Edit the document, balance the budget, clean the inbox. Finish the tasks you started during Bloom.",
+      "Delay the big decisions. You are highly critical right now — of yourself and others. Do not quit your job, break up with your partner, or send the angry email. Wait three days.",
+      "Give yourself grace. The brain fog and irritability are biological, not moral failings. Lower your expectations for yourself today and just do what is necessary.",
+    ],
+    body: [
+      "Transition from output to maintenance. Swap the HIIT for Pilates or long walks. Your body is preparing to reset and it wants to conserve energy.",
+      "Blood sugar stabilization. Progesterone makes you more insulin resistant. Focus on protein-heavy meals and avoid sugar spikes to keep your mood stable.",
+      "Magnesium and warmth. As hormones shift, cramps and tension can start. Support your nervous system with magnesium, warm baths, and the Recharge tea blend.",
+    ],
+    soul: [
+      "Fierce boundaries. Your tolerance for things that don't serve you is at zero. Use this clarity to see what isn't working — but wait until Bloom to fix it. For now, just observe and protect your peace.",
+      "Say no. You do not have the energetic bandwidth to be everything to everyone right now. 'No' is a complete sentence. Use it.",
+      "Honor your anger. If you are furious about something today, pay attention. The luteal phase strips away your tolerance for things you usually put up with. The anger is valid — manage the reaction.",
+    ],
   },
 };
 
-// ── 7-day strip ──────────────────────────────────────────────────────────────
-function WeekStrip({
-  cycleDay,
+// Phase key → display name
+const PHASE_NAMES: Record<string, string> = {
+  menstrual: "Flow",
+  follicular: "Bloom",
+  ovulatory: "Spark",
+  luteal: "Recharge",
+};
+
+// ── Full-width Calendar ───────────────────────────────────────────────────────
+function MonthCalendar({
   cycleLength,
   lastPeriodStart,
   accent,
 }: {
-  cycleDay: number | null;
   cycleLength: number;
-  lastPeriodStart: string | null | undefined;
+  lastPeriodStart: string;
   accent: string;
 }) {
   const [, setLocation] = useLocation();
+  const [viewDate, setViewDate] = useState(() => new Date());
 
-  const days = useMemo(() => {
-    if (!cycleDay || !lastPeriodStart) return [];
-    // Parse start date as local time
+  const PHASE_COLORS: Record<string, string> = {
+    menstrual: "#8B4A6B",
+    follicular: "#5B8A6B",
+    ovulatory: "#C4846E",
+    luteal: "#7A6B8A",
+  };
+
+  const calendarDays = useMemo(() => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     let start: Date;
     if (/^\d{4}-\d{2}-\d{2}$/.test(lastPeriodStart)) {
       const [y, m, d] = lastPeriodStart.split("-").map(Number);
@@ -97,65 +163,219 @@ function WeekStrip({
     }
     start.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const cells: Array<{
+      day: number | null;
+      phase: string | null;
+      color: string | null;
+      isToday: boolean;
+    }> = [];
 
-    // Show 3 days before today, today, 3 days after (7 total, today centered)
-    return Array.from({ length: 7 }, (_, i) => {
-      const offset = i - 3;
-      const date = new Date(today);
-      date.setDate(today.getDate() + offset);
-      const diffMs = date.getTime() - start.getTime();
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      const dayNum = ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
-      const phase = getPhaseForCycleLength(dayNum, cycleLength);
-      const cfg = PHASE_CONFIG[phase];
-      const isToday = offset === 0;
-      return {
-        date,
-        dayNum,
+    // Leading empty cells
+    for (let i = 0; i < firstDay; i++) {
+      cells.push({ day: null, phase: null, color: null, isToday: false });
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      date.setHours(0, 0, 0, 0);
+      const diffDays = Math.floor(
+        (date.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const cycleDay =
+        ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
+      const phase = getPhaseForCycleLength(cycleDay, cycleLength);
+      const isToday = date.getTime() === today.getTime();
+      cells.push({
+        day: d,
         phase,
-        icon: cfg.icon,
-        accent: cfg.accent,
+        color: PHASE_COLORS[phase] || null,
         isToday,
-        label: isToday
-          ? "Today"
-          : date.toLocaleDateString("en-US", { weekday: "short" }),
-        dayOfMonth: date.getDate(),
-      };
-    });
-  }, [cycleDay, cycleLength, lastPeriodStart]);
+      });
+    }
 
-  if (!days.length) return null;
+    return cells;
+  }, [viewDate, lastPeriodStart, cycleLength]);
+
+  const monthLabel = viewDate.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const prevMonth = () => {
+    setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+  };
+  const nextMonth = () => {
+    setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+  };
 
   return (
-    <div
-      style={{
-        background: "#1A1614",
-        border: "1px solid #2A2420",
-        borderRadius: "16px",
-        padding: "1rem",
-      }}
-    >
+    <div style={{ background: "#0D0B0A", padding: "0" }}>
+      {/* Month nav */}
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "0.75rem",
+          justifyContent: "space-between",
+          padding: "1rem 1rem 0.5rem",
         }}
       >
-        <span
+        <button
+          onClick={prevMonth}
           style={{
-            color: "#9A8A7A",
-            fontSize: "0.7rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            fontWeight: 600,
+            background: "transparent",
+            border: "none",
+            color: "#6A5A4A",
+            fontSize: "1.2rem",
+            cursor: "pointer",
+            padding: "0.25rem 0.5rem",
           }}
         >
-          This Week
+          ‹
+        </button>
+        <span
+          style={{
+            color: "#F7F2EB",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            letterSpacing: "0.05em",
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
+          {monthLabel}
         </span>
+        <button
+          onClick={nextMonth}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#6A5A4A",
+            fontSize: "1.2rem",
+            cursor: "pointer",
+            padding: "0.25rem 0.5rem",
+          }}
+        >
+          ›
+        </button>
+      </div>
+
+      {/* Day headers */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          padding: "0 0.75rem",
+          marginBottom: "0.25rem",
+        }}
+      >
+        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+          <div
+            key={d}
+            style={{
+              textAlign: "center",
+              color: "#4A3A2A",
+              fontSize: "0.65rem",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              padding: "0.25rem 0",
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          gap: "2px",
+          padding: "0 0.75rem 0.75rem",
+        }}
+      >
+        {calendarDays.map((cell, i) => (
+          <div
+            key={i}
+            style={{
+              aspectRatio: "1",
+              borderRadius: "8px",
+              background: cell.color
+                ? cell.isToday
+                  ? `${cell.color}55`
+                  : `${cell.color}22`
+                : "transparent",
+              border: cell.isToday
+                ? `2px solid ${cell.color || accent}`
+                : "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: cell.isToday
+                ? `0 0 10px ${cell.color || accent}60`
+                : "none",
+            }}
+          >
+            {cell.day !== null && (
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  color: cell.isToday ? "#F7F2EB" : cell.color ? "#C4B8A8" : "#3A2A1A",
+                  fontWeight: cell.isToday ? 700 : 400,
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                {cell.day}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Phase legend */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "1rem",
+          padding: "0 1rem 1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        {[
+          { label: "Flow", color: "#8B4A6B" },
+          { label: "Bloom", color: "#5B8A6B" },
+          { label: "Spark", color: "#C4846E" },
+          { label: "Recharge", color: "#7A6B8A" },
+        ].map((p) => (
+          <div
+            key={p.label}
+            style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}
+          >
+            <div
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "3px",
+                background: p.color,
+              }}
+            />
+            <span
+              style={{
+                color: "#6A5A4A",
+                fontSize: "0.65rem",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              {p.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Full calendar link */}
+      <div style={{ textAlign: "center", paddingBottom: "0.75rem" }}>
         <button
           onClick={() => setLocation("/calendar")}
           style={{
@@ -167,67 +387,118 @@ function WeekStrip({
             fontFamily: "Inter, sans-serif",
           }}
         >
-          Full calendar →
+          View full calendar →
         </button>
       </div>
+    </div>
+  );
+}
+
+// ── Flip Card ─────────────────────────────────────────────────────────────────
+function FlipCard({
+  label,
+  icon,
+  content,
+  accent,
+}: {
+  label: string;
+  icon: string;
+  content: string;
+  accent: string;
+}) {
+  const [flipped, setFlipped] = useState(false);
+
+  return (
+    <div
+      onClick={() => setFlipped((f) => !f)}
+      style={{
+        cursor: "pointer",
+        perspective: "1000px",
+        height: "140px",
+        flex: 1,
+        minWidth: 0,
+      }}
+    >
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "0.35rem",
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          transformStyle: "preserve-3d",
+          transition: "transform 0.45s ease",
+          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
       >
-        {days.map((d, i) => (
-          <div
-            key={i}
+        {/* Front */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backfaceVisibility: "hidden",
+            background: "#1A1614",
+            border: `1px solid ${accent}30`,
+            borderRadius: "14px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+            padding: "1rem",
+          }}
+        >
+          <span style={{ fontSize: "1.5rem" }}>{icon}</span>
+          <span
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.2rem",
+              color: accent,
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontFamily: "Inter, sans-serif",
             }}
           >
-            <span
-              style={{
-                fontSize: "0.6rem",
-                color: d.isToday ? accent : "#6A5A4A",
-                fontWeight: d.isToday ? 700 : 400,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}
-            >
-              {d.label}
-            </span>
-            <div
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "10px",
-                background: d.isToday ? `${d.accent}30` : `${d.accent}14`,
-                border: d.isToday
-                  ? `2px solid ${d.accent}`
-                  : `1px solid ${d.accent}40`,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: d.isToday ? `0 0 8px ${d.accent}50` : "none",
-                position: "relative",
-              }}
-            >
-              <span style={{ fontSize: "0.9rem", lineHeight: 1 }}>{d.icon}</span>
-            </div>
-            <span
-              style={{
-                fontSize: "0.65rem",
-                color: d.isToday ? "#F7F2EB" : "#6A5A4A",
-                fontWeight: d.isToday ? 700 : 400,
-              }}
-            >
-              {d.dayOfMonth}
-            </span>
-          </div>
-        ))}
+            {label}
+          </span>
+          <span
+            style={{
+              color: "#4A3A2A",
+              fontSize: "0.6rem",
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            tap to reveal
+          </span>
+        </div>
+
+        {/* Back */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            background: `${accent}15`,
+            border: `1px solid ${accent}40`,
+            borderRadius: "14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+        >
+          <p
+            style={{
+              color: "#F7F2EB",
+              fontSize: "0.78rem",
+              lineHeight: 1.55,
+              margin: 0,
+              textAlign: "center",
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            {content}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -235,8 +506,7 @@ function WeekStrip({
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const [showAskCync, setShowAskCync] = useState(false);
-  const [eveningDone, setEveningDone] = useState(false);
+  const [showAuntB, setShowAuntB] = useState(false);
   const [, setLocation] = useLocation();
 
   const profileId = getProfileId();
@@ -270,35 +540,20 @@ export default function Dashboard() {
     return { cycleDay: null, currentPhase: "follicular" as const };
   }, [profile, isNoPeriod]);
 
-  const userId = profileId || "demo-user";
-
-  const { data: spoonEntry } = useQuery<SpoonEntry | null>({
-    queryKey: ["/api/spoon-entries/today", userId],
-    queryFn: async () => {
-      const response = await fetch(`/api/spoon-entries/today?userId=${userId}`);
-      if (!response.ok) return null;
-      return response.json();
-    },
-  });
-
   const cfg = PHASE_CONFIG[currentPhase] || PHASE_CONFIG.follicular;
   const accent = cfg.accent;
-  const spoonsLeft =
-    spoonEntry ? spoonEntry.totalSpoons - spoonEntry.usedSpoons : null;
 
-  // Evening check-in — persist per day
-  useEffect(() => {
-    const today = new Date().toDateString();
-    const stored = localStorage.getItem("cync_evening_done");
-    if (stored === today) setEveningDone(true);
-  }, []);
+  // Pick daily variation for flip cards (rotate by cycle day)
+  const cardIndex = cycleDay ? (cycleDay - 1) % 3 : 0;
+  const mindContent = cfg.mind[cardIndex];
+  const bodyContent = cfg.body[cardIndex];
+  const soulContent = cfg.soul[cardIndex];
 
-  const handleEveningClose = () => {
-    const today = new Date().toDateString();
-    localStorage.setItem("cync_evening_done", today);
-    setEveningDone(true);
-    setLocation("/check-in");
-  };
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <div
@@ -307,391 +562,309 @@ export default function Dashboard() {
         background: "#0D0B0A",
         color: "#F7F2EB",
         fontFamily: "Inter, sans-serif",
-        padding: "0",
       }}
     >
+      {/* ── 1. FULL-WIDTH CALENDAR ── */}
+      {!isNoPeriod && profile?.lastPeriodStart ? (
+        <MonthCalendar
+          cycleLength={profile.cycleLength || 28}
+          lastPeriodStart={profile.lastPeriodStart}
+          accent={accent}
+        />
+      ) : (
+        <div
+          style={{
+            padding: "2rem 1rem 1rem",
+            textAlign: "center",
+            borderBottom: "1px solid #1A1614",
+          }}
+        >
+          <p style={{ color: "#4A3A2A", fontSize: "0.8rem" }}>
+            Set your last period date in settings to unlock your cycle calendar.
+          </p>
+        </div>
+      )}
+
+      {/* ── Scrollable content ── */}
       <div
         style={{
           maxWidth: "480px",
           margin: "0 auto",
-          padding: "1.5rem 1rem 6rem",
+          padding: "1.25rem 1rem 6rem",
           display: "flex",
           flexDirection: "column",
-          gap: "1rem",
+          gap: "1.25rem",
         }}
       >
-        {/* ── Header ── */}
-        <div style={{ paddingBottom: "0.25rem" }}>
+        {/* ── 2. CURRENT PHASE ── */}
+        <div
+          style={{
+            background: "#1A1614",
+            borderRadius: "16px",
+            padding: "1.5rem",
+            borderLeft: `4px solid ${accent}`,
+          }}
+        >
           <p
             style={{
               color: "#6A5A4A",
-              fontSize: "0.75rem",
+              fontSize: "0.65rem",
               textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              marginBottom: "0.25rem",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              margin: "0 0 0.5rem",
             }}
           >
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
+            {today}
+            {cycleDay ? ` · Day ${cycleDay}` : ""}
           </p>
-          <h1
-            style={{
-              fontFamily: "DM Serif Display, Georgia, serif",
-              fontSize: "1.6rem",
-              margin: 0,
-              color: "#F7F2EB",
-            }}
-          >
-            {userName ? `${userName.split(" ")[0]}'s Day` : "Your Daily Cync"}
-          </h1>
-        </div>
-
-        {/* ── 1. TODAY CARD ── */}
-        <div
-          style={{
-            background: `${accent}18`,
-            border: `1px solid ${accent}35`,
-            borderRadius: "20px",
-            padding: "1.5rem",
-          }}
-        >
-          {/* Phase title + day */}
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
+              alignItems: "baseline",
+              gap: "0.6rem",
               marginBottom: "0.25rem",
             }}
           >
-            <span style={{ fontSize: "1.5rem" }}>{cfg.icon}</span>
-            <span
+            <h1
               style={{
-                fontFamily: "DM Serif Display, Georgia, serif",
-                fontSize: "1.5rem",
-                color: "#F7F2EB",
+                color: accent,
+                fontSize: "2rem",
+                fontWeight: 700,
+                margin: 0,
+                letterSpacing: "-0.02em",
               }}
             >
-              {isNoPeriod ? "Your Body Today" : cfg.name}
+              {cfg.name}
+            </h1>
+            <span
+              style={{
+                color: "#6A5A4A",
+                fontSize: "0.9rem",
+                fontStyle: "italic",
+              }}
+            >
+              · {cfg.subtitle}
             </span>
-            {!isNoPeriod && cycleDay && (
-              <span
-                style={{
-                  background: `${accent}30`,
-                  color: accent,
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  padding: "0.2rem 0.6rem",
-                  borderRadius: "20px",
-                  marginLeft: "auto",
-                }}
-              >
-                Day {cycleDay}
-              </span>
-            )}
           </div>
+        </div>
 
-          {/* Today feels like */}
+        {/* ── 3. DAILY DESCRIPTION ── */}
+        <div
+          style={{
+            background: "#1A1614",
+            border: "1px solid #2A2420",
+            borderRadius: "16px",
+            padding: "1.25rem",
+          }}
+        >
+          <p
+            style={{
+              color: "#6A5A4A",
+              fontSize: "0.65rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              margin: "0 0 0.75rem",
+            }}
+          >
+            Today
+          </p>
           <p
             style={{
               color: "#C4B8A8",
               fontSize: "0.9rem",
-              margin: "0.5rem 0 0.25rem",
+              lineHeight: 1.7,
+              margin: 0,
+            }}
+          >
+            {cfg.description}
+          </p>
+        </div>
+
+        {/* ── 4. MIND / BODY / SOUL FLIP CARDS ── */}
+        <div>
+          <p
+            style={{
+              color: "#6A5A4A",
+              fontSize: "0.65rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              margin: "0 0 0.75rem",
+            }}
+          >
+            Your Needs Today
+          </p>
+          <div style={{ display: "flex", gap: "0.6rem" }}>
+            <FlipCard label="Mind" icon="🧠" content={mindContent} accent={accent} />
+            <FlipCard label="Body" icon="🌿" content={bodyContent} accent={accent} />
+            <FlipCard label="Soul" icon="✨" content={soulContent} accent={accent} />
+          </div>
+          <p
+            style={{
+              color: "#3A2A1A",
+              fontSize: "0.6rem",
+              textAlign: "center",
+              marginTop: "0.5rem",
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            Tap each card to reveal
+          </p>
+        </div>
+
+        {/* ── 5. CYNCLINK PROMPT ── */}
+        <div
+          style={{
+            background: "#1A1614",
+            border: `1px solid ${accent}25`,
+            borderRadius: "16px",
+            padding: "1.25rem",
+          }}
+        >
+          <p
+            style={{
+              color: "#6A5A4A",
+              fontSize: "0.65rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              margin: "0 0 0.5rem",
+            }}
+          >
+            CyncLink
+          </p>
+          <p
+            style={{
+              color: "#F7F2EB",
+              fontSize: "0.9rem",
+              fontWeight: 600,
+              margin: "0 0 0.25rem",
+            }}
+          >
+            Don't make them read your mind.
+          </p>
+          <p
+            style={{
+              color: "#9A8A7A",
+              fontSize: "0.8rem",
+              margin: "0 0 1rem",
               lineHeight: 1.5,
             }}
           >
-            {isNoPeriod
-              ? "Tracking by how you feel today."
-              : cfg.todayFeelsLike}
+            Share your phase and what you need with the people closest to you.
           </p>
-
-          {/* Focus line */}
-          <p
+          <button
+            onClick={() => setLocation("/partner-support")}
             style={{
+              background: `${accent}20`,
+              border: `1px solid ${accent}50`,
+              borderRadius: "10px",
+              padding: "0.65rem 1.25rem",
               color: accent,
-              fontSize: "0.8rem",
+              fontSize: "0.85rem",
               fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-              margin: "0.5rem 0 1.25rem",
+              cursor: "pointer",
+              fontFamily: "Inter, sans-serif",
+              width: "100%",
             }}
           >
-            Focus: {cfg.focus}
-          </p>
-
-          {/* Action buttons */}
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}
-          >
-            <button
-              onClick={() => setLocation("/check-in")}
-              style={{
-                background: accent,
-                color: "#0D0B0A",
-                border: "none",
-                borderRadius: "12px",
-                padding: "0.85rem 1.25rem",
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "Inter, sans-serif",
-                width: "100%",
-                textAlign: "center",
-              }}
-            >
-              Start Check-In
-            </button>
-            <div style={{ display: "flex", gap: "0.6rem" }}>
-              <button
-                onClick={() => setShowAskCync((v) => !v)}
-                style={{
-                  flex: 1,
-                  background: "#1A1614",
-                  border: `1px solid ${accent}40`,
-                  borderRadius: "12px",
-                  padding: "0.65rem 1rem",
-                  fontSize: "0.85rem",
-                  color: accent,
-                  cursor: "pointer",
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 600,
-                }}
-              >
-                Ask Cync
-              </button>
-              <button
-                onClick={() => setLocation("/spoons")}
-                style={{
-                  flex: 1,
-                  background: "#1A1614",
-                  border: "1px solid #2A2420",
-                  borderRadius: "12px",
-                  padding: "0.65rem 1rem",
-                  fontSize: "0.85rem",
-                  color:
-                    spoonsLeft !== null
-                      ? spoonsLeft > 6
-                        ? "#5B8A6B"
-                        : spoonsLeft > 3
-                        ? "#C4846E"
-                        : "#8B4A6B"
-                      : "#9A8A7A",
-                  cursor: "pointer",
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 600,
-                }}
-              >
-                {spoonsLeft !== null
-                  ? `🥄 ${spoonsLeft} spoons`
-                  : "🥄 Spoons"}
-              </button>
-            </div>
-          </div>
+            Share my CyncLink →
+          </button>
         </div>
 
-        {/* Ask Cync expanded */}
-        {showAskCync && (
-          <div
+        {/* ── 6. ASK AUNT B ── */}
+        <div>
+          <p
             style={{
-              background: "#1A1614",
-              border: `1px solid ${accent}25`,
-              borderRadius: "16px",
-              padding: "1rem",
+              color: "#6A5A4A",
+              fontSize: "0.65rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              margin: "0 0 0.75rem",
             }}
           >
-            <AskAuntB
-              cycleDay={cycleDay}
-              currentPhase={currentPhase}
-              profileId={profileId || undefined}
-            />
-          </div>
-        )}
-
-        {/* ── 2. DO / AVOID ── */}
-        {!isNoPeriod && (
-          <div
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "16px",
-              padding: "1.25rem",
-            }}
-          >
-            <p
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.7rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                marginBottom: "1rem",
-              }}
-            >
-              What Today Looks Like
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div>
-                <p
-                  style={{
-                    color: "#5B8A6B",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    marginBottom: "0.6rem",
-                  }}
-                >
-                  Do
-                </p>
-                {cfg.do.map((item, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "0.5rem",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    <span style={{ color: "#5B8A6B", fontSize: "0.85rem", flexShrink: 0 }}>✔</span>
-                    <span style={{ color: "#C4B8A8", fontSize: "0.85rem", lineHeight: 1.4 }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <p
-                  style={{
-                    color: "#8B4A6B",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    marginBottom: "0.6rem",
-                  }}
-                >
-                  Avoid
-                </p>
-                {cfg.avoid.map((item, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "0.5rem",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    <span style={{ color: "#8B4A6B", fontSize: "0.85rem", flexShrink: 0 }}>✖</span>
-                    <span style={{ color: "#C4B8A8", fontSize: "0.85rem", lineHeight: 1.4 }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── 3. 7-DAY STRIP ── */}
-        {!isNoPeriod && cycleDay && (
-          <WeekStrip
-            cycleDay={cycleDay}
-            cycleLength={profile?.cycleLength || 28}
-            lastPeriodStart={profile?.lastPeriodStart}
-            accent={accent}
-          />
-        )}
-
-        {/* ── 4. PATTERN TO WATCH ── */}
-        {!isNoPeriod && (
-          <div
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "16px",
-              padding: "1.25rem",
-            }}
-          >
-            <p
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.7rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                marginBottom: "0.6rem",
-              }}
-            >
-              Pattern to Watch
-            </p>
-            <p
-              style={{
-                color: "#9A8A7A",
-                fontSize: "0.875rem",
-                lineHeight: 1.6,
-                margin: 0,
-                fontStyle: "italic",
-              }}
-            >
-              {cfg.patternToWatch}
-            </p>
-          </div>
-        )}
-
-        {/* ── 5. EVENING CHECK-IN ── */}
-        {!eveningDone && (
-          <div
-            style={{
-              background: "#1A1614",
-              border: `1px solid ${accent}25`,
-              borderRadius: "16px",
-              padding: "1.25rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "1rem",
-            }}
-          >
-            <div>
-              <p
-                style={{
-                  color: "#F7F2EB",
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  margin: "0 0 0.25rem",
-                }}
-              >
-                Close your day
-              </p>
-              <p style={{ color: "#9A8A7A", fontSize: "0.8rem", margin: 0 }}>
-                A quick reflection before you rest.
-              </p>
-            </div>
+            Ask Aunt B
+          </p>
+          {!showAuntB ? (
             <button
-              onClick={handleEveningClose}
+              onClick={() => setShowAuntB(true)}
               style={{
-                background: `${accent}20`,
-                border: `1px solid ${accent}40`,
-                borderRadius: "10px",
-                padding: "0.6rem 1rem",
-                color: accent,
-                fontSize: "0.85rem",
-                fontWeight: 600,
+                background: "#1A1614",
+                border: `1px solid ${accent}25`,
+                borderRadius: "16px",
+                padding: "1.25rem",
+                width: "100%",
+                textAlign: "left",
                 cursor: "pointer",
                 fontFamily: "Inter, sans-serif",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
               }}
             >
-              Check in →
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                }}
+              >
+                <div
+                  style={{
+                    width: "42px",
+                    height: "42px",
+                    borderRadius: "50%",
+                    background: `${accent}25`,
+                    border: `1px solid ${accent}50`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.2rem",
+                    flexShrink: 0,
+                  }}
+                >
+                  🌙
+                </div>
+                <div>
+                  <p
+                    style={{
+                      color: "#F7F2EB",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      margin: "0 0 0.2rem",
+                    }}
+                  >
+                    She's here.
+                  </p>
+                  <p
+                    style={{
+                      color: "#6A5A4A",
+                      fontSize: "0.8rem",
+                      margin: 0,
+                    }}
+                  >
+                    Ask Aunt B anything about your cycle, your symptoms, or how you're feeling.
+                  </p>
+                </div>
+              </div>
             </button>
-          </div>
-        )}
+          ) : (
+            <div
+              style={{
+                background: "#1A1614",
+                border: `1px solid ${accent}25`,
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
+              <AskAuntB
+                cycleDay={cycleDay}
+                currentPhase={currentPhase}
+                profileId={profileId || undefined}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
