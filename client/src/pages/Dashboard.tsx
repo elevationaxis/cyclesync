@@ -501,6 +501,14 @@ export default function Dashboard() {
               · {cfg.subtitle}
             </span>
           </div>
+          <p className="text-muted-foreground/50 text-xs mt-0.5 mb-0 tracking-wide">
+            {({
+              menstrual: "Menstrual Phase",
+              follicular: "Follicular Phase",
+              ovulatory: "Ovulatory Phase",
+              luteal: "Luteal Phase",
+            } as Record<string, string>)[currentPhase] ?? ""}
+          </p>
         </div>
 
         {/* ── 3. DAILY DESCRIPTION ── */}

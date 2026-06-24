@@ -287,6 +287,14 @@ export default function CyncLinkPage() {
                 <div className="font-display text-2xl text-foreground">
                   {phaseInfo.phase}
                 </div>
+                <div className="text-muted-foreground/60 text-xs mt-0.5 tracking-wide">
+                  {({
+                    Flow: "Menstrual Phase",
+                    Bloom: "Follicular Phase",
+                    Spark: "Ovulatory Phase",
+                    Recharge: "Luteal Phase",
+                  } as Record<string, string>)[phaseInfo.phase] ?? ""}
+                </div>
               </div>
             </div>
             <p className="text-foreground/80 text-sm leading-relaxed m-0">
