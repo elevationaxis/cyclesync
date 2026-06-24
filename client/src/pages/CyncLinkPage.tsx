@@ -23,6 +23,7 @@ interface CyncLinkData {
     createdAt: string;
   } | null;
   claimedActions?: { action_text: string; claimed_at: string }[];
+  pendingCareRequests?: { id: string; type: string; message: string | null; status: string; created_at: string }[];
 }
 
 // ── Updated phase names: Flow / Bloom / Spark / Recharge ──────────────────────
@@ -113,6 +114,8 @@ export default function CyncLinkPage() {
   const [claimedActions, setClaimedActions] = useState<Set<string>>(new Set());
   const [claimingAction, setClaimingAction] = useState<string | null>(null);
   const [claimSuccess, setClaimSuccess] = useState<string | null>(null);
+  const [claimedCareRequests, setClaimedCareRequests] = useState<Set<string>>(new Set());
+  const [claimingCareRequest, setClaimingCareRequest] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -130,6 +133,24 @@ export default function CyncLinkPage() {
       .catch(() => setError("Could not load CyncLink. Please try again."))
       .finally(() => setLoading(false));
   }, [token]);
+
+  const claimCareRequest = async (requestId: string) => {
+    if (!token || claimedCareRequests.has(requestId)) return;
+    setClaimingCareRequest(requestId);
+    try {
+      const res = await fetch(`/api/cynclink/${token}/care-requests/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.ok) {
+        setClaimedCareRequests(prev => new Set(Array.from(prev).concat(requestId)));
+      }
+    } catch (e) {
+      // silent fail — button stays active for retry
+    } finally {
+      setClaimingCareRequest(null);
+    }
+  };
 
   const claimAction = async (actionText: string) => {
     if (!token || claimedActions.has(actionText)) return;
@@ -360,6 +381,71 @@ export default function CyncLinkPage() {
                 She's running low on energy today. Low-demand support is best.
               </p>
             )}
+          </div>
+        )}
+
+        {/* She Needs Right Now — Care Requests */}
+        {data.pendingCareRequests && data.pendingCareRequests.length > 0 && (
+          <div className="bg-card border border-border rounded-2xl p-5" style={{ borderColor: "#8B4A6B40" }}>
+            <div className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: "#8B4A6B" }}>
+              She Needs Right Now
+            </div>
+            <p className="text-muted-foreground text-xs mb-3">
+              She sent these directly. Tap "I got this" to let her know.
+            </p>
+            <div className="flex flex-col gap-2">
+              {data.pendingCareRequests.map((req) => {
+                const isClaimed = claimedCareRequests.has(req.id);
+                const isClaiming = claimingCareRequest === req.id;
+                const typeLabels: Record<string, { label: string; emoji: string }> = {
+                  snack: { label: "Snack Run", emoji: "☕" },
+                  touch: { label: "Physical Touch", emoji: "💗" },
+                  chill: { label: "Quiet Time", emoji: "✨" },
+                  encouragement: { label: "Encouragement", emoji: "🤝" },
+                  custom: { label: req.message || "Custom Request", emoji: "📝" },
+                };
+                const typeInfo = typeLabels[req.type] || { label: req.type, emoji: "💌" };
+                return (
+                  <div
+                    key={req.id}
+                    className="flex items-center justify-between gap-3 rounded-xl px-3 py-3"
+                    style={{
+                      background: isClaimed ? "#5B8A6B18" : "hsl(var(--muted))",
+                      border: `1px solid ${isClaimed ? "#5B8A6B40" : "#8B4A6B20"}`,
+                    }}
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="text-lg">{typeInfo.emoji}</span>
+                      <div>
+                        <div className="text-sm font-semibold" style={{ color: isClaimed ? "#5B8A6B" : undefined }}>
+                          {isClaimed && "✓ "}{typeInfo.label}
+                        </div>
+                        {req.message && req.type !== "custom" && (
+                          <div className="text-xs text-muted-foreground">{req.message}</div>
+                        )}
+                      </div>
+                    </div>
+                    {!isClaimed ? (
+                      <button
+                        onClick={() => claimCareRequest(req.id)}
+                        disabled={isClaiming}
+                        className="rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer whitespace-nowrap border-none"
+                        style={{
+                          background: "#8B4A6B",
+                          color: "#F7F2EB",
+                          opacity: isClaiming ? 0.7 : 1,
+                          cursor: isClaiming ? "wait" : "pointer",
+                        }}
+                      >
+                        {isClaiming ? "…" : "I got this"}
+                      </button>
+                    ) : (
+                      <span className="text-xs font-semibold" style={{ color: "#5B8A6B" }}>On it ✓</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

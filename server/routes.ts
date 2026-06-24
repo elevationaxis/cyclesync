@@ -668,6 +668,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `SELECT action_text, claimed_at FROM partner_actions WHERE partner_link_id = $1 ORDER BY claimed_at DESC LIMIT 5`,
         [link.id]
       );
+      // Fetch pending care requests so partner can see and claim them
+      const careRequestsResult = await pool.query(
+        `SELECT id, type, message, status, created_at FROM care_requests WHERE user_id = $1 AND status = 'pending' ORDER BY created_at DESC LIMIT 10`,
+        [link.userId]
+      );
       return res.json({
         partnerName: profile.name,
         privacyTier: "deep",
@@ -679,10 +684,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         label: link.label,
         linkId: link.id,
         claimedActions: actions.rows,
+        pendingCareRequests: careRequestsResult.rows,
       });
     } catch (error) {
       console.error("Error fetching CyncLink data:", error);
       return res.status(500).json({ error: "Failed to load CyncLink" });
+    }
+  });
+
+  // Partner marks a care request as completed via CyncLink token
+  app.patch("/api/cynclink/:token/care-requests/:requestId", async (req, res) => {
+    try {
+      const link = await storage.getPartnerLinkByToken(req.params.token);
+      if (!link || !link.active) {
+        return res.status(404).json({ error: "CyncLink not found" });
+      }
+      // Verify the care request belongs to this link's user
+      const check = await pool.query(
+        `SELECT id FROM care_requests WHERE id = $1 AND user_id = $2`,
+        [req.params.requestId, link.userId]
+      );
+      if (check.rows.length === 0) {
+        return res.status(404).json({ error: "Care request not found" });
+      }
+      await pool.query(
+        `UPDATE care_requests SET status = 'completed' WHERE id = $1`,
+        [req.params.requestId]
+      );
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("Error completing care request via CyncLink:", error);
+      return res.status(500).json({ error: "Failed to update care request" });
     }
   });
 
