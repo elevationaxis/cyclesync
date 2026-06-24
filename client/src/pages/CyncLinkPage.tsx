@@ -146,7 +146,9 @@ export default function CyncLinkPage() {
         setTimeout(() => setClaimSuccess(null), 3000);
       }
     } catch (e) {
-      // silent fail
+      // Show a visible error so the user knows something went wrong
+      setClaimSuccess("__error__");
+      setTimeout(() => setClaimSuccess(null), 3000);
     } finally {
       setClaimingAction(null);
     }
@@ -419,10 +421,13 @@ export default function CyncLinkPage() {
         )}
 
         {/* Footer */}
-        <div className="text-center py-4">
-          <div className="text-muted-foreground/40 text-xs">Powered by</div>
+        <div className="text-center py-6">
+          <div className="text-muted-foreground/40 text-xs mb-1">Powered by</div>
           <div className="font-display text-base tracking-wide" style={{ color: "#B07D52" }}>Cync</div>
           <div className="text-muted-foreground/30 text-xs mt-1">Cycle intelligence for real life</div>
+          {claimSuccess === "__error__" && (
+            <p className="text-xs mt-3" style={{ color: "#8B4A6B" }}>Couldn't save — please try again.</p>
+          )}
         </div>
       </div>
     </div>

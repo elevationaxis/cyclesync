@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
 import AskAuntB from "@/components/AskAuntB";
 import {
@@ -124,6 +124,7 @@ function MonthCalendar({
 }) {
   const [, setLocation] = useLocation();
   const [viewDate, setViewDate] = useState(() => new Date());
+  const [collapsed, setCollapsed] = useState(false);
 
   const PHASE_COLORS: Record<string, string> = {
     menstrual: "#8B4A6B",
@@ -196,24 +197,34 @@ function MonthCalendar({
   return (
     <div className="bg-background border-b border-border">
       {/* Month nav */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <div
+        className="flex items-center justify-between px-4 pt-4 pb-2 cursor-pointer select-none"
+        onClick={() => setCollapsed((c) => !c)}
+      >
         <button
-          onClick={prevMonth}
+          onClick={(e) => { e.stopPropagation(); prevMonth(); }}
           className="text-muted-foreground text-xl px-2 py-1 hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
         >
           ‹
         </button>
-        <span className="text-foreground text-sm font-semibold tracking-wide uppercase">
-          {monthLabel}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-foreground text-sm font-semibold tracking-wide uppercase">
+            {monthLabel}
+          </span>
+          <span className="text-muted-foreground/50 text-xs">
+            {collapsed ? "▸" : "▾"}
+          </span>
+        </div>
         <button
-          onClick={nextMonth}
+          onClick={(e) => { e.stopPropagation(); nextMonth(); }}
           className="text-muted-foreground text-xl px-2 py-1 hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
         >
           ›
         </button>
       </div>
 
+      {/* Collapsible body */}
+      {!collapsed && <>
       {/* Day headers */}
       <div className="grid grid-cols-7 px-3 mb-1">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
@@ -302,6 +313,7 @@ function MonthCalendar({
           View full calendar →
         </button>
       </div>
+      </> }
     </div>
   );
 }
