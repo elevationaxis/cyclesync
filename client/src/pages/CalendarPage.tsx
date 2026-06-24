@@ -145,191 +145,79 @@ function ActionDrawer({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.6)",
-          zIndex: 100,
-        }}
+        className="fixed inset-0 bg-black/60 z-[100]"
       />
       {/* Drawer */}
       <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: "#1A1614",
-          borderTop: `2px solid ${cfg.bg}`,
-          borderRadius: "20px 20px 0 0",
-          padding: "1.5rem 1.5rem 2.5rem",
-          zIndex: 101,
-          maxWidth: "480px",
-          margin: "0 auto",
-        }}
+        className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl px-6 pt-4 pb-10 z-[101] max-w-lg mx-auto"
+        style={{ borderTop: `2px solid ${cfg.bg}` }}
       >
         {/* Handle */}
-        <div
-          style={{
-            width: "40px",
-            height: "4px",
-            background: "#2A2420",
-            borderRadius: "2px",
-            margin: "0 auto 1.25rem",
-          }}
-        />
+        <div className="w-10 h-1 bg-border rounded-full mx-auto mb-5" />
 
         {/* Close */}
         <button
           onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "1.25rem",
-            right: "1.25rem",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            color: "#6A5A4A",
-          }}
+          className="absolute top-5 right-5 bg-transparent border-none cursor-pointer text-muted-foreground"
         >
           <X size={18} />
         </button>
 
         {/* Header */}
-        <div style={{ marginBottom: "1.25rem" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              marginBottom: "0.25rem",
-            }}
-          >
-            <span style={{ fontSize: "1.4rem" }}>{cfg.icon}</span>
-            <span
-              style={{
-                fontFamily: "DM Serif Display, Georgia, serif",
-                fontSize: "1.3rem",
-                color: "#F7F2EB",
-              }}
-            >
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-2xl">{cfg.icon}</span>
+            <span className="font-display text-xl text-foreground">
               {dateLabel}
             </span>
             {isToday && (
               <span
-                style={{
-                  background: `${cfg.bg}30`,
-                  color: cfg.bg,
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  padding: "0.2rem 0.5rem",
-                  borderRadius: "20px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                }}
+                className="text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                style={{ background: `${cfg.bg}30`, color: cfg.bg }}
               >
                 TODAY
               </span>
             )}
           </div>
-          <p style={{ color: cfg.bg, fontSize: "0.8rem", fontWeight: 600, margin: 0 }}>
+          <p className="text-sm font-semibold m-0" style={{ color: cfg.bg }}>
             {cfg.name} — Day {cycleDay}
           </p>
         </div>
 
         {/* Today feels like */}
-        <p
-          style={{
-            color: "#C4B8A8",
-            fontSize: "0.875rem",
-            lineHeight: 1.6,
-            marginBottom: "1rem",
-            fontStyle: "italic",
-          }}
-        >
+        <p className="text-foreground/70 text-sm leading-relaxed mb-4 italic">
           {cfg.todayFeelsLike}
         </p>
 
         {/* Focus */}
         <p
-          style={{
-            color: cfg.bg,
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            marginBottom: "1rem",
-          }}
+          className="text-xs font-bold uppercase tracking-wider mb-4"
+          style={{ color: cfg.bg }}
         >
           Focus: {cfg.focus}
         </p>
 
         {/* Do / Avoid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "1rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <p
-              style={{
-                color: "#5B8A6B",
-                fontSize: "0.7rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#5B8A6B" }}>
               Do
             </p>
             {cfg.do.map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  gap: "0.4rem",
-                  marginBottom: "0.4rem",
-                  alignItems: "flex-start",
-                }}
-              >
-                <span style={{ color: "#5B8A6B", fontSize: "0.8rem" }}>✔</span>
-                <span style={{ color: "#C4B8A8", fontSize: "0.8rem", lineHeight: 1.4 }}>
-                  {item}
-                </span>
+              <div key={i} className="flex gap-1.5 mb-1.5 items-start">
+                <span className="text-sm flex-shrink-0" style={{ color: "#5B8A6B" }}>✔</span>
+                <span className="text-foreground/80 text-sm leading-snug">{item}</span>
               </div>
             ))}
           </div>
           <div>
-            <p
-              style={{
-                color: "#8B4A6B",
-                fontSize: "0.7rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#8B4A6B" }}>
               Avoid
             </p>
             {cfg.avoid.map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  gap: "0.4rem",
-                  marginBottom: "0.4rem",
-                  alignItems: "flex-start",
-                }}
-              >
-                <span style={{ color: "#8B4A6B", fontSize: "0.8rem" }}>✖</span>
-                <span style={{ color: "#C4B8A8", fontSize: "0.8rem", lineHeight: 1.4 }}>
-                  {item}
-                </span>
+              <div key={i} className="flex gap-1.5 mb-1.5 items-start">
+                <span className="text-sm flex-shrink-0" style={{ color: "#8B4A6B" }}>✖</span>
+                <span className="text-foreground/80 text-sm leading-snug">{item}</span>
               </div>
             ))}
           </div>
@@ -339,18 +227,8 @@ function ActionDrawer({
         {isToday && (
           <button
             onClick={onGoToTodaysPlan}
-            style={{
-              width: "100%",
-              background: cfg.bg,
-              color: cfg.text,
-              border: "none",
-              borderRadius: "12px",
-              padding: "0.9rem",
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-            }}
+            className="w-full rounded-xl py-3.5 text-base font-bold cursor-pointer border-none"
+            style={{ background: cfg.bg, color: cfg.text }}
           >
             Go to Today's Plan →
           </button>
@@ -392,7 +270,6 @@ export default function CalendarPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Today's phase for micro summary
   const todayPhase =
     isCycling && profile?.lastPeriodStart
       ? getDisplayPhase(today, profile.lastPeriodStart, profile.cycleLength || 28)
@@ -452,32 +329,14 @@ export default function CalendarPage() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#0D0B0A",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div style={{ color: "#C4B8A8", fontFamily: "Inter, sans-serif" }}>
-          Loading calendar...
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading calendar...</div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0D0B0A",
-        color: "#F7F2EB",
-        fontFamily: "Inter, sans-serif",
-        padding: "0",
-      }}
-    >
+    <div className="min-h-screen bg-background text-foreground">
       {/* Action Drawer */}
       {selectedDay && (
         <ActionDrawer
@@ -494,134 +353,58 @@ export default function CalendarPage() {
       )}
 
       {/* Header */}
-      <div
-        style={{
-          background: "#1A1614",
-          borderBottom: "1px solid #2A2420",
-          padding: "1.5rem",
-        }}
-      >
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          <h1
-            style={{
-              fontFamily: "DM Serif Display, Georgia, serif",
-              fontSize: "1.6rem",
-              margin: "0 0 0.25rem",
-            }}
-          >
+      <div className="bg-card border-b border-border px-6 py-5">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="font-display text-2xl text-foreground mb-1">
             Calendar
           </h1>
-          {/* Micro summary */}
-          {todayCfg && (
-            <p
-              style={{
-                color: todayCfg.bg,
-                fontSize: "0.875rem",
-                margin: 0,
-                fontWeight: 500,
-              }}
-            >
+          {todayCfg ? (
+            <p className="text-sm font-medium m-0" style={{ color: todayCfg.bg }}>
               Today: {todayCfg.icon} {todayCfg.name} — {todayCfg.focus}
             </p>
-          )}
-          {!todayCfg && (
-            <p style={{ color: "#9A8A7A", fontSize: "0.85rem", margin: 0 }}>
-              Your monthly view
-            </p>
+          ) : (
+            <p className="text-muted-foreground text-sm m-0">Your monthly view</p>
           )}
         </div>
       </div>
 
-      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "1.5rem" }}>
+      <div className="max-w-2xl mx-auto px-4 py-6">
 
         {/* Phase Legend */}
         {isCycling && (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.75rem",
-              marginBottom: "1.5rem",
-              justifyContent: "center",
-            }}
-          >
+          <div className="flex flex-wrap gap-3 mb-6 justify-center">
             {Object.values(PHASE_CONFIG).map((cfg) => (
-              <div
-                key={cfg.name}
-                style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}
-              >
-                <span style={{ fontSize: "1rem" }}>{cfg.icon}</span>
+              <div key={cfg.name} className="flex items-center gap-1.5">
+                <span className="text-base">{cfg.icon}</span>
                 <div
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "50%",
-                    background: cfg.bg,
-                  }}
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ background: cfg.bg }}
                 />
-                <span style={{ color: "#C4B8A8", fontSize: "0.85rem" }}>
-                  {cfg.name}
-                </span>
+                <span className="text-foreground/70 text-sm">{cfg.name}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Month Navigation */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={() =>
               setCurrentMonth(
-                new Date(
-                  currentMonth.getFullYear(),
-                  currentMonth.getMonth() - 1,
-                  1
-                )
+                new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
               )
             }
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "10px",
-              color: "#C4B8A8",
-              padding: "0.5rem 0.75rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="bg-card border border-border rounded-xl text-foreground/80 px-3 py-2 cursor-pointer flex items-center hover:opacity-80 transition-opacity"
           >
-            <ChevronLeft style={{ width: "16px", height: "16px" }} />
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <div style={{ textAlign: "center" }}>
-            <h2
-              style={{
-                fontFamily: "DM Serif Display, Georgia, serif",
-                fontSize: "1.4rem",
-                margin: "0 0 0.5rem",
-              }}
-            >
-              {monthName}
-            </h2>
+          <div className="text-center">
+            <h2 className="font-display text-xl text-foreground mb-1.5">{monthName}</h2>
             <button
               onClick={() => setCurrentMonth(new Date())}
-              style={{
-                background: "transparent",
-                border: "1px solid #B07D52",
-                borderRadius: "8px",
-                color: "#B07D52",
-                padding: "0.35rem 1rem",
-                fontSize: "0.75rem",
-                cursor: "pointer",
-                fontFamily: "Inter, sans-serif",
-              }}
+              className="bg-transparent rounded-lg px-4 py-1.5 text-xs cursor-pointer"
+              style={{ border: "1px solid #B07D52", color: "#B07D52" }}
             >
               Today
             </button>
@@ -630,72 +413,30 @@ export default function CalendarPage() {
           <button
             onClick={() =>
               setCurrentMonth(
-                new Date(
-                  currentMonth.getFullYear(),
-                  currentMonth.getMonth() + 1,
-                  1
-                )
+                new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
               )
             }
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "10px",
-              color: "#C4B8A8",
-              padding: "0.5rem 0.75rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="bg-card border border-border rounded-xl text-foreground/80 px-3 py-2 cursor-pointer flex items-center hover:opacity-80 transition-opacity"
           >
-            <ChevronRight style={{ width: "16px", height: "16px" }} />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tap hint */}
         {isCycling && (
-          <p
-            style={{
-              color: "#4A3A2A",
-              fontSize: "0.75rem",
-              textAlign: "center",
-              marginBottom: "1rem",
-            }}
-          >
+          <p className="text-muted-foreground/40 text-xs text-center mb-4">
             Tap any day to see what it means
           </p>
         )}
 
         {/* Calendar Grid */}
-        <div
-          style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1rem",
-            overflow: "hidden",
-          }}
-        >
+        <div className="bg-card border border-border rounded-2xl p-4 overflow-hidden">
           {/* Weekday Headers */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7, 1fr)",
-              gap: "0.5rem",
-              marginBottom: "0.75rem",
-            }}
-          >
+          <div className="grid grid-cols-7 gap-2 mb-3">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                style={{
-                  textAlign: "center",
-                  color: "#6A5A4A",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
+                className="text-center text-muted-foreground/60 text-xs font-semibold uppercase tracking-wider"
               >
                 {day}
               </div>
@@ -704,65 +445,46 @@ export default function CalendarPage() {
 
           {/* Weeks */}
           {weeks.map((week, weekIdx) => (
-            <div
-              key={weekIdx}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "0.5rem",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <div key={weekIdx} className="grid grid-cols-7 gap-2 mb-2">
               {week.map((date, dayIdx) => {
                 if (!date) {
                   return (
-                    <div
-                      key={dayIdx}
-                      style={{ aspectRatio: "1", background: "transparent" }}
-                    />
+                    <div key={dayIdx} style={{ aspectRatio: "1", background: "transparent" }} />
                   );
                 }
 
                 const phaseName =
                   isCycling && profile?.lastPeriodStart
-                    ? getDisplayPhase(
-                        date,
-                        profile.lastPeriodStart,
-                        profile.cycleLength || 28
-                      )
+                    ? getDisplayPhase(date, profile.lastPeriodStart, profile.cycleLength || 28)
                     : null;
-                const isToday =
-                  date.toDateString() === new Date().toDateString();
+                const isToday = date.toDateString() === new Date().toDateString();
                 const cfg = phaseName ? PHASE_CONFIG[phaseName] : null;
 
                 return (
                   <div
                     key={dayIdx}
                     onClick={() => handleDayTap(date)}
+                    className="rounded-xl flex items-center justify-center text-sm transition-transform"
                     style={{
                       aspectRatio: "1",
-                      background: cfg ? cfg.light : "#0D0B0A",
+                      background: cfg ? cfg.light : "transparent",
                       border: isToday
                         ? `2px solid ${cfg?.bg || "#B07D52"}`
-                        : `1px solid ${cfg?.bg ? cfg.bg + "50" : "#2A2420"}`,
-                      borderRadius: "10px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: cfg ? "#F7F2EB" : "#C4B8A8",
-                      fontSize: "0.85rem",
+                        : `1px solid ${cfg?.bg ? cfg.bg + "50" : "var(--border)"}`,
+                      color: cfg ? "var(--foreground)" : "var(--muted-foreground)",
                       fontWeight: isToday ? 800 : 500,
-                      position: "relative",
                       cursor: isCycling ? "pointer" : "default",
                       boxShadow: isToday
                         ? `0 0 12px ${cfg?.bg || "#B07D52"}60, 0 0 4px ${cfg?.bg || "#B07D52"}40`
                         : "none",
-                      transition: "transform 0.1s ease",
                     }}
                   >
                     {isToday ? (
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1px" }}>
-                        <span style={{ fontSize: "0.6rem", fontWeight: 800, color: cfg?.bg || "#B07D52", textTransform: "uppercase", letterSpacing: "0.05em", lineHeight: 1 }}>
+                      <div className="flex flex-col items-center gap-0">
+                        <span
+                          className="text-xs font-black uppercase tracking-tight leading-none"
+                          style={{ fontSize: "0.5rem", color: cfg?.bg || "#B07D52" }}
+                        >
                           TODAY
                         </span>
                         <span>{date.getDate()}</span>
@@ -779,26 +501,11 @@ export default function CalendarPage() {
 
         {/* No-period message */}
         {!isCycling && (
-          <div
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "12px",
-              padding: "1.5rem",
-              marginTop: "1.5rem",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                color: "#9A8A7A",
-                fontSize: "0.9rem",
-                lineHeight: 1.6,
-                margin: 0,
-              }}
-            >
+          <div className="bg-card border border-border rounded-xl p-6 mt-6 text-center">
+            <p className="text-muted-foreground text-sm leading-relaxed m-0">
               Your profile is set to track without a period, so phase colors
-              aren't shown. If this has changed, update your settings.
+              aren't shown. You can still use the calendar to log how you feel
+              each day.
             </p>
           </div>
         )}

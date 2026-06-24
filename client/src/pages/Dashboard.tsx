@@ -1,11 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import AskAuntB from "@/components/AskAuntB";
 import {
   calculateCycleDay,
   getPhaseForCycleLength,
 } from "@/lib/cycleUtils";
-import { getDailyBriefing, getPhaseStartDay } from "@/lib/dailyBriefing";
 import { useQuery } from "@tanstack/react-query";
 import type { UserProfile } from "@shared/schema";
 import { getProfileId, getUserName } from "@/lib/storage";
@@ -17,7 +16,6 @@ const PHASE_CONFIG: Record<
     name: string;
     subtitle: string;
     accent: string;
-    bg: string;
     description: string;
     mind: string[];
     body: string[];
@@ -28,7 +26,6 @@ const PHASE_CONFIG: Record<
     name: "Flow",
     subtitle: "Let Go",
     accent: "#8B4A6B",
-    bg: "#8B4A6B",
     description:
       "Everything feels slower today — and that's not a flaw, it's a feature. Your body is doing significant internal work. The most productive thing you can do right now is rest without guilt and let the cycle complete itself.",
     mind: [
@@ -51,7 +48,6 @@ const PHASE_CONFIG: Record<
     name: "Bloom",
     subtitle: "Open Up",
     accent: "#5B8A6B",
-    bg: "#5B8A6B",
     description:
       "The heavy fatigue is lifting and something is waking back up. Your estrogen is rising, your brain is primed for new ideas, and your body is ready to move again. This is your planning window — use it.",
     mind: [
@@ -74,7 +70,6 @@ const PHASE_CONFIG: Record<
     name: "Spark",
     subtitle: "Turn Up",
     accent: "#C4846E",
-    bg: "#C4846E",
     description:
       "You are magnetic right now. Your estrogen is peaking, your testosterone is surging, and your verbal fluency is at its absolute highest. This is your window to be seen, to speak, and to lead. Don't waste it hiding.",
     mind: [
@@ -97,7 +92,6 @@ const PHASE_CONFIG: Record<
     name: "Recharge",
     subtitle: "Come Home",
     accent: "#7A6B8A",
-    bg: "#7A6B8A",
     description:
       "Your energy is turning inward and your tolerance for noise is dropping. That's not a problem — it's your nervous system asking for protection. Honor it. Finish what matters, say no to what doesn't, and start coming home to yourself.",
     mind: [
@@ -116,14 +110,6 @@ const PHASE_CONFIG: Record<
       "Honor your anger. If you are furious about something today, pay attention. The luteal phase strips away your tolerance for things you usually put up with. The anger is valid — manage the reaction.",
     ],
   },
-};
-
-// Phase key → display name
-const PHASE_NAMES: Record<string, string> = {
-  menstrual: "Flow",
-  follicular: "Bloom",
-  ovulatory: "Spark",
-  luteal: "Recharge",
 };
 
 // ── Full-width Calendar ───────────────────────────────────────────────────────
@@ -170,7 +156,6 @@ function MonthCalendar({
       isToday: boolean;
     }> = [];
 
-    // Leading empty cells
     for (let i = 0; i < firstDay; i++) {
       cells.push({ day: null, phase: null, color: null, isToday: false });
     }
@@ -209,77 +194,32 @@ function MonthCalendar({
   };
 
   return (
-    <div style={{ background: "#0D0B0A", padding: "0" }}>
+    <div className="bg-background border-b border-border">
       {/* Month nav */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "1rem 1rem 0.5rem",
-        }}
-      >
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <button
           onClick={prevMonth}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#6A5A4A",
-            fontSize: "1.2rem",
-            cursor: "pointer",
-            padding: "0.25rem 0.5rem",
-          }}
+          className="text-muted-foreground text-xl px-2 py-1 hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
         >
           ‹
         </button>
-        <span
-          style={{
-            color: "#F7F2EB",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            letterSpacing: "0.05em",
-            fontFamily: "Inter, sans-serif",
-          }}
-        >
+        <span className="text-foreground text-sm font-semibold tracking-wide uppercase">
           {monthLabel}
         </span>
         <button
           onClick={nextMonth}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#6A5A4A",
-            fontSize: "1.2rem",
-            cursor: "pointer",
-            padding: "0.25rem 0.5rem",
-          }}
+          className="text-muted-foreground text-xl px-2 py-1 hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
         >
           ›
         </button>
       </div>
 
       {/* Day headers */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          padding: "0 0.75rem",
-          marginBottom: "0.25rem",
-        }}
-      >
+      <div className="grid grid-cols-7 px-3 mb-1">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
           <div
             key={d}
-            style={{
-              textAlign: "center",
-              color: "#4A3A2A",
-              fontSize: "0.65rem",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-              padding: "0.25rem 0",
-              fontFamily: "Inter, sans-serif",
-            }}
+            className="text-center text-muted-foreground/60 text-xs font-semibold uppercase tracking-widest py-1"
           >
             {d}
           </div>
@@ -287,14 +227,7 @@ function MonthCalendar({
       </div>
 
       {/* Calendar grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "2px",
-          padding: "0 0.75rem 0.75rem",
-        }}
-      >
+      <div className="grid grid-cols-7 gap-0.5 px-3 pb-3">
         {calendarDays.map((cell, i) => (
           <div
             key={i}
@@ -321,10 +254,14 @@ function MonthCalendar({
               <span
                 style={{
                   fontSize: "0.75rem",
-                  color: cell.isToday ? "#F7F2EB" : cell.color ? "#C4B8A8" : "#3A2A1A",
+                  color: cell.isToday
+                    ? "#F7F2EB"
+                    : cell.color
+                    ? `${cell.color}cc`
+                    : undefined,
                   fontWeight: cell.isToday ? 700 : 400,
-                  fontFamily: "Inter, sans-serif",
                 }}
+                className={!cell.color && !cell.isToday ? "text-muted-foreground/40" : ""}
               >
                 {cell.day}
               </span>
@@ -334,25 +271,14 @@ function MonthCalendar({
       </div>
 
       {/* Phase legend */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "1rem",
-          padding: "0 1rem 1rem",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="flex justify-center gap-4 px-4 pb-3 flex-wrap">
         {[
           { label: "Flow", color: "#8B4A6B" },
           { label: "Bloom", color: "#5B8A6B" },
           { label: "Spark", color: "#C4846E" },
           { label: "Recharge", color: "#7A6B8A" },
         ].map((p) => (
-          <div
-            key={p.label}
-            style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}
-          >
+          <div key={p.label} className="flex items-center gap-1.5">
             <div
               style={{
                 width: "10px",
@@ -361,31 +287,17 @@ function MonthCalendar({
                 background: p.color,
               }}
             />
-            <span
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.65rem",
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              {p.label}
-            </span>
+            <span className="text-muted-foreground text-xs">{p.label}</span>
           </div>
         ))}
       </div>
 
       {/* Full calendar link */}
-      <div style={{ textAlign: "center", paddingBottom: "0.75rem" }}>
+      <div className="text-center pb-3">
         <button
           onClick={() => setLocation("/calendar")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: accent,
-            fontSize: "0.75rem",
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
-          }}
+          style={{ color: accent }}
+          className="bg-transparent border-none text-xs cursor-pointer hover:opacity-80 transition-opacity"
         >
           View full calendar →
         </button>
@@ -435,7 +347,6 @@ function FlipCard({
             position: "absolute",
             inset: 0,
             backfaceVisibility: "hidden",
-            background: "#1A1614",
             border: `1px solid ${accent}30`,
             borderRadius: "14px",
             display: "flex",
@@ -445,6 +356,7 @@ function FlipCard({
             gap: "0.5rem",
             padding: "1rem",
           }}
+          className="bg-card"
         >
           <span style={{ fontSize: "1.5rem" }}>{icon}</span>
           <span
@@ -454,18 +366,11 @@ function FlipCard({
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.12em",
-              fontFamily: "Inter, sans-serif",
             }}
           >
             {label}
           </span>
-          <span
-            style={{
-              color: "#4A3A2A",
-              fontSize: "0.6rem",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
+          <span className="text-muted-foreground/50 text-xs">
             tap to reveal
           </span>
         </div>
@@ -486,16 +391,7 @@ function FlipCard({
             padding: "1rem",
           }}
         >
-          <p
-            style={{
-              color: "#F7F2EB",
-              fontSize: "0.78rem",
-              lineHeight: 1.55,
-              margin: 0,
-              textAlign: "center",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
+          <p className="text-foreground text-sm leading-relaxed m-0 text-center">
             {content}
           </p>
         </div>
@@ -543,7 +439,6 @@ export default function Dashboard() {
   const cfg = PHASE_CONFIG[currentPhase] || PHASE_CONFIG.follicular;
   const accent = cfg.accent;
 
-  // Pick daily variation for flip cards (rotate by cycle day)
   const cardIndex = cycleDay ? (cycleDay - 1) % 3 : 0;
   const mindContent = cfg.mind[cardIndex];
   const bodyContent = cfg.body[cardIndex];
@@ -556,14 +451,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0D0B0A",
-        color: "#F7F2EB",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
+    <div className="min-h-screen bg-background text-foreground">
       {/* ── 1. FULL-WIDTH CALENDAR ── */}
       {!isNoPeriod && profile?.lastPeriodStart ? (
         <MonthCalendar
@@ -572,187 +460,74 @@ export default function Dashboard() {
           accent={accent}
         />
       ) : (
-        <div
-          style={{
-            padding: "2rem 1rem 1rem",
-            textAlign: "center",
-            borderBottom: "1px solid #1A1614",
-          }}
-        >
-          <p style={{ color: "#4A3A2A", fontSize: "0.8rem" }}>
+        <div className="px-4 pt-8 pb-4 text-center border-b border-border">
+          <p className="text-muted-foreground text-sm">
             Set your last period date in settings to unlock your cycle calendar.
           </p>
         </div>
       )}
 
       {/* ── Scrollable content ── */}
-      <div
-        style={{
-          maxWidth: "480px",
-          margin: "0 auto",
-          padding: "1.25rem 1rem 6rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.25rem",
-        }}
-      >
+      <div className="max-w-lg mx-auto px-4 pt-5 pb-24 flex flex-col gap-5">
+
         {/* ── 2. CURRENT PHASE ── */}
         <div
-          style={{
-            background: "#1A1614",
-            borderRadius: "16px",
-            padding: "1.5rem",
-            borderLeft: `4px solid ${accent}`,
-          }}
+          className="bg-card rounded-2xl p-6"
+          style={{ borderLeft: `4px solid ${accent}` }}
         >
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-              margin: "0 0 0.5rem",
-            }}
-          >
-            {today}
-            {cycleDay ? ` · Day ${cycleDay}` : ""}
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-2">
+            {today}{cycleDay ? ` · Day ${cycleDay}` : ""}
           </p>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: "0.6rem",
-              marginBottom: "0.25rem",
-            }}
-          >
+          <div className="flex items-baseline gap-2 mb-1">
             <h1
-              style={{
-                color: accent,
-                fontSize: "2rem",
-                fontWeight: 700,
-                margin: 0,
-                letterSpacing: "-0.02em",
-              }}
+              className="text-3xl font-bold m-0 tracking-tight"
+              style={{ color: accent }}
             >
               {cfg.name}
             </h1>
-            <span
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.9rem",
-                fontStyle: "italic",
-              }}
-            >
+            <span className="text-muted-foreground text-base italic">
               · {cfg.subtitle}
             </span>
           </div>
         </div>
 
         {/* ── 3. DAILY DESCRIPTION ── */}
-        <div
-          style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1.25rem",
-          }}
-        >
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-              margin: "0 0 0.75rem",
-            }}
-          >
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-3">
             Today
           </p>
-          <p
-            style={{
-              color: "#C4B8A8",
-              fontSize: "0.9rem",
-              lineHeight: 1.7,
-              margin: 0,
-            }}
-          >
+          <p className="text-foreground text-sm leading-relaxed m-0">
             {cfg.description}
           </p>
         </div>
 
         {/* ── 4. MIND / BODY / SOUL FLIP CARDS ── */}
         <div>
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-              margin: "0 0 0.75rem",
-            }}
-          >
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-3">
             Your Needs Today
           </p>
-          <div style={{ display: "flex", gap: "0.6rem" }}>
+          <div className="flex gap-2">
             <FlipCard label="Mind" icon="🧠" content={mindContent} accent={accent} />
             <FlipCard label="Body" icon="🌿" content={bodyContent} accent={accent} />
             <FlipCard label="Soul" icon="✨" content={soulContent} accent={accent} />
           </div>
-          <p
-            style={{
-              color: "#3A2A1A",
-              fontSize: "0.6rem",
-              textAlign: "center",
-              marginTop: "0.5rem",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
+          <p className="text-muted-foreground/40 text-xs text-center mt-2">
             Tap each card to reveal
           </p>
         </div>
 
         {/* ── 5. CYNCLINK PROMPT ── */}
         <div
-          style={{
-            background: "#1A1614",
-            border: `1px solid ${accent}25`,
-            borderRadius: "16px",
-            padding: "1.25rem",
-          }}
+          className="bg-card rounded-2xl p-5"
+          style={{ border: `1px solid ${accent}25` }}
         >
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-              margin: "0 0 0.5rem",
-            }}
-          >
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-2">
             CyncLink
           </p>
-          <p
-            style={{
-              color: "#F7F2EB",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              margin: "0 0 0.25rem",
-            }}
-          >
+          <p className="text-foreground text-base font-semibold mb-1">
             Don't make them read your mind.
           </p>
-          <p
-            style={{
-              color: "#9A8A7A",
-              fontSize: "0.8rem",
-              margin: "0 0 1rem",
-              lineHeight: 1.5,
-            }}
-          >
+          <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
             Share your phase and what you need with the people closest to you.
           </p>
           <button
@@ -760,15 +535,9 @@ export default function Dashboard() {
             style={{
               background: `${accent}20`,
               border: `1px solid ${accent}50`,
-              borderRadius: "10px",
-              padding: "0.65rem 1.25rem",
               color: accent,
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-              width: "100%",
             }}
+            className="rounded-xl px-5 py-2.5 text-sm font-semibold cursor-pointer w-full hover:opacity-90 transition-opacity"
           >
             Share my CyncLink →
           </button>
@@ -776,73 +545,30 @@ export default function Dashboard() {
 
         {/* ── 6. ASK AUNT B ── */}
         <div>
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-              margin: "0 0 0.75rem",
-            }}
-          >
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-3">
             Ask Aunt B
           </p>
           {!showAuntB ? (
             <button
               onClick={() => setShowAuntB(true)}
-              style={{
-                background: "#1A1614",
-                border: `1px solid ${accent}25`,
-                borderRadius: "16px",
-                padding: "1.25rem",
-                width: "100%",
-                textAlign: "left",
-                cursor: "pointer",
-                fontFamily: "Inter, sans-serif",
-              }}
+              className="bg-card rounded-2xl p-5 w-full text-left cursor-pointer hover:opacity-90 transition-opacity border-0"
+              style={{ border: `1px solid ${accent}25` }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                }}
-              >
+              <div className="flex items-center gap-3">
                 <div
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-xl flex-shrink-0"
                   style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "50%",
                     background: `${accent}25`,
                     border: `1px solid ${accent}50`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.2rem",
-                    flexShrink: 0,
                   }}
                 >
                   🌙
                 </div>
                 <div>
-                  <p
-                    style={{
-                      color: "#F7F2EB",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                      margin: "0 0 0.2rem",
-                    }}
-                  >
+                  <p className="text-foreground text-base font-semibold mb-0.5">
                     She's here.
                   </p>
-                  <p
-                    style={{
-                      color: "#6A5A4A",
-                      fontSize: "0.8rem",
-                      margin: 0,
-                    }}
-                  >
+                  <p className="text-muted-foreground text-sm m-0">
                     Ask Aunt B anything about your cycle, your symptoms, or how you're feeling.
                   </p>
                 </div>
@@ -850,12 +576,8 @@ export default function Dashboard() {
             </button>
           ) : (
             <div
-              style={{
-                background: "#1A1614",
-                border: `1px solid ${accent}25`,
-                borderRadius: "16px",
-                overflow: "hidden",
-              }}
+              className="bg-card rounded-2xl overflow-hidden"
+              style={{ border: `1px solid ${accent}25` }}
             >
               <AskAuntB
                 cycleDay={cycleDay}

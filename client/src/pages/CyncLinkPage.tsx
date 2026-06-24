@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 
 interface CyncLinkData {
@@ -25,22 +25,23 @@ interface CyncLinkData {
   claimedActions?: { action_text: string; claimed_at: string }[];
 }
 
+// ── Updated phase names: Flow / Bloom / Spark / Recharge ──────────────────────
 const PHASE_SUPPORT_TIPS: Record<string, string[]> = {
-  Reset: [
+  Flow: [
     "Pick up food so she doesn't have to think about dinner",
     "Bring a heating pad or hot water bottle without being asked",
     "Handle one thing on the household list — quietly, without a report",
     "Give her uninterrupted quiet time, no check-ins needed",
     "Sit with her with no agenda — just be there",
   ],
-  Spark: [
+  Bloom: [
     "Ask about something she's been working on and actually listen",
     "Plan something low-key together — even a walk counts",
     "Try one new thing together this week, anything",
     "Tell her you noticed something she did well lately",
     "Be available — she's in a talkative phase and she wants you",
   ],
-  Radiance: [
+  Spark: [
     "Make real time today — put the phone down, be present",
     "Tell her something specific you appreciate about her",
     "Plan a date or quality time — she'll remember this phase",
@@ -57,7 +58,6 @@ const PHASE_SUPPORT_TIPS: Record<string, string[]> = {
 };
 
 function getPhaseInfo(lastPeriodStart: string, cycleLength: number) {
-  // Parse date-only strings as local time to avoid UTC offset shifting the date
   let start: Date;
   if (/^\d{4}-\d{2}-\d{2}$/.test(lastPeriodStart)) {
     const [year, month, day] = lastPeriodStart.split('-').map(Number);
@@ -80,25 +80,25 @@ function getPhaseInfo(lastPeriodStart: string, cycleLength: number) {
   let partnerTip: string;
 
   if (dayInCycle <= menstrualEnd) {
-    phase = "Reset";
+    phase = "Flow";
     emoji = "🌑";
     color = "#8B4A6B";
-    partnerTip = "She's in her rest phase right now. Her body is doing significant internal work and her energy is at its lowest point of the cycle. This isn't a mood — it's biology. Warmth, quiet, and taking things off her plate is the whole playbook today.";
+    partnerTip = "She's in Flow — her rest phase. Her body is doing significant internal work and her energy is at its lowest point of the cycle. This isn't a mood — it's biology. Warmth, quiet, and taking things off her plate is the whole playbook today.";
   } else if (dayInCycle <= follicularEnd) {
-    phase = "Spark";
+    phase = "Bloom";
     emoji = "🌱";
     color = "#5B8A6B";
-    partnerTip = "She's in her Spark phase — energy is building and she's feeling more like herself. She's curious, more optimistic, and open to connecting. Good time for plans, real conversations, or just being present together.";
+    partnerTip = "She's in Bloom — energy is building and she's feeling more like herself. She's curious, more optimistic, and open to connecting. Good time for plans, real conversations, or just being present together.";
   } else if (dayInCycle <= ovulatoryEnd) {
-    phase = "Radiance";
+    phase = "Spark";
     emoji = "🌕";
     color = "#C4846E";
-    partnerTip = "She's in her Radiance phase — peak energy, peak connection. She's likely feeling confident and wants real time with you. This is the shortest phase of the cycle. Don't waste it being half-present.";
+    partnerTip = "She's in Spark — peak energy, peak connection. She's likely feeling confident and wants real time with you. This is the shortest phase of the cycle. Don't waste it being half-present.";
   } else {
     phase = "Recharge";
     emoji = "🍂";
-    color = "#8B6A3E";
-    partnerTip = "She's in her Recharge phase — more inward, more sensitive, easier to overwhelm. Her nervous system is running hot right now. This is not personal. Be steady, keep things low-demand, and don't add to her mental load.";
+    color = "#7A6B8A";
+    partnerTip = "She's in Recharge — more inward, more sensitive, easier to overwhelm. Her nervous system is running hot right now. This is not personal. Be steady, keep things low-demand, and don't add to her mental load.";
   }
 
   return { phase, emoji, color, partnerTip, dayInCycle };
@@ -122,7 +122,6 @@ export default function CyncLinkPage() {
         if (d.error) setError(d.error);
         else {
           setData(d);
-          // Pre-populate already-claimed actions from server
           if (d.claimedActions) {
             setClaimedActions(new Set(d.claimedActions.map((a: any) => a.action_text)));
           }
@@ -155,21 +154,21 @@ export default function CyncLinkPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0D0B0A", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ color: "#F7F2EB", fontFamily: "Inter, sans-serif", fontSize: "1rem" }}>Loading CyncLink…</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-foreground text-base">Loading CyncLink…</div>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0D0B0A", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-        <div style={{ textAlign: "center", color: "#F7F2EB", fontFamily: "Inter, sans-serif" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔗</div>
-          <h2 style={{ fontFamily: "DM Serif Display, Georgia, serif", fontSize: "1.5rem", marginBottom: "0.5rem" }}>
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="text-5xl mb-4">🔗</div>
+          <h2 className="font-display text-2xl text-foreground mb-2">
             {error === "This CyncLink has expired" ? "This CyncLink has expired" : "CyncLink not found"}
           </h2>
-          <p style={{ color: "#C4846E", fontSize: "0.9rem" }}>
+          <p className="text-sm" style={{ color: "#C4846E" }}>
             {error || "This link may have been deactivated. Ask your partner to generate a new one."}
           </p>
         </div>
@@ -179,45 +178,52 @@ export default function CyncLinkPage() {
 
   const spoonsLeft = data.spoons ? data.spoons.totalSpoons - data.spoons.usedSpoons : null;
 
-  // Surface tier — minimal view
+  // ── Surface tier — minimal view ──────────────────────────────────────────────
   if (data.privacyTier === "surface") {
     const spoonPercent = spoonsLeft !== null && data.spoons ? (spoonsLeft / data.spoons.totalSpoons) * 100 : 0;
     const spoonColor = spoonsLeft !== null && spoonsLeft > 6 ? "#5B8A6B" : spoonsLeft !== null && spoonsLeft > 3 ? "#C4846E" : "#8B4A6B";
     const vibe = spoonsLeft === null ? "Unknown" : spoonsLeft > 8 ? "Feeling good today" : spoonsLeft > 5 ? "Moderate energy" : spoonsLeft > 2 ? "Running low" : "Very low energy today";
 
     return (
-      <div style={{ minHeight: "100vh", background: "#0D0B0A", color: "#F7F2EB", fontFamily: "Inter, sans-serif" }}>
-        <div style={{ background: "#1A1614", padding: "1.5rem 1.5rem 1rem", borderBottom: "1px solid #2A2420" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-            <span style={{ fontSize: "1.2rem" }}>🔗</span>
-            <span style={{ color: "#B07D52", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>CyncLink</span>
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Header */}
+        <div className="bg-card border-b border-border px-6 pt-6 pb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xl">🔗</span>
+            <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#B07D52" }}>CyncLink</span>
           </div>
-          <h1 style={{ fontFamily: "DM Serif Display, Georgia, serif", fontSize: "1.6rem", margin: 0, color: "#F7F2EB" }}>
+          <h1 className="font-display text-2xl text-foreground m-0">
             {data.partnerName}'s Day
           </h1>
-          <p style={{ color: "#9A8A7A", fontSize: "0.8rem", margin: "0.25rem 0 0" }}>Shared with {data.label}</p>
+          <p className="text-muted-foreground text-sm mt-1">Shared with {data.label}</p>
         </div>
-        <div style={{ padding: "1.5rem", maxWidth: "480px", margin: "0 auto" }}>
-          <div style={{ background: "#1A1614", border: "1px solid #2A2420", borderRadius: "16px", padding: "1.5rem", marginBottom: "1rem" }}>
-            <div style={{ color: "#B07D52", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1rem" }}>Energy Today</div>
-            <div style={{ background: "#0D0B0A", borderRadius: "8px", height: "12px", overflow: "hidden", marginBottom: "0.75rem" }}>
-              <div style={{ background: spoonColor, height: "100%", width: `${spoonPercent}%`, borderRadius: "8px", transition: "width 0.3s ease" }} />
+
+        <div className="px-6 pt-6 max-w-lg mx-auto">
+          {/* Energy bar */}
+          <div className="bg-card border border-border rounded-2xl p-6 mb-4">
+            <div className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: "#B07D52" }}>Energy Today</div>
+            <div className="bg-muted rounded-full h-3 overflow-hidden mb-3">
+              <div
+                style={{ background: spoonColor, height: "100%", width: `${spoonPercent}%`, borderRadius: "9999px", transition: "width 0.3s ease" }}
+              />
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ color: "#C4B8A8", fontSize: "0.9rem" }}>{vibe}</div>
-              {data.spoons && <div style={{ color: "#F7F2EB", fontSize: "1rem", fontWeight: 600 }}>{spoonsLeft}/{data.spoons.totalSpoons}</div>}
+            <div className="flex justify-between items-center">
+              <div className="text-foreground text-sm">{vibe}</div>
+              {data.spoons && <div className="text-foreground font-semibold">{spoonsLeft}/{data.spoons.totalSpoons}</div>}
             </div>
           </div>
-          <div style={{ textAlign: "center", padding: "1rem 0 2rem" }}>
-            <div style={{ color: "#4A3A2A", fontSize: "0.7rem" }}>Powered by</div>
-            <div style={{ fontFamily: "DM Serif Display, Georgia, serif", color: "#B07D52", fontSize: "1rem", letterSpacing: "0.05em" }}>Cync</div>
+
+          {/* Footer */}
+          <div className="text-center py-8">
+            <div className="text-muted-foreground/40 text-xs">Powered by</div>
+            <div className="font-display text-base tracking-wide" style={{ color: "#B07D52" }}>Cync</div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Deep tier — full view
+  // ── Deep tier — full view ────────────────────────────────────────────────────
   const phaseInfo = data.lastPeriodStart
     ? getPhaseInfo(data.lastPeriodStart, data.cycleLength)
     : null;
@@ -225,42 +231,42 @@ export default function CyncLinkPage() {
   const supportTips = phaseInfo ? (PHASE_SUPPORT_TIPS[phaseInfo.phase] || []) : [];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0D0B0A", color: "#F7F2EB", fontFamily: "Inter, sans-serif", padding: "0" }}>
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div style={{ background: "#1A1614", padding: "1.5rem 1.5rem 1rem", borderBottom: "1px solid #2A2420" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-          <span style={{ fontSize: "1.2rem" }}>🔗</span>
-          <span style={{ color: "#B07D52", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>CyncLink</span>
+      <div className="bg-card border-b border-border px-6 pt-6 pb-4">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xl">🔗</span>
+          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#B07D52" }}>CyncLink</span>
         </div>
-        <h1 style={{ fontFamily: "DM Serif Display, Georgia, serif", fontSize: "1.6rem", margin: 0, color: "#F7F2EB" }}>
+        <h1 className="font-display text-2xl text-foreground m-0">
           {data.partnerName}'s Day
         </h1>
-        <p style={{ color: "#9A8A7A", fontSize: "0.8rem", margin: "0.25rem 0 0" }}>Shared with {data.label}</p>
+        <p className="text-muted-foreground text-sm mt-1">Shared with {data.label}</p>
       </div>
 
-      <div style={{ padding: "1.5rem", maxWidth: "480px", margin: "0 auto" }}>
+      <div className="px-6 pt-6 pb-24 max-w-lg mx-auto flex flex-col gap-4">
 
         {/* Phase Card (cycling users only) */}
         {phaseInfo && data.cycleStatus !== "no_period" && (
-          <div style={{
-            background: `${phaseInfo.color}18`,
-            border: `1px solid ${phaseInfo.color}40`,
-            borderRadius: "16px",
-            padding: "1.5rem",
-            marginBottom: "1rem",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <span style={{ fontSize: "2rem" }}>{phaseInfo.emoji}</span>
+          <div
+            className="rounded-2xl p-6"
+            style={{
+              background: `${phaseInfo.color}18`,
+              border: `1px solid ${phaseInfo.color}40`,
+            }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-4xl">{phaseInfo.emoji}</span>
               <div>
-                <div style={{ color: "#9A8A7A", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <div className="text-muted-foreground text-xs uppercase tracking-widest">
                   Current Phase — Day {phaseInfo.dayInCycle}
                 </div>
-                <div style={{ fontFamily: "DM Serif Display, Georgia, serif", fontSize: "1.4rem", color: "#F7F2EB" }}>
+                <div className="font-display text-2xl text-foreground">
                   {phaseInfo.phase}
                 </div>
               </div>
             </div>
-            <p style={{ color: "#C4B8A8", fontSize: "0.875rem", lineHeight: 1.6, margin: 0 }}>
+            <p className="text-foreground/80 text-sm leading-relaxed m-0">
               {phaseInfo.partnerTip}
             </p>
           </div>
@@ -268,20 +274,15 @@ export default function CyncLinkPage() {
 
         {/* No-period vibe card */}
         {data.cycleStatus === "no_period" && (
-          <div style={{
-            background: "#8B6A3E18",
-            border: "1px solid #8B6A3E40",
-            borderRadius: "16px",
-            padding: "1.5rem",
-            marginBottom: "1rem",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <span style={{ fontSize: "2rem" }}>🌿</span>
-              <div style={{ fontFamily: "DM Serif Display, Georgia, serif", fontSize: "1.2rem", color: "#F7F2EB" }}>
-                Her Energy Today
-              </div>
+          <div
+            className="rounded-2xl p-6"
+            style={{ background: "#8B6A3E18", border: "1px solid #8B6A3E40" }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-4xl">🌿</span>
+              <div className="font-display text-xl text-foreground">Her Energy Today</div>
             </div>
-            <p style={{ color: "#C4B8A8", fontSize: "0.875rem", lineHeight: 1.6, margin: 0 }}>
+            <p className="text-foreground/80 text-sm leading-relaxed m-0">
               She's navigating her body on her own terms. Check in with her energy level below — that's your best guide today.
             </p>
           </div>
@@ -289,52 +290,42 @@ export default function CyncLinkPage() {
 
         {/* Today's Check-in */}
         {data.latestCheckIn && (
-          <div style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1.25rem",
-            marginBottom: "1rem",
-          }}>
-            <div style={{ color: "#B07D52", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <div className="text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: "#B07D52" }}>
               Today's Check-in
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <div style={{ background: "#0D0B0A", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
-                <div style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="bg-background rounded-xl p-3 text-center">
+                <div className="text-2xl mb-1">
                   {data.latestCheckIn.energy === "high" ? "⚡" : data.latestCheckIn.energy === "medium" ? "🌤" : "🌙"}
                 </div>
-                <div style={{ color: "#9A8A7A", fontSize: "0.7rem" }}>Energy</div>
-                <div style={{ color: "#F7F2EB", fontSize: "0.85rem", textTransform: "capitalize" }}>{data.latestCheckIn.energy}</div>
+                <div className="text-muted-foreground text-xs">Energy</div>
+                <div className="text-foreground text-sm capitalize">{data.latestCheckIn.energy}</div>
               </div>
-              <div style={{ background: "#0D0B0A", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
-                <div style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>
+              <div className="bg-background rounded-xl p-3 text-center">
+                <div className="text-2xl mb-1">
                   {data.latestCheckIn.mood === "happy" ? "😊" : data.latestCheckIn.mood === "anxious" ? "😰" : data.latestCheckIn.mood === "sad" ? "😔" : data.latestCheckIn.mood === "irritable" ? "😤" : "😌"}
                 </div>
-                <div style={{ color: "#9A8A7A", fontSize: "0.7rem" }}>Mood</div>
-                <div style={{ color: "#F7F2EB", fontSize: "0.85rem", textTransform: "capitalize" }}>{data.latestCheckIn.mood}</div>
+                <div className="text-muted-foreground text-xs">Mood</div>
+                <div className="text-foreground text-sm capitalize">{data.latestCheckIn.mood}</div>
               </div>
             </div>
             {data.latestCheckIn.symptoms && data.latestCheckIn.symptoms.length > 0 && (
-              <div style={{ marginBottom: "0.5rem" }}>
-                <div style={{ color: "#9A8A7A", fontSize: "0.7rem", marginBottom: "0.4rem" }}>Symptoms</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+              <div className="mb-2">
+                <div className="text-muted-foreground text-xs mb-1">Symptoms</div>
+                <div className="flex flex-wrap gap-1.5">
                   {data.latestCheckIn.symptoms.map((s: string, i: number) => (
-                    <span key={i} style={{
-                      background: "#2A2420",
-                      color: "#C4B8A8",
-                      fontSize: "0.75rem",
-                      padding: "0.2rem 0.6rem",
-                      borderRadius: "20px",
-                    }}>{s}</span>
+                    <span key={i} className="bg-muted text-foreground/80 text-xs px-3 py-1 rounded-full">
+                      {s}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             {data.latestCheckIn.notes && (
-              <div style={{ background: "#0D0B0A", borderRadius: "10px", padding: "0.75rem", marginTop: "0.5rem" }}>
-                <div style={{ color: "#9A8A7A", fontSize: "0.7rem", marginBottom: "0.25rem" }}>Note</div>
-                <div style={{ color: "#C4B8A8", fontSize: "0.85rem", fontStyle: "italic" }}>"{data.latestCheckIn.notes}"</div>
+              <div className="bg-background rounded-xl p-3 mt-2">
+                <div className="text-muted-foreground text-xs mb-1">Note</div>
+                <div className="text-foreground/80 text-sm italic">"{data.latestCheckIn.notes}"</div>
               </div>
             )}
           </div>
@@ -342,99 +333,83 @@ export default function CyncLinkPage() {
 
         {/* Spoon Energy */}
         {data.spoons && (
-          <div style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1.25rem",
-            marginBottom: "1rem",
-          }}>
-            <div style={{ color: "#B07D52", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <div className="text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: "#B07D52" }}>
               Energy Spoons Today
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ background: "#0D0B0A", borderRadius: "8px", height: "8px", overflow: "hidden" }}>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <div className="bg-muted rounded-full h-2 overflow-hidden">
                   <div style={{
                     background: spoonsLeft !== null && spoonsLeft > 6 ? "#5B8A6B" : spoonsLeft !== null && spoonsLeft > 3 ? "#C4846E" : "#8B4A6B",
                     height: "100%",
                     width: `${spoonsLeft !== null ? (spoonsLeft / data.spoons!.totalSpoons) * 100 : 0}%`,
-                    borderRadius: "8px",
+                    borderRadius: "9999px",
                     transition: "width 0.3s ease",
                   }} />
                 </div>
               </div>
-              <div style={{ color: "#F7F2EB", fontSize: "1rem", fontWeight: 600, whiteSpace: "nowrap" }}>
+              <div className="text-foreground font-semibold whitespace-nowrap">
                 {spoonsLeft}/{data.spoons.totalSpoons} left
               </div>
             </div>
             {spoonsLeft !== null && spoonsLeft <= 3 && (
-              <p style={{ color: "#C4846E", fontSize: "0.8rem", marginTop: "0.5rem", margin: "0.5rem 0 0" }}>
+              <p className="text-sm mt-2 m-0" style={{ color: "#C4846E" }}>
                 She's running low on energy today. Low-demand support is best.
               </p>
             )}
           </div>
         )}
 
-        {/* I Got This — Support Actions */}
+        {/* Ways to Support Her */}
         {supportTips.length > 0 && (
-          <div style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1.25rem",
-            marginBottom: "1rem",
-          }}>
-            <div style={{ color: "#B07D52", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.25rem" }}>
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <div className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: "#B07D52" }}>
               Ways to Support Her
             </div>
-            <p style={{ color: "#9A8A7A", fontSize: "0.75rem", marginBottom: "0.75rem" }}>
+            <p className="text-muted-foreground text-xs mb-3">
               Tap "I got this" to let her know you're on it.
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div className="flex flex-col gap-2">
               {supportTips.map((tip, i) => {
                 const isClaimed = claimedActions.has(tip);
                 const isClaiming = claimingAction === tip;
                 const justClaimed = claimSuccess === tip;
                 return (
-                  <div key={i} style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "0.75rem",
-                    background: isClaimed ? "#5B8A6B18" : "#0D0B0A",
-                    border: `1px solid ${isClaimed ? "#5B8A6B40" : "#1A1614"}`,
-                    borderRadius: "10px",
-                    padding: "0.75rem",
-                  }}>
-                    <span style={{ color: isClaimed ? "#5B8A6B" : "#C4B8A8", fontSize: "0.85rem", flex: 1 }}>
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 rounded-xl px-3 py-3"
+                    style={{
+                      background: isClaimed ? "#5B8A6B18" : "hsl(var(--muted))",
+                      border: `1px solid ${isClaimed ? "#5B8A6B40" : "transparent"}`,
+                    }}
+                  >
+                    <span
+                      className="text-sm flex-1"
+                      style={{ color: isClaimed ? "#5B8A6B" : undefined }}
+                    >
                       {isClaimed && "✓ "}{tip}
                     </span>
                     {!isClaimed && (
                       <button
                         onClick={() => claimAction(tip)}
                         disabled={isClaiming}
+                        className="rounded-lg px-3 py-1.5 text-xs font-bold cursor-pointer whitespace-nowrap border-none"
                         style={{
                           background: "#C4846E",
                           color: "#0D0B0A",
-                          border: "none",
-                          borderRadius: "8px",
-                          padding: "0.4rem 0.75rem",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          cursor: isClaiming ? "wait" : "pointer",
-                          whiteSpace: "nowrap",
                           opacity: isClaiming ? 0.7 : 1,
+                          cursor: isClaiming ? "wait" : "pointer",
                         }}
                       >
                         {isClaiming ? "…" : "I got this"}
                       </button>
                     )}
                     {isClaimed && justClaimed && (
-                      <span style={{ color: "#5B8A6B", fontSize: "0.75rem", fontWeight: 600 }}>She'll see this 💚</span>
+                      <span className="text-xs font-semibold" style={{ color: "#5B8A6B" }}>She'll see this 💚</span>
                     )}
                     {isClaimed && !justClaimed && (
-                      <span style={{ color: "#5B8A6B", fontSize: "0.75rem" }}>Claimed ✓</span>
+                      <span className="text-xs" style={{ color: "#5B8A6B" }}>Claimed ✓</span>
                     )}
                   </div>
                 );
@@ -444,10 +419,10 @@ export default function CyncLinkPage() {
         )}
 
         {/* Footer */}
-        <div style={{ textAlign: "center", padding: "1rem 0 2rem" }}>
-          <div style={{ color: "#4A3A2A", fontSize: "0.7rem" }}>Powered by</div>
-          <div style={{ fontFamily: "DM Serif Display, Georgia, serif", color: "#B07D52", fontSize: "1rem", letterSpacing: "0.05em" }}>Cync</div>
-          <div style={{ color: "#4A3A2A", fontSize: "0.65rem", marginTop: "0.25rem" }}>Cycle intelligence for real life</div>
+        <div className="text-center py-4">
+          <div className="text-muted-foreground/40 text-xs">Powered by</div>
+          <div className="font-display text-base tracking-wide" style={{ color: "#B07D52" }}>Cync</div>
+          <div className="text-muted-foreground/30 text-xs mt-1">Cycle intelligence for real life</div>
         </div>
       </div>
     </div>

@@ -105,64 +105,19 @@ function WelcomeOverlay({
   onDismiss: () => void;
 }) {
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(13,11,10,0.95)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 200,
-        padding: "2rem",
-      }}
-    >
-      <div
-        style={{
-          background: "#1A1614",
-          border: "1px solid #2A2420",
-          borderRadius: "20px",
-          padding: "2.5rem 2rem",
-          maxWidth: "380px",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔗</div>
-        <h2
-          style={{
-            fontFamily: "DM Serif Display, Georgia, serif",
-            fontSize: "1.5rem",
-            color: "#F7F2EB",
-            margin: "0 0 0.75rem",
-          }}
-        >
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-8 bg-background/95">
+      <div className="bg-card border border-border rounded-2xl p-10 max-w-sm w-full text-center">
+        <div className="text-5xl mb-4">🔗</div>
+        <h2 className="font-display text-2xl text-foreground mb-3">
           Welcome to Partner View
         </h2>
-        <p
-          style={{
-            color: "#9A8A7A",
-            fontSize: "0.9rem",
-            lineHeight: 1.6,
-            margin: "0 0 2rem",
-          }}
-        >
+        <p className="text-muted-foreground text-sm leading-relaxed mb-8">
           {partnerName} gave you access to this so you don't have to guess anymore. Here's where she is right now.
         </p>
         <button
           onClick={onDismiss}
-          style={{
-            background: "#B07D52",
-            color: "#0D0B0A",
-            border: "none",
-            borderRadius: "12px",
-            padding: "0.9rem 2rem",
-            fontSize: "1rem",
-            fontWeight: 700,
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
-            width: "100%",
-          }}
+          className="w-full rounded-xl py-3.5 text-base font-bold cursor-pointer border-none"
+          style={{ background: "#B07D52", color: "#0D0B0A" }}
         >
           Got it
         </button>
@@ -240,14 +195,7 @@ export default function PartnerViewPage() {
       : "#6A5A4A";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0D0B0A",
-        color: "#F7F2EB",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
+    <div className="min-h-screen bg-background text-foreground">
       {showWelcome && (
         <WelcomeOverlay
           partnerName={partnerName}
@@ -255,119 +203,51 @@ export default function PartnerViewPage() {
         />
       )}
 
-      <div
-        style={{
-          maxWidth: "480px",
-          margin: "0 auto",
-          padding: "1.5rem 1rem 6rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-        }}
-      >
+      <div className="max-w-lg mx-auto px-4 pt-6 pb-24 flex flex-col gap-4">
+
         {/* Header */}
         <div>
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.7rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              marginBottom: "0.25rem",
-            }}
-          >
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-1">
             Partner View
           </p>
-          <h1
-            style={{
-              fontFamily: "DM Serif Display, Georgia, serif",
-              fontSize: "1.6rem",
-              margin: 0,
-            }}
-          >
+          <h1 className="font-display text-2xl text-foreground m-0">
             {partnerName}'s Day
           </h1>
         </div>
 
         {/* TODAY CARD */}
         <div
+          className="rounded-2xl p-6"
           style={{
             background: `${accent}18`,
             border: `1px solid ${accent}35`,
-            borderRadius: "20px",
-            padding: "1.5rem",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              marginBottom: "0.5rem",
-            }}
-          >
-            <span style={{ fontSize: "1.4rem" }}>{cfg.icon}</span>
-            <span
-              style={{
-                fontFamily: "DM Serif Display, Georgia, serif",
-                fontSize: "1.4rem",
-                color: "#F7F2EB",
-              }}
-            >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-2xl">{cfg.icon}</span>
+            <span className="font-display text-2xl text-foreground">
               {cfg.name}
             </span>
             <span
-              style={{
-                background: `${accent}30`,
-                color: accent,
-                fontSize: "0.7rem",
-                fontWeight: 700,
-                padding: "0.2rem 0.6rem",
-                borderRadius: "20px",
-                marginLeft: "auto",
-              }}
+              className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full"
+              style={{ background: `${accent}30`, color: accent }}
             >
               Day {cycleDay}
             </span>
           </div>
 
-          <p
-            style={{
-              color: "#F7F2EB",
-              fontSize: "1rem",
-              fontWeight: 600,
-              margin: "0 0 0.4rem",
-              lineHeight: 1.4,
-            }}
-          >
+          <p className="text-foreground text-base font-semibold mb-1.5 leading-snug">
             {cfg.headline}
           </p>
 
-          <p
-            style={{
-              color: "#C4B8A8",
-              fontSize: "0.875rem",
-              lineHeight: 1.6,
-              margin: "0 0 1.25rem",
-            }}
-          >
+          <p className="text-foreground/70 text-sm leading-relaxed mb-5">
             {cfg.context}
           </p>
 
           <button
             onClick={() => setShowWhyExplainer((v) => !v)}
-            style={{
-              width: "100%",
-              background: accent,
-              color: "#F7F2EB",
-              border: "none",
-              borderRadius: "12px",
-              padding: "0.85rem",
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-            }}
+            className="w-full rounded-xl py-3.5 text-base font-bold cursor-pointer border-none text-white"
+            style={{ background: accent }}
           >
             {showWhyExplainer ? "Got it ↑" : "Why is she like this today? →"}
           </button>
@@ -376,123 +256,43 @@ export default function PartnerViewPage() {
         {/* Why explainer */}
         {showWhyExplainer && (
           <div
-            style={{
-              background: "#1A1614",
-              border: `1px solid ${accent}25`,
-              borderRadius: "16px",
-              padding: "1.25rem",
-            }}
+            className="bg-card rounded-2xl p-5"
+            style={{ border: `1px solid ${accent}25` }}
           >
-            <p
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.7rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                marginBottom: "0.75rem",
-              }}
-            >
+            <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-3">
               What's happening
             </p>
-            <p
-              style={{
-                color: "#C4B8A8",
-                fontSize: "0.875rem",
-                lineHeight: 1.7,
-                margin: 0,
-              }}
-            >
+            <p className="text-foreground/80 text-sm leading-relaxed m-0">
               {cfg.whyExplainer}
             </p>
           </div>
         )}
 
         {/* HOW TO SHOW UP */}
-        <div
-          style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1.25rem",
-          }}
-        >
-          <p
-            style={{
-              color: "#6A5A4A",
-              fontSize: "0.7rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontWeight: 600,
-              marginBottom: "1rem",
-            }}
-          >
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-4">
             How to Show Up
           </p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "1rem",
-            }}
-          >
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p
-                style={{
-                  color: "#5B8A6B",
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom: "0.6rem",
-                }}
-              >
+              <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#5B8A6B" }}>
                 Do
               </p>
               {cfg.howToShowUp.map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: "0.4rem",
-                    marginBottom: "0.5rem",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <span style={{ color: "#5B8A6B", fontSize: "0.85rem" }}>✔</span>
-                  <span style={{ color: "#C4B8A8", fontSize: "0.85rem", lineHeight: 1.4 }}>
-                    {item}
-                  </span>
+                <div key={i} className="flex gap-1.5 mb-2 items-start">
+                  <span className="text-sm flex-shrink-0" style={{ color: "#5B8A6B" }}>✔</span>
+                  <span className="text-foreground/80 text-sm leading-snug">{item}</span>
                 </div>
               ))}
             </div>
             <div>
-              <p
-                style={{
-                  color: "#8B4A6B",
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom: "0.6rem",
-                }}
-              >
+              <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#8B4A6B" }}>
                 Avoid
               </p>
               {cfg.avoid.map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: "0.4rem",
-                    marginBottom: "0.5rem",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <span style={{ color: "#8B4A6B", fontSize: "0.85rem" }}>✖</span>
-                  <span style={{ color: "#C4B8A8", fontSize: "0.85rem", lineHeight: 1.4 }}>
-                    {item}
-                  </span>
+                <div key={i} className="flex gap-1.5 mb-2 items-start">
+                  <span className="text-sm flex-shrink-0" style={{ color: "#8B4A6B" }}>✖</span>
+                  <span className="text-foreground/80 text-sm leading-snug">{item}</span>
                 </div>
               ))}
             </div>
@@ -501,59 +301,29 @@ export default function PartnerViewPage() {
 
         {/* SPOON ENERGY */}
         {spoonEntry && spoonsLeft !== null && (
-          <div
-            style={{
-              background: "#1A1614",
-              border: "1px solid #2A2420",
-              borderRadius: "16px",
-              padding: "1.25rem",
-            }}
-          >
-            <p
-              style={{
-                color: "#6A5A4A",
-                fontSize: "0.7rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                marginBottom: "0.75rem",
-              }}
-            >
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold mb-3">
               Her Energy Today
             </p>
-            <div
-              style={{
-                background: "#0D0B0A",
-                borderRadius: "8px",
-                height: "8px",
-                overflow: "hidden",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <div className="bg-muted rounded-full h-2 overflow-hidden mb-2">
               <div
                 style={{
                   background: spoonColor,
                   height: "100%",
                   width: `${spoonPct}%`,
-                  borderRadius: "8px",
+                  borderRadius: "9999px",
                 }}
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span style={{ color: "#9A8A7A", fontSize: "0.8rem" }}>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground text-sm">
                 {spoonsLeft <= 3
                   ? "Running on empty — low-demand only today"
                   : spoonsLeft <= 6
                   ? "Some energy, but don't push it"
                   : "She's got energy today — good time to connect"}
               </span>
-              <span style={{ color: spoonColor, fontSize: "0.85rem", fontWeight: 700 }}>
+              <span className="text-sm font-bold" style={{ color: spoonColor }}>
                 {spoonsLeft}/{spoonEntry.totalSpoons}
               </span>
             </div>
@@ -563,39 +333,18 @@ export default function PartnerViewPage() {
         {/* VIEW CALENDAR */}
         <button
           onClick={() => setLocation("/calendar")}
-          style={{
-            background: "#1A1614",
-            border: "1px solid #2A2420",
-            borderRadius: "16px",
-            padding: "1rem 1.25rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
-            color: "#C4B8A8",
-            fontSize: "0.9rem",
-            width: "100%",
-            textAlign: "left",
-          }}
+          className="bg-card border border-border rounded-2xl px-5 py-4 flex items-center justify-between cursor-pointer w-full text-left hover:opacity-90 transition-opacity"
         >
-          <span>See the full cycle calendar</span>
+          <span className="text-foreground/80 text-sm">See the full cycle calendar</span>
           <span style={{ color: accent }}>→</span>
         </button>
 
         {/* Footer */}
-        <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
-          <div
-            style={{
-              fontFamily: "DM Serif Display, Georgia, serif",
-              color: "#B07D52",
-              fontSize: "0.9rem",
-              letterSpacing: "0.05em",
-            }}
-          >
+        <div className="text-center py-2">
+          <div className="font-display text-sm tracking-wide" style={{ color: "#B07D52" }}>
             Cync
           </div>
-          <div style={{ color: "#4A3A2A", fontSize: "0.65rem", marginTop: "0.2rem" }}>
+          <div className="text-muted-foreground/30 text-xs mt-1">
             Cycle intelligence for real life
           </div>
         </div>
