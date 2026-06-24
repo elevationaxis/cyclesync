@@ -21,7 +21,10 @@ export default function SettingsPage() {
   const [cycleLength, setCycleLength] = useState("28");
 
   useEffect(() => {
-    if (!profileId) return;
+    if (!profileId) {
+      setLoading(false);
+      return;
+    }
     fetch(`/api/profile/${profileId}`)
       .then(r => r.json())
       .then(data => {
@@ -38,7 +41,9 @@ export default function SettingsPage() {
           setCycleLength(String(data.cycleLength));
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        // API unavailable — still show the page with defaults
+      })
       .finally(() => setLoading(false));
   }, [profileId]);
 
